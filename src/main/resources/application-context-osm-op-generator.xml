@@ -16,44 +16,44 @@
     <context:annotation-config/>
 	
 	<bean id="vgiModelFactory" lazy-init="true" scope="singleton"
-		class="at.srfg.vgianalyzer.activityanalysis.model.vgi.impl.VgiModelFactoryImpl" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiModelFactoryImpl" />
 	
 	<bean id="vgiOperationGeneratorDataHandler" lazy-init="true"
-			class="at.srfg.vgianalyzer.osm.importer.impl.VgiOperationGeneratorDataHandlerImpl" >
+			class="at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.impl.VgiOperationGeneratorDataHandlerImpl" >
 		<property name="vgiOperationGenerator" ref="vgiOperationGeneratorOsm" />
 		<property name="vgiOperationPbfWriter" ref="vgiOperationPbfWriter" />
 	</bean>
 	
 	<bean id="abstractVgiOperationGenerator" lazy-init="true" scope="singleton" abstract="true"
-			class="at.srfg.vgianalyzer.osm.vgi.service.impl.AbstractVgiOperationOsmGenerator" >
+			class="at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl.AbstractVgiOperationOsmGenerator" >
 		<constructor-arg index="0" ref="vgiModelFactory" />
 	</bean>
 	
 	<bean id="vgiOperationGeneratorOsm" lazy-init="true" parent="abstractVgiOperationGenerator"
-			class="at.srfg.vgianalyzer.osm.vgi.service.impl.VgiOperationGeneratorOsmImpl" >
+			class="at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl.VgiOperationGeneratorOsmImpl" >
 		<property name="nodeOpGenerator" ref="vgiOperationGeneratorOsmNode"/>
 		<property name="wayOpGenerator" ref="vgiOperationGeneratorOsmWay" />
 		<property name="relationOpGenerator" ref="vgiOperationGeneratorOsmRelation" />
 	</bean>
 	
 	<bean id="vgiOperationGeneratorOsmNode" lazy-init="true" parent="abstractVgiOperationGenerator"
-			class="at.srfg.vgianalyzer.osm.vgi.service.impl.VgiOperationGeneratorOsmNodeImpl" >
+			class="at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl.VgiOperationGeneratorOsmNodeImpl" >
 	</bean>
 	
 	<bean id="vgiOperationGeneratorOsmWay" lazy-init="true" parent="abstractVgiOperationGenerator"
-			class="at.srfg.vgianalyzer.osm.vgi.service.impl.VgiOperationGeneratorOsmWayImpl">
+			class="at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl.VgiOperationGeneratorOsmWayImpl">
 	</bean>
 	
 	<bean id="vgiOperationGeneratorOsmRelation" lazy-init="true" parent="abstractVgiOperationGenerator"
-			class="at.srfg.vgianalyzer.osm.vgi.service.impl.VgiOperationGeneratorOsmRelationImpl">
+			class="at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl.VgiOperationGeneratorOsmRelationImpl">
 	</bean>
 	
 	<!-- VGI pipeline -->
 	<bean id="readAllFeaturesPipelineConsumer" scope="prototype" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
 	
 	<bean id="getFeaturesPipeline" scope="prototype" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
 		<property name="consumers">
@@ -66,10 +66,10 @@
 	</bean>
 	
 	<bean id="vgiPipelineSettings" scope="singleton"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineSettings" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineSettings" />
 	
 	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
-		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" />
 	<bean id="vgiOperationPbfWriter" lazy-init="true" scope="prototype"
-		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl" />
 </beans>

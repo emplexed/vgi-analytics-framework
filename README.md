@@ -1,10 +1,10 @@
 # VGI Analytics Framework
 
 ## Overview
-The VGI analyzer is an analytics framework for Volunteered Geographic Information (VGI) datasets written in Java. Currently, the tools can handle historic OpenStreetMap datasets.
+The VGI Analytics Framework analyses Volunteered Geographic Information (VGI) datasets. Currently, the tools can handle historic OpenStreetMap datasets.
 
 ## Getting Started
-1. You can build `vgi-analytics-framework.jar` with maven or directly download it from the `build`-directory.
+1. You can build `vgi-analytics-framework.jar` with maven.
 2. Download the current [OSM Full History File](http://planet.openstreetmap.org/pbf/full-history/) in PBF format!
 3. Generate VGI operations! Run `OsmHistoryImporter`. Use option -o to specify the path to the OSM PBF file and the option -s to refer to the settings file which contains the path to the output directory. The PBF files containing VGI operations will be created in this output directory. The settings file can also specify a spatial filter (setting-key `filterPolygon`).
 4. Create the spatial index structure (quadtree)! Run `VgiQuadtreeBuilder`. Use option -s to refer to the settings file which contains the path to the VGI data directory. The file-based quadtree will be built inside this directory. Make sure that enough disk space is available (approx. 300 GB). The settings file can also specify a spatial filter (setting-key `filterPolygon`).

@@ -16,39 +16,39 @@
     <context:annotation-config/>
 	
 	<bean id="vgiPipelineSettings" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineSettings" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineSettings" />
 	
 	<bean id="vgiModelFactory" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.model.vgi.impl.VgiModelFactoryImpl" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiModelFactoryImpl" />
 	
 	<bean id="countingAnalysisConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.CountingAnalysisConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.CountingAnalysisConsumer" />
 	
 	<bean id="osmElementBuilderConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.OsmElementBuilderConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.OsmElementBuilderConsumer" />
 	
 	<bean id="featureBuilderConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.FeatureBuilderConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.FeatureBuilderConsumer" />
 		
 	<bean id="vgiAnalysisConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.VgiAnalysisConsumer">
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.VgiAnalysisConsumer">
 		<!-- <property name="dataSource" ref="dataSourceMain" />-->
 	</bean>
 	
 	<bean id="relatedVgiOperationFinderConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.RelatedVgiOperationFinderConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.RelatedVgiOperationFinderConsumer" />
 	
 	<bean id="readAllFeaturesConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
 	
 	<bean id="vgiActionGenerator" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.model.vgi.impl.VgiActionGeneratorImpl">
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiActionGeneratorImpl">
         <constructor-arg index="0" ref="vgiModelFactory" />
         <constructor-arg index="1" ref="vgiPipelineSettings" />
     </bean>
 	
 	<bean id="vgiPipeline" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
 		<property name="queueSize" value="100000" />
 		<property name="batchSize" value="100000" />
 		<property name="consumers">
@@ -61,7 +61,7 @@
 	</bean>
 	
 	<bean id="vgiPipelineTest" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
 		<property name="queueSize" value="100000" />
 		<property name="batchSize" value="100000" />
 		<property name="consumers">
@@ -73,7 +73,7 @@
 	</bean>
 	
 	<bean id="vgiRelatedFeaturePipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
 		<property name="consumers">
@@ -85,7 +85,7 @@
 	</bean>
 	
 	<bean id="readAllFeaturesPipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
 		<property name="consumers">
@@ -97,10 +97,10 @@
 	</bean>
 	
 	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
-		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" >
 	</bean>
 	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
-		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
 	</bean>
 	
 	<!-- <bean id="osmObjectFactory" class="at.srfg.gitechsuite.osm.model.impl.OsmObjectFactoryImpl" /> -->

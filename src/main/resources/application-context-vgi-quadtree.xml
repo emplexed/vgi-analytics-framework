@@ -16,20 +16,20 @@
     <context:annotation-config/>
 	
 	<bean id="vgiPipelineSettings" scope="singleton"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineSettings" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineSettings" />
 	
 	<bean id="countingAnalysisConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.CountingAnalysisConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.CountingAnalysisConsumer" />
 		
 	<bean id="quadtreeBuilderConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.QuadtreeBuilderConsumer">
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.QuadtreeBuilderConsumer">
 	</bean>
 	
 	<bean id="readAllFeaturesConsumer" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
 	
 	<bean id="vgiPipeline" scope="singleton" lazy-init="true"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
 		<property name="queueSize" value="80000" />
 		<property name="batchSize" value="80000" />
 		<property name="consumers">
@@ -44,7 +44,7 @@
 	</bean>
 	
 	<bean id="getQuadrantFeaturesPipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
-		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
 		<property name="consumers">
@@ -58,12 +58,12 @@
 	</bean>
 	
 	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
-		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
 	</bean>
 	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
-		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" >
 	</bean>
 	<bean id="vgiOperationPbfWriter" lazy-init="true" scope="prototype"
-		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl" >
 	</bean>
 </beans>
