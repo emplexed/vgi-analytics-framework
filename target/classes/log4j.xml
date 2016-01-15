@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration>
+
+	<!--
+		=====================================================================
+	-->
+	<!--
+	-->
+	<!--
+		Log4j Configuration
+	-->
+	<!--
+	-->
+	<!--
+		=====================================================================
+	-->
+
+	<!--
+		| For more configuration information and examples see the Jakarta
+		Log4j | website: http://jakarta.apache.org/log4j
+	-->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="true">
+
+	<!-- ============================== -->
+	<!-- Append messages to the console -->
+	<!-- ============================== -->
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+		<!-- default target is System.out -->
+		<param name="Target" value="System.out" />
+		<param name="Threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}.%M()]  %m%n" />
+		</layout>
+	</appender>
+
+
+	<root>
+		<priority value="INFO" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+</log4j:configuration>

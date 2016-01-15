@@ -1,0 +1,107 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+        
+    <context:annotation-config/>
+	
+	<bean id="vgiPipelineSettings" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineSettings" />
+	
+	<bean id="vgiModelFactory" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.model.vgi.impl.VgiModelFactoryImpl" />
+	
+	<bean id="countingAnalysisConsumer" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.CountingAnalysisConsumer" />
+	
+	<bean id="osmElementBuilderConsumer" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.OsmElementBuilderConsumer" />
+	
+	<bean id="featureBuilderConsumer" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.FeatureBuilderConsumer" />
+		
+	<bean id="vgiAnalysisConsumer" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.VgiAnalysisConsumer">
+		<!-- <property name="dataSource" ref="dataSourceMain" />-->
+	</bean>
+	
+	<bean id="relatedVgiOperationFinderConsumer" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.RelatedVgiOperationFinderConsumer" />
+	
+	<bean id="readAllFeaturesConsumer" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
+	
+	<bean id="vgiActionGenerator" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.model.vgi.impl.VgiActionGeneratorImpl">
+        <constructor-arg index="0" ref="vgiModelFactory" />
+        <constructor-arg index="1" ref="vgiPipelineSettings" />
+    </bean>
+	
+	<bean id="vgiPipeline" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<property name="queueSize" value="100000" />
+		<property name="batchSize" value="100000" />
+		<property name="consumers">
+		   		<list>
+		   			<ref bean="vgiAnalysisConsumer" />
+		   			<ref bean="countingAnalysisConsumer" />
+		   		</list>
+		</property>
+		<property name="numThreads" value="1" />
+	</bean>
+	
+	<bean id="vgiPipelineTest" scope="singleton" lazy-init="true"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<property name="queueSize" value="100000" />
+		<property name="batchSize" value="100000" />
+		<property name="consumers">
+		   		<list>
+		   			<ref bean="readAllFeaturesConsumer"/>
+		   		</list>
+		</property>
+		<property name="numThreads" value="1" />
+	</bean>
+	
+	<bean id="vgiRelatedFeaturePipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<property name="queueSize" value="50000" />
+		<property name="batchSize" value="50000" />
+		<property name="consumers">
+		   		<list>
+		   			<ref bean="relatedVgiOperationFinderConsumer"/>
+		   		</list>
+		</property>
+		<property name="numThreads" value="1" />
+	</bean>
+	
+	<bean id="readAllFeaturesPipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
+		class="at.srfg.vgianalyzer.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<property name="queueSize" value="50000" />
+		<property name="batchSize" value="50000" />
+		<property name="consumers">
+		   		<list>
+		   			<ref bean="readAllFeaturesPipelineConsumer"/>
+		   		</list>
+		</property>
+		<property name="numThreads" value="1" />
+	</bean>
+	
+	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
+		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" >
+	</bean>
+	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
+		class="at.srfg.vgianalyzer.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
+	</bean>
+	
+	<!-- <bean id="osmObjectFactory" class="at.srfg.gitechsuite.osm.model.impl.OsmObjectFactoryImpl" /> -->
+</beans>

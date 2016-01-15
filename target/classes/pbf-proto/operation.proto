@@ -1,0 +1,36 @@
+package impl;
+
+option java_package = "at.srfg.vgianalyzer.activityanalysis.persistence.pbf";
+option java_outer_classname = "OperationProto";
+
+message PbfVgiOperationList {
+	repeated PbfVgiFeatureWrapper featureWrapper = 1;
+	
+	message PbfVgiFeatureWrapper {
+		required PbfVgiFeatureBytes bytes = 1;
+		required PbfVgiFeature feature = 2;
+	}
+	
+	message PbfVgiFeatureBytes {
+		required fixed32 bytes = 1;
+	}
+
+	message PbfVgiFeature {
+		required sint64 oid = 2;
+		repeated PbfVgiOperation operation = 3;
+	}
+	
+	message PbfVgiOperation {
+		optional int32 vgiOperationType = 1;
+		optional int32 uid = 2;
+		optional sint32 timestamp = 3;
+		optional sint32 changesetId = 4;
+		optional int32 version = 5;
+		optional sint64 ref = 8;
+		optional string key = 9;
+		optional string value = 10;
+		optional int32 position = 11;
+		optional sint32 longitude = 13;
+		optional sint32 latitude = 14;
+	}
+}
