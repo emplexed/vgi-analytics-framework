@@ -1,103 +1,69 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
-<settings>
-	<setting key="settingName" value="Batch Default" />
-	<setting key="pbfDataFolder" value="E:\vgi\data\world_2015_09" />
-	<setting key="readQuadtree" value="true" />
-	<setting key="resultFolder" value="E:\vgi\results\" />
-	
-	<setting key="filterUid" value="-1" /> <!-- -1 or uid -->
-	
-	<setting key="filterTimestamp" value="2016-01-01T00:00:00Z" />
-	
-	<setting key="filterElementType" value="UNDEFINED" /> <!-- UNDEFINED/POINT/LINE/RELATION -->
-	<setting key="filterTag" value="list"><!-- Set tag value to "" if all values for this key should be analyzed -->
-		<tag key="highway" value="motorway" />
-		<tag key="highway" value="motorway_link" />
-		<tag key="highway" value="trunk" />
-		<tag key="highway" value="trunk_link" />
-		<tag key="highway" value="primary" />
-		<tag key="highway" value="primary_link" />
-		<tag key="highway" value="secondary" />
-		<tag key="highway" value="secondary_link" />
-		<tag key="highway" value="tertiary" />
-		<tag key="highway" value="tertiary_link" />
-		<tag key="highway" value="residential" />
-		<tag key="highway" value="unclassified" />
-		<tag key="highway" value="living_street" />
-		<tag key="highway" value="service" />
-		<tag key="highway" value="track" />
-		<tag key="highway" value="road" />
-		<!--
-		<tag key="highway" value="footway" />
-		<tag key="highway" value="path" />
-		<tag key="highway" value="cycleway" />
-		<tag key="highway" value="steps" />
-		-->
-		<tag key="building" value="" /><!--
-		<tag key="addr:housenumber" value="" />-->
-	</setting>
-
-	<!-- Welt -->
-	<setting key="filterPolygon" value="" /> 
-	<!--<setting key="filterPolygon" value="POLYGON((-180 -90,180 -90,180 90,-180 90,-180 -90))" /> -->
-	<!--<setting key="filterPolygon" value="POLYGON((13.114 47.6875, 13.114 47.6885, 13.115 47.6885, 13.115 47.6875, 13.114 47.6875))" />-->
-	
-	<setting key="analysisSubjects" value="list">
-		<analysis value="VgiAnalysisBatchGeneral" />
-		<analysis value="VgiAnalysisTags">
-			<analysisSetting key="tagKey" value="" />
-		</analysis>
-		<!--
-		<analysis value="VgiAnalysisUpdate" />
-		<analysis value="VgiAnalysisUpdateGeometry" />
-		<analysis value="VgiAnalysisUserPerAction">
-			<analysisSetting key="mergeActionTypes" value="false" />
-		</analysis>
-		<analysis value="VgiAnalysisActionDetails">
-			<analysisSetting key="includeOperationDetails" value="true" />
-		</analysis>
-		<analysis value="VgiAnalysisChangeDetection" />
-		<analysis value="VgiAnalysisActionDetails">
-			<analysisSetting key="includeOperationDetails" value="true" />
-		</analysis>
-		<analysis value="VgiAnalysisBatchUserActionType" />
-		<analysis value="VgiAnalysisBatchContributor" />
-		<analysis value="VgiAnalysisTag">
-			<analysisSetting key="tagKey" value="lanes" />
-		</analysis>
-		<analysis value="VgiAnalysisUserPerOperation">
-			<analysisSetting key="mergeOperationTypes" value="false" />
-		</analysis>
+<settings
+		xmlns="http://www.salzburgresearch.at"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.salzburgresearch.at validator.xsd">
+	<general
+		settingName="Batch Default"
+		pbfDataFolder="E:\vgi\data\world_2016_01"
+		readQuadtree="true"
+		resultFolder="E:\vgi\results\"
+		filterTimestamp="2020-01-01T00:00:00Z" />
 		
-		<analysis value="VgiAnalysisActionPerType" />
-		<analysis value="VgiAnalysisOperationPerType" />
-		<analysis value="VgiAnalysisGeometryType">
-			<analysisSetting key="tagKey" value="" />
-		</analysis>
-		<analysis value="VgiAnalysisHourOfDay" />
+	<!-- temporalResolution: eternity, century, decade, year, month, day -->
+	<!-- findRelatedOperations e.g. OP_SPLIT_WAY, OP_MERGE_WAY; very time-consuming -->
+	<!-- actionTimeBuffer: 1000*60*60*24=86400000=1 day ; 1000*60*60*12=43200000=12hours -->
+	<analysis
+		filterElementType="UNDEFINED"
+		analysisStartDate="2015-04-01T00:00:00Z"
+		analysisEndDate="2016-01-01T00:00:00Z"
+		temporalResolution="day"
+		findRelatedOperations="true"
+		writeGeometryFiles="false"
+		actionTimeBuffer="43200000">
+		
+		<filterTag key="highway" value="motorway" />
+		<filterTag key="highway" value="motorway_link" />
+		<filterTag key="highway" value="trunk" />
+		<filterTag key="highway" value="trunk_link" />
+		<filterTag key="highway" value="primary" />
+		<filterTag key="highway" value="primary_link" />
+		<filterTag key="highway" value="secondary" />
+		<filterTag key="highway" value="secondary_link" />
+		<filterTag key="highway" value="tertiary" />
+		<filterTag key="highway" value="tertiary_link" />
+		<filterTag key="highway" value="residential" />
+		<filterTag key="highway" value="unclassified" />
+		<filterTag key="highway" value="living_street" />
+		<filterTag key="highway" value="service" />
+		<filterTag key="highway" value="track" />
+		<filterTag key="highway" value="road" />
+		<!--
+		<filterTag key="highway" value="footway" />
+		<filterTag key="highway" value="path" />
+		<filterTag key="highway" value="cycleway" />
+		<filterTag key="highway" value="steps" />
 		-->
-	</setting>
-	
-	<setting key="featureType" value="ft">
-	<!-- 'tag' elements define tags which are necessary to recognize features -->
-	<!-- 'property' elements define tags which are used as feature attributes -->
+		<filterTag key="building" value="" /><!--
+		<filterTag key="addr:housenumber" value="" />-->
+		
 		<featureType name="street" geometryType="LineString">
-			<tag key="highway" value="motorway" />
-			<tag key="highway" value="motorway_link" />
-			<tag key="highway" value="trunk" />
-			<tag key="highway" value="trunk_link" />
-			<tag key="highway" value="primary" />
-			<tag key="highway" value="primary_link" />
-			<tag key="highway" value="secondary" />
-			<tag key="highway" value="secondary_link" />
-			<tag key="highway" value="tertiary" />
-			<tag key="highway" value="tertiary_link" />
-			<tag key="highway" value="residential" />
-			<tag key="highway" value="unclassified" />
-			<tag key="highway" value="living_street" />
-			<tag key="highway" value="service" />
-			<tag key="highway" value="track" />
-			<tag key="highway" value="road" />
+			<filterTag key="highway" value="motorway" />
+			<filterTag key="highway" value="motorway_link" />
+			<filterTag key="highway" value="trunk" />
+			<filterTag key="highway" value="trunk_link" />
+			<filterTag key="highway" value="primary" />
+			<filterTag key="highway" value="primary_link" />
+			<filterTag key="highway" value="secondary" />
+			<filterTag key="highway" value="secondary_link" />
+			<filterTag key="highway" value="tertiary" />
+			<filterTag key="highway" value="tertiary_link" />
+			<filterTag key="highway" value="residential" />
+			<filterTag key="highway" value="unclassified" />
+			<filterTag key="highway" value="living_street" />
+			<filterTag key="highway" value="service" />
+			<filterTag key="highway" value="track" />
+			<filterTag key="highway" value="road" />
 			<property key="highway" dataType="String" />
 			<property key="name" dataType="String" />
 			<property key="ref" dataType="String" />
@@ -108,10 +74,10 @@
 			<property key="layer" dataType="String" />
 		</featureType><!--
 		<featureType name="path" geometryType="LineString">
-			<tag key="highway" value="path" />
-			<tag key="highway" value="footway" />
-			<tag key="highway" value="cycleway" />
-			<tag key="highway" value="steps" />
+			<filterTag key="highway" value="path" />
+			<filterTag key="highway" value="footway" />
+			<filterTag key="highway" value="cycleway" />
+			<filterTag key="highway" value="steps" />
 			<property key="highway" />
 			<property key="name" />
 			<property key="access" />
@@ -120,12 +86,12 @@
 			<property key="layer" dataType="String" />
 		</featureType>
 		<featureType name="buildingPoint" geometryType="Point">
-			<tag key="building" value="" />
+			<filterTag key="building" value="" />
 			<property key="building" />
 			<property key="addr:housenumber" />
 		</featureType>-->
 		<featureType name="building" geometryType="Polygon">
-			<tag key="building" value="" />
+			<filterTag key="building" value="" />
 			<property key="building" />
 			<property key="addr:housenumber" />
 			<property key="addr:street" />
@@ -134,25 +100,18 @@
 			<property key="addr:country" />
 		</featureType><!--
 		<featureType name="housenumber" geometryType="Point">
-			<tag key="addr:housenumber" value="" />
+			<filterTag key="addr:housenumber" value="" />
 			<property key="addr:housenumber" />
 			<property key="addr:street" />
 			<property key="addr:postcode" />
 			<property key="addr:city" />
 			<property key="addr:country" />
 		</featureType>-->
-	</setting>
-	<setting key="analysisStartDate" value="2015-04-01T00:00:00Z" />
-	<setting key="analysisEndDate" value="2016-01-01T00:00:00Z" />
-	<setting key="temporalResolution" value="day" /><!-- eternity, century, decade, year, month, day, userdefined -->
-	<setting key="ignoreFeaturesWithoutTags" value="true" /> <!-- ignore way's nodes -->
-	<setting key="findRelatedOperations" value="false" /> <!-- e.g. OP_SPLIT_WAY; very time-consuming -->
-	<setting key="writeGeometryFiles" value="false" />
+		
+		<analysisSubject name="VgiAnalysisBatchGeneral" />
 	
-	<setting key="actionTimeBuffer" value="43200000" /> <!-- 1000*60*60*24=86400000=1 day ; 1000*60*60*12=43200000=12hours -->
-	
-	<setting key="actionDefinitions" value="list"><!--
-		<actionDefinition name="AcUpdateSplit" actionType="UPDATE" filterGeometryType="">
+	<!--
+		<actionDefinition name="AcUpdateSplit" actionType="UPDATE" geometryType="">
 			<definitionRule operationType="OP_SPLIT_WAY" entryPoint="YES" />
 			<definitionRule operationType="OP_CREATE_NODE" entryPoint="NO" />
 			<definitionRule operationType="OP_CREATE_WAY" entryPoint="NO" />
@@ -162,7 +121,7 @@
 			<definitionRule operationType="OP_ADD_NODE" entryPoint="NO" />
 			<definitionRule operationType="OP_ADD_MEMBER" entryPoint="NO" />
 		</actionDefinition>-->
-		<actionDefinition name="AcCreate" actionType="CREATE" filterGeometryType="">
+		<actionDefinition name="AcCreate" actionType="CREATE" geometryType="">
 			<definitionRule operationType="OP_CREATE_NODE" entryPoint="YES" />
 			<definitionRule operationType="OP_CREATE_WAY" entryPoint="YES" />
 			<definitionRule operationType="OP_CREATE_RELATION" entryPoint="YES" />
@@ -171,7 +130,7 @@
 			<definitionRule operationType="OP_ADD_NODE" entryPoint="NO" />
 			<definitionRule operationType="OP_ADD_MEMBER" entryPoint="NO" />
 		</actionDefinition>
-		<!--<actionDefinition name="AcUpdate" actionType="CREATE" filterGeometryType="">
+		<!--<actionDefinition name="AcUpdate" actionType="CREATE" geometryType="">
 			<definitionRule operationType="OP_SPLIT_WAY" entryPoint="YES" />
 			<definitionRule operationType="OP_CREATE_WAY" entryPoint="NO" />
 			<definitionRule operationType="OP_ADD_TAG" entryPoint="IF_FEATURE_TYPE_ADDED" />
@@ -179,7 +138,7 @@
 			<definitionRule operationType="OP_ADD_NODE" entryPoint="NO" />
 			<definitionRule operationType="OP_ADD_MEMBER" entryPoint="NO" />
 		</actionDefinition>-->
-		<actionDefinition name="AcDelete" actionType="DELETE" filterGeometryType="">
+		<actionDefinition name="AcDelete" actionType="DELETE" geometryType="">
 			<definitionRule operationType="OP_DELETE_NODE" entryPoint="YES" />
 			<definitionRule operationType="OP_DELETE_WAY" entryPoint="YES" />
 			<definitionRule operationType="OP_DELETE_RELATION" entryPoint="YES" />
@@ -188,7 +147,7 @@
 			<definitionRule operationType="OP_REMOVE_NODE" entryPoint="NO" />
 			<definitionRule operationType="OP_REMOVE_MEMBER" entryPoint="NO" />
 		</actionDefinition>
-		<actionDefinition name="AcUpdate" actionType="UPDATE" filterGeometryType="">
+		<actionDefinition name="AcUpdate" actionType="UPDATE" geometryType="">
 			<definitionRule operationType="OP_RECREATE_NODE" entryPoint="YES" />
 			<definitionRule operationType="OP_RECREATE_WAY" entryPoint="YES" />
 			<definitionRule operationType="OP_RECREATE_RELATION" entryPoint="YES" />
@@ -209,10 +168,10 @@
 			<definitionRule operationType="OP_MODIFY_WAY_COORDINATE" entryPoint="YES" />
 			<definitionRule operationType="OP_MODIFY_ROLE" entryPoint="YES" />
 		</actionDefinition><!--
-		<actionDefinition name="AcUpdateAttr" actionType="UPDATE" filterGeometryType="">
+		<actionDefinition name="AcUpdateAttr" actionType="UPDATE" geometryType="">
 			<definitionRule operationType="OP_ADD_TAG" entryPoint="YES" />
 			<definitionRule operationType="OP_MODIFY_TAG_VALUE" entryPoint="YES" />
 			<definitionRule operationType="OP_REMOVE_TAG" entryPoint="YES" />
 		</actionDefinition>-->
-	</setting>
+	</analysis>
 </settings>
