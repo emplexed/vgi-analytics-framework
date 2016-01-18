@@ -168,7 +168,14 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	
 	@Override
 	public void loadSettings(File url) {
-		if (settingsLoaded) return;
+		if (settingsLoaded) {
+			log.info("Settings already loaded!");
+			return;
+		}
+		if (url == null) {
+			log.info("No settings file specified");
+			return;
+		}
 		
 	    try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -600,6 +607,14 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	@Override
 	public File getPbfDataFolder() {
 		return pbfDataFolder;
+	}
+	@Override
+	public void setPbfDataFolder(File pbfDataFolder) {
+		this.pbfDataFolder = pbfDataFolder;
+		if (!pbfDataFolder.exists()) {
+			log.error("Cannot find pbfDataFolder!");
+			System.exit(1);
+		}
 	}
 
 	@Override

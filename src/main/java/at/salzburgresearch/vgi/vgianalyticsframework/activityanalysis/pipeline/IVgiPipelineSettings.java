@@ -41,6 +41,7 @@ public interface IVgiPipelineSettings {
 	void setSettingName(String name);
 	
 	File getPbfDataFolder();
+	void setPbfDataFolder(File pbfDataFolder);
 	
 	boolean isReadQuadtree();
 	void setReadQuadtree(boolean readQuadtree);
