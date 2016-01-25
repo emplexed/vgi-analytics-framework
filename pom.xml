@@ -10,11 +10,41 @@
 	<packaging>jar</packaging>
 	<properties>
 		<geotools.version>14.0</geotools.version>
-		<spring.version>3.1.1.RELEASE</spring.version>
+		<spring.version>4.2.4.RELEASE</spring.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.application.VgiAnalyticsFramework</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.application.VgiAnalyticsFramework</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
@@ -24,7 +54,7 @@
 		<dependency>
 			<groupId>net.sf.trove4j</groupId>
 			<artifactId>trove4j</artifactId>
-			<version>2.0.2</version>
+			<version>3.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>

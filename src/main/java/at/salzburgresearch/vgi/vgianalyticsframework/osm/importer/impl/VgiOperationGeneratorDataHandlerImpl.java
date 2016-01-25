@@ -42,8 +42,8 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer;
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.OsmDataConsumer;
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.IOsmVgiOperationGenerator;
-import gnu.trove.TLongArrayList;
-import gnu.trove.TLongObjectHashMap;
+import gnu.trove.list.array.TLongArrayList;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer {
 	private static Logger log = Logger.getLogger(VgiOperationGeneratorDataHandlerImpl.class);

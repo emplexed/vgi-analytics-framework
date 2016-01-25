@@ -15,13 +15,12 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.producer;
 
-import gnu.trove.TLongArrayList;
-
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
+import gnu.trove.list.array.TLongArrayList;
 
 public interface IVgiAnalysisPipelineProducer extends Runnable {
 

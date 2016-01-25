@@ -36,7 +36,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiOperation;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiOperationImpl;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.IVgiPipelineConsumer;
-import gnu.trove.TLongArrayList;
+import gnu.trove.list.array.TLongArrayList;
 
 public class OsmElementBuilderConsumer implements IVgiPipelineConsumer {
 	private static Logger log = Logger.getLogger(OsmElementBuilderConsumer.class);
@@ -125,7 +125,7 @@ public class OsmElementBuilderConsumer implements IVgiPipelineConsumer {
 					break;
 					
 				case OP_REORDER_NODE:
-					nodeList.insert(operation.getPosition(), nodeList.remove((int)operation.getRefId()));
+					nodeList.insert(operation.getPosition(), nodeList.removeAt((int)operation.getRefId()));
 					break;
 					
 				case OP_ADD_MEMBER:

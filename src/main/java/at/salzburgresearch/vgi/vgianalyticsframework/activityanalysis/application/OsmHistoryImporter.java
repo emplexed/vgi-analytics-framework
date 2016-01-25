@@ -38,18 +38,27 @@ import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.impl.VgiOperat
 
 public class OsmHistoryImporter {
 	private static Logger log = Logger.getLogger(OsmHistoryImporter.class);
-	
+
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:/application-context-osm-op-generator.xml");
-		
+		/**
+		 * Read input parameter
+		 */
 		Options options = new Options();
 		options.addOption("h", "help", false, "Display this help page");
-		options.addOption(Option.builder("o").longOpt("osm").hasArg().argName("osm_history_file").desc("osm history file").build());
+		/** Settings */
 		options.addOption(Option.builder("s").longOpt("settings").hasArg().argName("settings_file").desc("settings file").build());
+		options.addOption(Option.builder("p").longOpt("polygons").hasArg().argName("polygon_file").desc("polygon file").build());
+		/** OSM History importer */
+		options.addOption(Option.builder("o").longOpt("osm").hasArg().argName("osm_history_file").desc("osm history file").build());
+		
+		launch(options, args);
+	}
+
+	public static void launch (Options options, String[] args) {
 		
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
-        try {
+        try (ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:/application-context-osm-op-generator.xml")) {
             cmd = parser.parse(options, args);
             
             File osmHistoryFile = null;
@@ -76,6 +85,8 @@ public class OsmHistoryImporter {
             		System.exit(0);
             	}
             } else {
+				log.warn("No setting file specified! Use option -s to specify a settings XML file");
+				System.exit(0);
                 settingsFile = null;
             }
 			

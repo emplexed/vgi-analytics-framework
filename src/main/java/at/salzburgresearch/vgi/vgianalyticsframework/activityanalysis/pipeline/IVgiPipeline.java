@@ -15,13 +15,12 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline;
 
-import gnu.trove.TLongArrayList;
-
 import java.io.File;
 import java.util.List;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.IVgiPipelineConsumer;
+import gnu.trove.list.array.TLongArrayList;
 
 /**
  * Interface to controls VGI pipelines. It receives VGI data from a VGI data producer and
@@ -43,6 +42,8 @@ public interface IVgiPipeline {
 	
 	void setPbfDataFolder(File file);
 	void setNumThreads(int threadCount);
+
+	void setVgiPipelineSettings(IVgiPipelineSettings settings);
 	
 	/**
 	 * Sets a node ID filter. Set an empty list if no ways should be processed.

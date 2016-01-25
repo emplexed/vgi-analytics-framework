@@ -15,8 +15,6 @@ limitations under the License.
 
 package at.srfg.gitechsuite.vgi.activityanalysis.pipeline.impl;
 
-import gnu.trove.TLongArrayList;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -38,6 +36,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipeline;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer;
+import gnu.trove.list.array.TLongArrayList;
 
 /**
  * JUnit Test class<br />

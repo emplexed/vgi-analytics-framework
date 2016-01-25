@@ -31,17 +31,25 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
 
 public class VgiQuadtreeBuilder {
 	private static Logger log = Logger.getLogger(VgiQuadtreeBuilder.class);
-	
+
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:/application-context-vgi-quadtree.xml");
-		
+		/**
+		 * Read input parameter
+		 */
 		Options options = new Options();
 		options.addOption("h", "help", false, "Display this help page");
+		/** Settings */
 		options.addOption(Option.builder("s").longOpt("settings").hasArg().argName("settings_file").desc("settings file").build());
+		options.addOption(Option.builder("p").longOpt("polygons").hasArg().argName("polygon_file").desc("polygon file").build());
+		
+		launch(options, args);
+	}
+
+	public static void launch (Options options, String[] args) {
 		
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
-        try {
+        try (ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:/application-context-vgi-quadtree.xml")) {
             cmd = parser.parse(options, args);
             
             File settingsFile = null;
@@ -58,6 +66,8 @@ public class VgiQuadtreeBuilder {
             		settingsFile = null;
             	}
             } else {
+				log.warn("No setting file specified! Use option -s to specify a settings XML file");
+				System.exit(0);
                 settingsFile = null;
             }
 			

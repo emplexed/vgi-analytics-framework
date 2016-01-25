@@ -48,19 +48,24 @@ public class VgiAnalysis {
 	private static Logger log = Logger.getLogger(VgiAnalysis.class);
 
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
-				"classpath:/application-context-vgi-pipeline.xml");
-
+		/**
+		 * Read input parameter
+		 */
 		Options options = new Options();
 		options.addOption("h", "help", false, "Display this help page");
-		options.addOption(Option.builder("s").longOpt("settings").hasArg().argName("settings_file")
-				.desc("settings file").build());
-		options.addOption(
-				Option.builder("p").longOpt("polygons").hasArg().argName("polygon_file").desc("polygon file").build());
+		/** Settings */
+		options.addOption(Option.builder("s").longOpt("settings").hasArg().argName("settings_file").desc("settings file").build());
+		options.addOption(Option.builder("p").longOpt("polygons").hasArg().argName("polygon_file").desc("polygon file").build());
+		
+		launch(options, args);
+	}
 
+	public static void launch (Options options, String[] args) {
+		
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
-		try {
+		try (ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+				"classpath:/application-context-vgi-pipeline.xml")) {
 			cmd = parser.parse(options, args);
 
 			File settingsFile = null;
@@ -80,6 +85,8 @@ public class VgiAnalysis {
 				}
 			} else {
 				settingsFile = null;
+				log.warn("No setting file specified! Use option -s to specify a settings XML file");
+				System.exit(0);
 			}
 			if (cmd.hasOption('p')) {
 				polygonFile = new File(cmd.getOptionValue('p'));
@@ -112,7 +119,7 @@ public class VgiAnalysis {
 
 						String[] split = line.split(";");
 						try {
-							settings.setFilterPolygonLabel(split[2]);
+							settings.setFilterPolygonLabel(split[1]);
 							settings.setFilterPolygon((Polygon) wktReader.read(split[0]));
 						} catch (ParseException e) {
 							log.warn("Cannot parse geometry!! (" + split[0] + ")");

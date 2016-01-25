@@ -15,7 +15,6 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl;
 
-import gnu.trove.TLongArrayList;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -50,6 +49,8 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistenc
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationList.PbfVgiOperation;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.producer.IVgiAnalysisPipelineProducer;
+
+import gnu.trove.list.array.TLongArrayList;
 
 public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 	private static Logger log = Logger.getLogger(VgiOperationPbfReaderImpl.class);

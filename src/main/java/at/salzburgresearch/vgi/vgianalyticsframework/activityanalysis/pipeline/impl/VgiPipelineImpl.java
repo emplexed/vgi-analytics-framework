@@ -15,8 +15,6 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl;
 
-import gnu.trove.TLongArrayList;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,9 +25,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
@@ -43,6 +41,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IV
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisOperation;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.impl.CSVFileWriter;
+import gnu.trove.list.array.TLongArrayList;
 
 /**
  * Controls VGI pipelines. It receives VGI data from a VGI data producer and
@@ -52,15 +51,12 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.im
  * @author sgroeche
  *
  */
-public class VgiPipelineImpl implements IVgiPipeline {
+public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 
 	private static Logger log = Logger.getLogger(VgiPipelineImpl.class);
-
-	@Autowired
-	ApplicationContext ctx;
-
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
+	
+	private ApplicationContext ctx;
+	
 	private IVgiPipelineSettings settings;
 
 	private List<IVgiPipelineConsumer> consumers;
@@ -292,6 +288,11 @@ public class VgiPipelineImpl implements IVgiPipeline {
 	public void setNumThreads(int threadCount) {
 		this.numThreads = threadCount;
 	}
+	
+	@Override
+	public void setVgiPipelineSettings(IVgiPipelineSettings settings) {
+		this.settings = settings;
+	}
 
 	@Override
 	public void setPbfDataFolder(File pbfDataFolder) {
@@ -331,5 +332,10 @@ public class VgiPipelineImpl implements IVgiPipeline {
 	@Override
 	public void setCoordinateOnly(boolean coordinatesOnly) {
 		this.coordinateOnly = coordinatesOnly;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+		this.ctx = ctx;
 	}
 }

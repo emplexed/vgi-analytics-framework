@@ -15,8 +15,6 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl;
 
-import gnu.trove.TLongArrayList;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,9 +36,9 @@ import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -58,23 +56,17 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IV
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisOperation;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisParent;
+import gnu.trove.list.array.TLongArrayList;
 
-public class VgiAnalysisConsumer implements IVgiPipelineConsumer {
+public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationContextAware {
 	private static Logger log = Logger.getLogger(VgiAnalysisConsumer.class);
 	
-	@Autowired
-	ApplicationContext ctx;
+	private ApplicationContext ctx = null;
 	
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
 	private IVgiPipelineSettings settings = null;
 	
-	@Autowired
-	@Qualifier("vgiActionGenerator")
 	private IVgiActionGenerator actionGenerator = null;
 	
-	@Autowired
-	@Qualifier("featureBuilderConsumer")
 	private FeatureBuilderConsumer geometryAssemblerConsumer;
 	
 	private List<IVgiFeature> featureList = null;
@@ -384,5 +376,22 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer {
 		}
 		/** Otherwise return false */
 		return false;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+		this.ctx = ctx;
+	}
+	
+	public void setSettings(IVgiPipelineSettings settings) {
+		this.settings = settings;
+	}
+	
+	public void setActionGenerator(IVgiActionGenerator actionGenerator) {
+		this.actionGenerator = actionGenerator;
+	}
+	
+	public void setGeometryAssemblerConsumer(FeatureBuilderConsumer geometryAssemblerConsumer) {
+		this.geometryAssemblerConsumer = geometryAssemblerConsumer;
 	}
 }

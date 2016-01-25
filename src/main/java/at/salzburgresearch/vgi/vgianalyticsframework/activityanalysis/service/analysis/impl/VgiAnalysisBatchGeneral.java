@@ -15,8 +15,6 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
-import gnu.trove.TIntArrayList;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +30,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.impl.CSVFileWriter;
+import gnu.trove.list.array.TIntArrayList;
 
 /**
  * General batch analysis!<br>

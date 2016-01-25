@@ -4,11 +4,11 @@
 The VGI Analytics Framework analyses Volunteered Geographic Information (VGI) datasets. Currently, the tools can handle historic OpenStreetMap datasets.
 
 ## Getting Started
-1. You can build `vgi-analytics-framework.jar` with maven.
+1. You can build `vgi-analytics-framework.jar` with maven or directly download it from the `build`-directory.
 2. Download the current [OSM Full History File](http://planet.openstreetmap.org/pbf/full-history/) in PBF format!
-3. Generate VGI operations! Run `OsmHistoryImporter`. Use option -o to specify the path to the OSM PBF file and the option -s to refer to the settings file which contains the path to the output directory. The PBF files containing VGI operations will be created in this output directory. The settings file can also specify a spatial filter (setting-key `filterPolygon`).
-4. Create the spatial index structure (quadtree)! Run `VgiQuadtreeBuilder`. Use option -s to refer to the settings file which contains the path to the VGI data directory. The file-based quadtree will be built inside this directory. Make sure that enough disk space is available (approx. 300 GB). The settings file can also specify a spatial filter (setting-key `filterPolygon`).
-5. Run VGI analysis! Run `VgiAnalysis`. Use option -s to refer to the settings file and -p to refer to an optional polygon raster file. The polygon raster file specifies a set of polygons along with a label and can be used to run an analysis for multiple polygons with the same settings (batch processing). The polygon file contains one entry per line. The first value is the polygon geometry (WKT format) and the second value represents the label. Both are separated by a semicolon.
+3. Generate VGI operations! Run `VgiAnalyticsFramework -importer`. Use option -o to specify the path to the OSM PBF file and the option -s to refer to the settings file which contains the path to the output directory. The PBF files containing VGI operations will be created in this output directory. The settings file can also specify a spatial filter (setting `filterPolygon`).
+4. Create the spatial index structure (quadtree)! Run `VgiAnalyticsFramework -quadtree`. Use option -s to refer to the settings file which contains the path to the VGI data directory. The file-based quadtree will be built inside this directory. Make sure that enough disk space is available (approx. 300 GB). The settings file can also specify a spatial filter (setting-key `filterPolygon`).
+5. Run VGI analysis! Run `VgiAnalyticsFramework -analysis`. Use option -s to refer to the settings file and -p to refer to an optional polygon raster file. The polygon raster file specifies a set of polygons along with a label and can be used to run an analysis for multiple polygons with the same settings (batch processing). The polygon file contains one entry per line. The first value is the polygon geometry (WKT format) and the second value represents the label. Both are separated by a semicolon.
 
 ## Analysis Methods
 * VgiAnalysisBatchGeneral
