@@ -54,7 +54,7 @@ public class VgiAnalysisBatchContributor extends VgiAnalysisParent implements IV
 	@Override
 	public void write(File path) {
 		
-		currentEntry.name = settings.getFilterPolygonLabel();
+		currentEntry.name = settings.getFilterPolygon().getLabel();
 		currentEntry.numUser = VgiAnalysisParent.userAnalysis.size();
 		long actionCount = 0;
 		

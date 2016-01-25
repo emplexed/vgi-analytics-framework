@@ -88,7 +88,7 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 	@Override
 	public void doBeforeFirstBatch() {
 		/** Write analysis result */
-		resultDir = new File(settings.getResultFolder() + File.separator + settings.getFilterPolygonLabel() + File.separator);
+		resultDir = new File(settings.getResultFolder() + File.separator + settings.getFilterPolygon().getLabel() + File.separator);
 		resultDir.mkdir();
 		
 		/** Initialize variables */
@@ -174,7 +174,7 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 			
 			if (settings.getFilterPolygon() != null || settings.isWriteGeometryFiles()) {
 				if (settings.getFilterPolygon() != null) {
-					if (!settings.getFilterPolygon().getEnvelopeInternal().intersects(feature.getBBox())) continue;
+					if (!settings.getFilterPolygon().getPolygon().getEnvelopeInternal().intersects(feature.getBBox())) continue;
 				}
 				
 				SimpleFeature f = geometryAssemblerConsumer.assembleGeometry(feature, null);
@@ -182,7 +182,7 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 				
 				if (settings.getFilterPolygon() != null) {
 					Geometry geometry = (Geometry)f.getDefaultGeometry();
-					if (geometry == null || geometry.disjoint(settings.getFilterPolygon())) continue;					
+					if (geometry == null || geometry.disjoint(settings.getFilterPolygon().getPolygon())) continue;					
 				}
 				
 				if (settings.isWriteGeometryFiles()) {

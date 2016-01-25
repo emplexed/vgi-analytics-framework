@@ -20,12 +20,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.vividsolutions.jts.geom.Polygon;
-
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeatureType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiPolygon;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisOperation;
@@ -57,11 +56,11 @@ public interface IVgiPipelineSettings {
 	long getFilterUid();
 	VgiGeometryType getFilterElementType();
 	Map<String, List<String>> getFilterTag();
-	
-	Polygon getFilterPolygon();
-	void setFilterPolygon(Polygon polygon);
-	String getFilterPolygonLabel();
-	void setFilterPolygonLabel(String polygonLabel);
+
+	List<VgiPolygon> getFilterPolygonList();
+	void setFilterPolygonList(List<VgiPolygon> filterPolygonList);
+	VgiPolygon getFilterPolygon();
+	void setFilterPolygon(VgiPolygon polygon);
 
 	Date getAnalysisStartDate();
 	Date getAnalysisEndDate();

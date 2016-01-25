@@ -232,7 +232,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer {
 				}
 				boolean withinBBox = false;
 				for (IVgiOperation operation : feature.getOperationList()) {
-					if (operation.getCoordinate() != null && settings.getFilterPolygon().getEnvelopeInternal().contains(operation.getCoordinate())) {
+					if (operation.getCoordinate() != null && settings.getFilterPolygon().getPolygon().getEnvelopeInternal().contains(operation.getCoordinate())) {
 						withinBBox = true;
 						break;
 					}

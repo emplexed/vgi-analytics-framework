@@ -101,7 +101,7 @@ public class VgiAnalysisBatchGeneral extends VgiAnalysisParent implements IVgiAn
 	
 	@Override
 	public void write(File path) {
-		currentEntry.name = settings.getFilterPolygonLabel();
+		currentEntry.name = settings.getFilterPolygon().getLabel();
 		entryList.add(currentEntry);
 		
 		CSVFileWriter writer = new CSVFileWriter(settings.getResultFolder() + "/analysis_batch_feature_type.csv", true);

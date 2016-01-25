@@ -179,7 +179,7 @@ public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtr
 			if (!feature.getBBox().isNull()) {
 				if (settings.getFilterPolygon() != null) {
 					/** Only add features which intersect filter polygon */
-					if (!feature.getBBox().intersects(settings.getFilterPolygon().getEnvelopeInternal())) continue;
+					if (!feature.getBBox().intersects(settings.getFilterPolygon().getPolygon().getEnvelopeInternal())) continue;
 				}
 				/** Correctly processed feature */
 				quadtree.insertFeature(feature);

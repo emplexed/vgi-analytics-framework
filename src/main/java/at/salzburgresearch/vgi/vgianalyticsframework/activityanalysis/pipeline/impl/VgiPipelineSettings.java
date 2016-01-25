@@ -52,6 +52,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiFeatureTypeImpl;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiOperationType;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiPolygon;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisFeature;
@@ -95,8 +96,9 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	private Date filterTimestamp = null;
 	private VgiGeometryType filterElementType = VgiGeometryType.UNDEFINED;
 	private Map<String, List<String>> filterTag = null;
-	private Polygon filterPolygon = null;
-	private String filterPolygonLabel = "Default";
+	private List<VgiPolygon> filterPolygonList = null;
+	private VgiPolygon filterPolygon = null;
+//	private String filterPolygonLabel = "Default";
 	
 	/** Action generator */
 	private long actionTimeBuffer = 43200000l;
@@ -567,13 +569,15 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	                Node node1 = nodeList1.item(t);
 	                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
 					Element firstElement1 = (Element) node1;
+					VgiPolygon polygon = new VgiPolygon();
 					if (!firstElement1.getAttribute("label").equals("")) {
-	    				filterPolygonLabel = firstElement1.getAttribute("label");
+	    				polygon.setLabel(firstElement1.getAttribute("label"));
 					}
 	    			try {
 	    				if (!firstElement1.getAttribute("geometry").equals("")) {
 		    				WKTReader wktReader = new WKTReader();
-		    				filterPolygon = (Polygon)wktReader.read(firstElement1.getAttribute("geometry"));
+		    				polygon.setPolygon((Polygon)wktReader.read(firstElement1.getAttribute("geometry")));
+		    				filterPolygonList.add(polygon);
 	    				}
 	    				
 	    			} catch (Exception ex) {
@@ -687,23 +691,23 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	}
 
 	@Override
-	public Polygon getFilterPolygon() {
+	public List<VgiPolygon> getFilterPolygonList() {
+		return filterPolygonList;
+	}
+	@Override
+	public void setFilterPolygonList(List<VgiPolygon> filterPolygonList) {
+		this.filterPolygonList = filterPolygonList;
+	}
+
+	@Override
+	public VgiPolygon getFilterPolygon() {
 		return filterPolygon;
 	}
 	@Override
-	public void setFilterPolygon(Polygon polygon) {
+	public void setFilterPolygon(VgiPolygon polygon) {
 		this.filterPolygon = polygon;
 	}
-
-	@Override
-	public String getFilterPolygonLabel() {
-		return filterPolygonLabel;
-	}
-	@Override
-	public void setFilterPolygonLabel(String polygonLabel) {
-		filterPolygonLabel = polygonLabel;
-	}
-
+	
 	@Override
 	public long getActionTimeBuffer() {
 		return actionTimeBuffer;

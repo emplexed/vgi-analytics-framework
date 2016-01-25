@@ -244,8 +244,8 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 			}
 		}
 		if (settings.getFilterPolygon() != null) {
-			writer.writeLine("Test Area Label: " + settings.getFilterPolygonLabel());
-			writer.writeLine("Test Area Polygon: " + settings.getFilterPolygon().toText());
+			writer.writeLine("Test Area Label: " + settings.getFilterPolygon().getLabel());
+			writer.writeLine("Test Area Polygon: " + settings.getFilterPolygon().getPolygon().toText());
 		} else {
 			writer.writeLine("Test Area Polygon: (no polygon set)");
 		}

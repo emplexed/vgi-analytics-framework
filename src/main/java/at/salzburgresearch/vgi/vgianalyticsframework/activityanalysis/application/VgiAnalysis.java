@@ -18,6 +18,7 @@ package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.applicati
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -32,6 +33,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiPolygon;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipeline;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 
@@ -110,6 +112,8 @@ public class VgiAnalysis {
 				pipeline.start();
 
 			} else {
+				settings.setFilterPolygonList(new ArrayList<VgiPolygon>());
+				
 				try {
 					BufferedReader fileReader = new BufferedReader(new FileReader(polygonFile));
 
@@ -119,22 +123,24 @@ public class VgiAnalysis {
 
 						String[] split = line.split(";");
 						try {
-							settings.setFilterPolygonLabel(split[1]);
-							settings.setFilterPolygon((Polygon) wktReader.read(split[0]));
+							settings.getFilterPolygonList().add(new VgiPolygon((Polygon) wktReader.read(split[0]), split[1]));
+
 						} catch (ParseException e) {
 							log.warn("Cannot parse geometry!! (" + split[0] + ")");
 							continue;
-						}
-
-						if (settings.getFilterPolygon() != null) {
-							log.info("Start analysis... " + settings.getFilterPolygonLabel());
-							pipeline.start();
 						}
 					}
 					fileReader.close();
 
 				} catch (Exception e) {
 					e.printStackTrace();
+				}
+				
+				log.info(settings.getFilterPolygonList().size() + " filter polygons found!");
+				for (VgiPolygon polygon : settings.getFilterPolygonList()) {
+					settings.setFilterPolygon(polygon);
+					log.info("Start analysis... " + settings.getFilterPolygon().getLabel());
+					pipeline.start();
 				}
 			}
 

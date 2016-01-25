@@ -119,7 +119,7 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 		/** Read this quadtree if it intersects with test region and if it has >0 features */
 		IntersectionMatrix intersectionMatrix = quadrant.relate(quadrant); /** default */
 		if (settings.getFilterPolygon() != null) {
-			intersectionMatrix = settings.getFilterPolygon().relate(quadrant); /** quadrant specific */
+			intersectionMatrix = settings.getFilterPolygon().getPolygon().relate(quadrant); /** quadrant specific */
 		}
 		if (intersectionMatrix.isIntersects() && pbfQuadtree.getFeatureCount() > 0) {
 			super.setPbfDataFolder(new File(settings.getPbfDataFolder() + "/Quadtree/" + pbfQuadtree.getPath()));

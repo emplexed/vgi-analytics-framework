@@ -45,7 +45,7 @@ public class VgiAnalysisBatchUserActionType extends VgiAnalysisParent implements
 	public void write(File path) {
 		
 		AnalysisEntry currentEntry = new AnalysisEntry();
-		currentEntry.name = settings.getFilterPolygonLabel();
+		currentEntry.name = settings.getFilterPolygon().getLabel();
 		
 //		for (Entry<Integer, VgiAnalysisUser> user : VgiAnalysisParent.userAnalysis.entrySet()) { //TODO repair
 //
