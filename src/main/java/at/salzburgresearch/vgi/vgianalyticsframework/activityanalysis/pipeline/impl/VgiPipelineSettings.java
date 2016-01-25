@@ -581,7 +581,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	    				}
 	    				
 	    			} catch (Exception ex) {
-	    				log.warn("Cannot parse setting 'filterPolygon'");
+	    				log.warn("Cannot parse setting 'filterPolygon' (" + polygon.getLabel() + ")");
 	    			}
 				}
             }

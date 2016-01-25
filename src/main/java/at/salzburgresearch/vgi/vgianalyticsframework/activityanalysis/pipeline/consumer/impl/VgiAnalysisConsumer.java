@@ -88,7 +88,11 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 	@Override
 	public void doBeforeFirstBatch() {
 		/** Write analysis result */
-		resultDir = new File(settings.getResultFolder() + File.separator + settings.getFilterPolygon().getLabel() + File.separator);
+		if (settings.getFilterPolygon() != null) {
+			resultDir = new File(settings.getResultFolder() + File.separator + settings.getFilterPolygon().getLabel() + File.separator);
+		} else {
+			resultDir = new File(settings.getResultFolder() + File.separator);
+		}
 		resultDir.mkdir();
 		
 		/** Initialize variables */
