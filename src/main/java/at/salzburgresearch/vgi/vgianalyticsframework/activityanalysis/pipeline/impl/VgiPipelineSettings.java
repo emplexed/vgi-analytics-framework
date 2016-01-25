@@ -559,6 +559,8 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
             nodeList = doc.getElementsByTagName("filterPolygons");
             
             for(int s=0; s<nodeList.getLength(); s++) {
+            	if (filterPolygonList == null) filterPolygonList = new ArrayList<VgiPolygon>();
+            	
                 Node node = nodeList.item(s);
 				if (node.getNodeType() != Node.ELEMENT_NODE) continue; 
 					

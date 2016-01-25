@@ -43,8 +43,6 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
  * -s path to settings XML file<br>
  * -p path to polygon CSV file
  *
- * @author sgroeche
- *
  */
 public class VgiAnalysis {
 	private static Logger log = Logger.getLogger(VgiAnalysis.class);
@@ -108,12 +106,11 @@ public class VgiAnalysis {
 			IVgiPipelineSettings settings = ((IVgiPipelineSettings) ctx.getBean("vgiPipelineSettings"));
 			settings.loadSettings(settingsFile);
 
-			if (!batchProcessing) {
-				pipeline.start();
-
-			} else {
-				settings.setFilterPolygonList(new ArrayList<VgiPolygon>());
-				
+			if (batchProcessing) {
+            	if (settings.getFilterPolygonList() == null) {
+            		settings.setFilterPolygonList(new ArrayList<VgiPolygon>());
+            	}
+            	
 				try {
 					BufferedReader fileReader = new BufferedReader(new FileReader(polygonFile));
 
@@ -135,7 +132,12 @@ public class VgiAnalysis {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
+			
+			if (settings.getFilterPolygonList() == null) {
+				pipeline.start();
 				
+			} else {
 				log.info(settings.getFilterPolygonList().size() + " filter polygons found!");
 				for (VgiPolygon polygon : settings.getFilterPolygonList()) {
 					settings.setFilterPolygon(polygon);
