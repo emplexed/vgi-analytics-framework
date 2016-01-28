@@ -47,8 +47,6 @@ import gnu.trove.list.array.TLongArrayList;
  * Controls VGI pipelines. It receives VGI data from a VGI data producer and
  * sends the VGI features to one or more VGI consumers. The VGI pipeline
  * supports multi-threading.
- * 
- * @author sgroeche
  *
  */
 public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {

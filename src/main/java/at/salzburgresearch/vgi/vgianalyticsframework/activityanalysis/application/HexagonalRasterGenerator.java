@@ -47,8 +47,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Creates a hexagonal raster
- * 
- * @author sgroeche
  *
  */
 public class HexagonalRasterGenerator {

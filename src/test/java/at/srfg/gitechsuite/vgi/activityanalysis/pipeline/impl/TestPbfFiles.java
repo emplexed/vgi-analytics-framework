@@ -41,7 +41,6 @@ import gnu.trove.list.array.TLongArrayList;
 /**
  * JUnit Test class<br />
  * Settings can be modified in the test/resources/vgi.properties file
- * @author sgroeche
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -26,8 +26,6 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 
 /**
  * Interface for VGI actions
- * 
- * @author sgroeche
  *
  */
 public interface IVgiAction {

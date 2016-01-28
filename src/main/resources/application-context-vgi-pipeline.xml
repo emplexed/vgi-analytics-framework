@@ -22,7 +22,9 @@
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.OsmElementBuilderConsumer" />
 	
 	<bean id="featureBuilderConsumer" scope="singleton" lazy-init="true"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.FeatureBuilderConsumer" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.FeatureBuilderConsumer">
+		<property name="settings" ref="vgiPipelineSettings" />
+	</bean>
 		
 	<bean id="vgiAnalysisConsumer" scope="singleton" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.VgiAnalysisConsumer">
@@ -41,6 +43,7 @@
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiActionGeneratorImpl">
         <constructor-arg index="0" ref="vgiModelFactory" />
         <constructor-arg index="1" ref="vgiPipelineSettings" />
+        <constructor-arg index="2" ref="featureBuilderConsumer" />
     </bean>
 	
 	<bean id="vgiPipeline" scope="singleton" lazy-init="true"
@@ -97,9 +100,11 @@
 	</bean>
 	
 	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
 	</bean>
 	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
 	</bean>
 </beans>

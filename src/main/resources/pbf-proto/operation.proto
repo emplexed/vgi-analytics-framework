@@ -1,6 +1,6 @@
 package impl;
 
-option java_package = "at.srfg.vgianalyzer.activityanalysis.persistence.pbf";
+option java_package = "at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf";
 option java_outer_classname = "OperationProto";
 
 message PbfVgiOperationList {

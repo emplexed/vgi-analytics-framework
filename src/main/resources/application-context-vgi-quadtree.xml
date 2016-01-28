@@ -17,6 +17,7 @@
 		
 	<bean id="quadtreeBuilderConsumer" scope="singleton" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.QuadtreeBuilderConsumer">
+		<property name="settings" ref="vgiPipelineSettings" />
 	</bean>
 	
 	<bean id="readAllFeaturesConsumer" scope="singleton" lazy-init="true"
@@ -57,9 +58,10 @@
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
 	</bean>
 	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
 	</bean>
 	<bean id="vgiOperationPbfWriter" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl" >
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl">
 	</bean>
 </beans>

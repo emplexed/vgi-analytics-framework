@@ -14,6 +14,7 @@
 	
 	<bean id="vgiOperationGeneratorDataHandler" lazy-init="true"
 			class="at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.impl.VgiOperationGeneratorDataHandlerImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="vgiOperationGenerator" ref="vgiOperationGeneratorOsm" />
 		<property name="vgiOperationPbfWriter" ref="vgiOperationPbfWriter" />
 	</bean>
@@ -64,7 +65,9 @@
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineSettings" />
 	
 	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl" />
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
+	</bean>
 	<bean id="vgiOperationPbfWriter" lazy-init="true" scope="prototype"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl" />
 </beans>

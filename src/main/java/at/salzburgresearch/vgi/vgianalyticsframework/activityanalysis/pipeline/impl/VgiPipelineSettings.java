@@ -391,12 +391,13 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 						featureType.add(key, String.class);
     				}
     				
-//    				if (featureTypeList.containsKey(vgiFeatureType.getName())) {
-//    					log.error("Feature Type with name '" + vgiFeatureType.getName() + "' already exists!");
-//    				}
-    				
     				vgiFeatureType.setFeatureType(featureType.buildFeatureType());
-    				featureTypeList.put(featureType.getName(), vgiFeatureType);
+    				if (featureTypeList.containsKey(featureType.getName())) {
+    					log.error("Feature type with name '" + featureType.getName() + "' already exists!");
+    					System.exit(0);
+    				} else {
+    					featureTypeList.put(featureType.getName(), vgiFeatureType);
+    				}
     				log.info("FeatureType '" + featureType.getName() + "' added");
 	            }
     			

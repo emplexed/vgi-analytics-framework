@@ -20,15 +20,14 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.IOsmElement;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Node;
-import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Relation;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Way;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiOperation;
@@ -45,14 +44,11 @@ import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.IOsmVgiOper
 import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
-public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer {
+public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, ApplicationContextAware {
 	private static Logger log = Logger.getLogger(VgiOperationGeneratorDataHandlerImpl.class);
 	
-	@Autowired
 	private ApplicationContext ctx;
 	
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
 	private IVgiPipelineSettings settings = null;
 	
 	private IOsmVgiOperationGenerator vgiOperationGenerator = null;
@@ -73,7 +69,9 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer {
 	
 	private IOsmElement lastOsmElement = null;
 	
-	public VgiOperationGeneratorDataHandlerImpl () {}
+	public VgiOperationGeneratorDataHandlerImpl (IVgiPipelineSettings settings) {
+		this.settings = settings;
+	}
 	
 	@Override
 	public void beforeProcessing() {
@@ -401,5 +399,10 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer {
 	
 	public void setVgiOperationPbfWriter(IVgiOperationPbfWriter vgiOperationPbfWriter) {
 		this.vgiOperationPbfWriter = vgiOperationPbfWriter;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+		this.ctx = ctx;
 	}
 }

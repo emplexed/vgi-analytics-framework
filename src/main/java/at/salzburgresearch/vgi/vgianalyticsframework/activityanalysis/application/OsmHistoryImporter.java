@@ -76,7 +76,9 @@ public class OsmHistoryImporter {
             		System.exit(0);
             	}
             } else {
-                settingsFile = null;
+				log.warn("No osm history file specified! Use option -o to specify a settings XML file");
+				System.exit(0);
+            	osmHistoryFile = null;
             }
             if (cmd.hasOption('s')) {
                 settingsFile = new File(cmd.getOptionValue('s'));

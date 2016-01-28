@@ -24,8 +24,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.geotools.geometry.jts.Geometries;
 import org.opengis.feature.simple.SimpleFeature;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -52,12 +50,8 @@ public class VgiActionGeneratorImpl implements IVgiActionGenerator {
 	
 	private IVgiModelFactory actionFactory = new VgiModelFactoryImpl();
 	
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
 	private IVgiPipelineSettings settings;
 	
-	@Autowired
-	@Qualifier("featureBuilderConsumer")
 	private FeatureBuilderConsumer geometryAssemblerConsumer;
 	
 	private Map<String, String> currentFeatureTags = null;
@@ -66,9 +60,10 @@ public class VgiActionGeneratorImpl implements IVgiActionGenerator {
 	private IVgiFeature featureToAssemble = null;
 	
 	/** Constructor */
-	public VgiActionGeneratorImpl(IVgiModelFactory actionFactory, IVgiPipelineSettings settings) {
+	public VgiActionGeneratorImpl(IVgiModelFactory actionFactory, IVgiPipelineSettings settings, FeatureBuilderConsumer geometryAssemblerConsumer) {
 		this.actionFactory = actionFactory;
 		this.settings = settings;
+		this.geometryAssemblerConsumer = geometryAssemblerConsumer;
 	}
 	
 	/**

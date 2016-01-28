@@ -15,7 +15,6 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl;
 
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,8 +27,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.vividsolutions.jts.geom.Envelope;
@@ -55,8 +52,6 @@ import gnu.trove.list.array.TLongArrayList;
 public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 	private static Logger log = Logger.getLogger(VgiOperationPbfReaderImpl.class);
 	
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
 	protected IVgiPipelineSettings settings = null;
 	
 	protected File pbfDataFolder = null;
@@ -103,6 +98,10 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 	private long previousPbfOperationRefId = 0l;
 	private int previousPbfOperationLongitude = 0;
 	private int previousPbfOperationLatitude = 0;
+	
+	public VgiOperationPbfReaderImpl(IVgiPipelineSettings settings) {
+		this.settings = settings;
+	}
 	
 	@Override
 	public void run() {
@@ -225,7 +224,6 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 			previousOperationValues = new VgiOperationImpl();
 			byteArray = new byte[0];
 			byteArrayPointer = 0;
-			BufferedInputStream bis = null;
 			
 			previousPbfOperationOid = 0l;
 			previousPbfOperationTimestamp = 0;
@@ -234,10 +232,9 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 			previousPbfOperationLongitude = 0;
 			previousPbfOperationLatitude = 0;
 			
-			/** Stream and read the operations*/
-			try {
-				
-				bis = new BufferedInputStream(new FileInputStream(pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf"), 1024*64);
+			/** Stream and read the operations */
+			try (BufferedInputStream bis = new BufferedInputStream(
+					new FileInputStream(pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf"), 1024*64)) {
 				
 				byte[] byteArray = null;
 				PbfVgiFeature pbfFeature = null;
@@ -272,14 +269,18 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 					IVgiFeature feature = deserializeFeature(pbfFeature, geometryType);
 					
 					/** Enqueue operation (feature can be null if filter is applied) */
-					if (feature != null) createFeature(feature, keepInCache);
+					if (feature != null) {
+						feature.setLocalizeType(localizeType);
+						enqueueFeature(feature);
+						if (keepInCache) settings.getCache().get(cacheIdentifier).add(feature);
+					}
 					
 					/** No more filter values in this file */
 					if (filterNodeId != null && file.getElementType().equals(ElementType.NODE) && (filterNodeIdPointer == filterNodeId.size() || file.getMaxElementId() < filterNodeId.get(filterNodeIdPointer))) break;
 					if (filterWayId != null && file.getElementType().equals(ElementType.WAY) && (filterWayIdPointer == filterWayId.size() || file.getMaxElementId() < filterWayId.get(filterWayIdPointer))) break;
 				}
 				
-			    if (bis!=null) {
+			    if (bis != null) {
 			    	bis.close();
 			    }
 				
@@ -589,20 +590,6 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
     	}
 		
 		return feature;
-    }
-    
-    /**
-     * Aggregates operations to features based on the feature id and the geometry type
-     * @param feature VGI feature
-     * @param keepInCache if true the feature will be stored in cache (for faster access afterwards)
-     */
-    private void createFeature(IVgiFeature feature, boolean keepInCache) {
-//    	if (filterByElementId(feature)) {
-    		feature.setLocalizeType(localizeType);
-			enqueueFeature(feature);
-			
-			if (keepInCache) settings.getCache().get(cacheIdentifier).add(feature);
-//		}
     }
 	
 	@Override

@@ -24,9 +24,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -46,14 +46,11 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.IVgiPipelineConsumer;
 
-public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtree, FeatureImportListener {
+public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtree, FeatureImportListener, ApplicationContextAware {
 	private static Logger log = Logger.getLogger(QuadtreeBuilderConsumer.class);
 	
-	@Autowired
 	private ApplicationContext ctx;
 	
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
 	private IVgiPipelineSettings settings;
 	
 	private IQuadtree quadtree = null;
@@ -534,5 +531,14 @@ public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtr
 				log.error("File '" + f.getAbsolutePath() + "' does not exist!");
 			}
 		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+		this.ctx = ctx;
+	}
+	
+	public void setSettings(IVgiPipelineSettings settings) {
+		this.settings = settings;
 	}
 }

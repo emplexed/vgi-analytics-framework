@@ -23,8 +23,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -39,17 +37,18 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.impl.CSVFileWriter;
 
 public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl {
+
 	private static Logger log = Logger.getLogger(VgiOperationPbfReaderQuadtreeImpl.class);
-	
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
-	private IVgiPipelineSettings settings = null;
 	
 	private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 	
 	private int keepInCacheMaxLevel = 8;
 	
 	private CSVFileWriter writerQTStructure = new CSVFileWriter("E:/vgi/csv/quadtree_structure.csv");
+
+	public VgiOperationPbfReaderQuadtreeImpl(IVgiPipelineSettings settings) {
+		super(settings);
+	}
 	
 	@Override
 	public void run() {

@@ -27,8 +27,6 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -50,9 +48,7 @@ public class FeatureBuilderConsumer implements IVgiPipelineConsumer {
 	
 	private final SimpleDateFormat dateFormatOSM = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	
-	@Autowired
-	@Qualifier("vgiPipelineSettings")
-	private IVgiPipelineSettings settings;
+	private IVgiPipelineSettings settings = null;
 	
 	private GeometryFactory geomFactory = new GeometryFactory();
 	
@@ -341,5 +337,9 @@ public class FeatureBuilderConsumer implements IVgiPipelineConsumer {
 	
 	public List<SimpleFeature> getFeatures() {
 		return features;
+	}
+	
+	public void setSettings(IVgiPipelineSettings settings) {
+		this.settings = settings;
 	}
 }
