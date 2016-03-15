@@ -32,7 +32,7 @@ The VGI Analytics Framework analyses Volunteered Geographic Information (VGI) da
 * Assign more memory (`-Xmx8g`) and use the spatial filter (`filterPolygon`) to restrict the amount of data.
 
 ## Further Reading
-...
+Rehrl, K., Gröchenig, S., 2016, *A framework for data-centric analysis or mapping activity in the context of volunteered geographic information*, ISPRS International Journal of Geo-Information (Open Access)
 
 Rehrl, K., Brunauer, R., Gröchenig, S., 2015, *Towards a Qualitative Assessment of Changes in Geographic Vector Datasets*. In: AGILE 2015 (pp. 181-197). Springer International Publishing
 
