@@ -502,10 +502,6 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 	    	operation.setOid(feature.getOid());
 	    	operation.setVgiGeometryType(feature.getVgiGeometryType());
 	    	
-	    	if (operation.getOid() == 341908283) {
-	    		operation.getOid();
-	    	}
-	    	
 			/** op type */
 			if (pbfOperation.hasVgiOperationType()) {
 				operation.setVgiOperationType(VgiOperationType.getOperationTypeById(pbfOperation.getVgiOperationType()));

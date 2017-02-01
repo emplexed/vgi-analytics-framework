@@ -25,7 +25,8 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 
 public class VgiFeatureTypeImpl implements IVgiFeatureType {
 	private SimpleFeatureType featureType = null;
-	private Map<String, List<String>> featureTypeTags = new HashMap<String, List<String>>();
+	private Map<String, List<String>> featureTypeTagsInclude = new HashMap<String, List<String>>();
+	private Map<String, List<String>> featureTypeTagsExclude = new HashMap<String, List<String>>();
 	
 	@Override
 	public SimpleFeatureType getFeatureType() {
@@ -37,11 +38,20 @@ public class VgiFeatureTypeImpl implements IVgiFeatureType {
 	}
 	
 	@Override
-	public Map<String, List<String>> getFeatureTypeTags() {
-		return featureTypeTags;
+	public Map<String, List<String>> getFeatureTypeTagsInclude() {
+		return featureTypeTagsInclude;
 	}
 	@Override
-	public void setFeatureTypeTags(Map<String, List<String>> tags) {
-		this.featureTypeTags = tags;
+	public void setFeatureTypeTagsInclude(Map<String, List<String>> tags) {
+		this.featureTypeTagsInclude = tags;
+	}
+	
+	@Override
+	public Map<String, List<String>> getFeatureTypeTagsExclude() {
+		return featureTypeTagsExclude;
+	}
+	@Override
+	public void setFeatureTypeTagsExclude(Map<String, List<String>> tags) {
+		this.featureTypeTagsExclude = tags;
 	}
 }

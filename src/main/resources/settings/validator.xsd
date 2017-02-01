@@ -7,6 +7,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="general" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="filterTags" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="analysis" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="filterPolygons" minOccurs="0" maxOccurs="1" />
 			</xs:sequence>
@@ -30,7 +31,6 @@
 	<xs:element name="analysis">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="filterTag" minOccurs="0" maxOccurs="100" />
 				<xs:element ref="featureType" minOccurs="1" maxOccurs="100" />
 				<xs:element ref="analysisSubject" minOccurs="1" maxOccurs="100" />
 				<xs:element ref="actionDefinition" minOccurs="1" maxOccurs="100" />
@@ -38,7 +38,7 @@
 			<xs:attribute name="filterElementType" use="optional">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:pattern value="UNDEFINED|NODE|WAY|RELATION" />
+						<xs:pattern value="UNDEFINED|POINT|LINE|RELATION" />
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -67,6 +67,14 @@
 				</xs:simpleType>
 			</xs:attribute>
 			<xs:attribute name="actionTimeBuffer" type="xs:integer" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="filterTags">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="includeTag" minOccurs="1" maxOccurs="10000" />
+				<xs:element ref="excludeTag" minOccurs="0" maxOccurs="10000" />
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="filterPolygons">
@@ -103,6 +111,7 @@
 						<xs:enumeration value="VgiAnalysisTags"/>
 						<xs:enumeration value="VgiAnalysisFeatureStability"/>
 						<xs:enumeration value="VgiAnalysisActionDetails"/>
+						<xs:enumeration value="VgiAnalysisCountry"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
@@ -111,14 +120,29 @@
 	<xs:element name="featureType">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="filterTag" minOccurs="1" maxOccurs="100" />
+				<xs:element ref="includeTag" minOccurs="1" maxOccurs="100" />
+				<xs:element ref="excludeTag" minOccurs="0" maxOccurs="100" />
 				<xs:element ref="property" minOccurs="1" maxOccurs="100" />
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required" />
-			<xs:attribute name="geometryType" type="xs:string" use="required" />
+			<xs:attribute name="geometryType" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Point"/>
+						<xs:enumeration value="LineString"/>
+						<xs:enumeration value="Polygon"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="filterTag">
+	<xs:element name="includeTag">
+		<xs:complexType>
+			<xs:attribute name="key" type="xs:string" use="required" />
+			<xs:attribute name="value" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="excludeTag">
 		<xs:complexType>
 			<xs:attribute name="key" type="xs:string" use="required" />
 			<xs:attribute name="value" type="xs:string" use="required" />

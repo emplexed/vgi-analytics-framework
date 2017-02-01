@@ -303,11 +303,13 @@ public class FeatureBuilderConsumer implements IVgiPipelineConsumer {
 			if (featureTypeName.equals(VgiPipelineSettings.invalidFeatureTypeLine)) continue;
 			if (featureTypeName.equals(VgiPipelineSettings.invalidFeatureTypePolygon)) continue;
 			
-			Map<String, List<String>> tags = settings.getFeatureTypeList().get(featureTypeName).getFeatureTypeTags();
+			Map<String, List<String>> tagsInclude = settings.getFeatureTypeList().get(featureTypeName).getFeatureTypeTagsInclude();
+			Map<String, List<String>> tagsExclude = settings.getFeatureTypeList().get(featureTypeName).getFeatureTypeTagsExclude();
 			
-			for (String tagKey : tags.keySet()) {
+			for (String tagKey : tagsInclude.keySet()) {
 				if (!attributes.containsKey(tagKey)) continue; /** wrong tag key */
-				if (!tags.get(tagKey).isEmpty() && !tags.get(tagKey).contains(attributes.get(tagKey))) continue; /** wrong tag value */
+				if (!tagsInclude.get(tagKey).isEmpty() && !tagsInclude.get(tagKey).contains(attributes.get(tagKey))) continue; /** wrong tag value */
+				if (tagsExclude.containsKey(tagKey) && tagsExclude.get(tagKey).contains(attributes.get(tagKey))) continue; /** excluded tag */
 				
 				/** check geometry type */
 				if (settings.getFeatureTypeList().get(featureTypeName).getFeatureType().getGeometryDescriptor().getType().getBinding().equals(Point.class) && !point) {

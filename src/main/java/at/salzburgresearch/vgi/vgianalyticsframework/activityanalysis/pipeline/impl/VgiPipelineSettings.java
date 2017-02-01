@@ -140,7 +140,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 		featureTypePoint.add("osm_id", Long.class);
 		featureTypePoint.add("deleted", Boolean.class);
 		vgiFeatureTypePoint.setFeatureType(featureTypePoint.buildFeatureType());
-		vgiFeatureTypePoint.getFeatureTypeTags().put("invalid", new ArrayList<String>());
+		vgiFeatureTypePoint.getFeatureTypeTagsInclude().put("invalid", new ArrayList<String>());
 		featureTypeList.put(featureTypePoint.getName(), vgiFeatureTypePoint);
 		
 		IVgiFeatureType vgiFeatureTypeLine = new VgiFeatureTypeImpl();
@@ -153,7 +153,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 		featureTypeLine.add("length", Double.class);
 		featureTypeLine.add("deleted", Boolean.class);
 		vgiFeatureTypeLine.setFeatureType(featureTypeLine.buildFeatureType());
-		vgiFeatureTypeLine.getFeatureTypeTags().put("invalid", new ArrayList<String>());
+		vgiFeatureTypeLine.getFeatureTypeTagsInclude().put("invalid", new ArrayList<String>());
 		featureTypeList.put(featureTypeLine.getName(), vgiFeatureTypeLine);
 		
 		IVgiFeatureType vgiFeatureTypePolygon = new VgiFeatureTypeImpl();
@@ -166,7 +166,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 		featureTypePolygon.add("area", Double.class);
 		featureTypePolygon.add("deleted", Boolean.class);
 		vgiFeatureTypePolygon.setFeatureType(featureTypePolygon.buildFeatureType());
-		vgiFeatureTypePolygon.getFeatureTypeTags().put("invalid", new ArrayList<String>());
+		vgiFeatureTypePolygon.getFeatureTypeTagsInclude().put("invalid", new ArrayList<String>());
 		featureTypeList.put(featureTypePolygon.getName(), vgiFeatureTypePolygon);
 	}
 	
@@ -250,7 +250,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 					
 				Element firstElement = (Element) node;
 				
-				NodeList nodeList1 = firstElement.getElementsByTagName("filterTag");
+				NodeList nodeList1 = firstElement.getElementsByTagName("includeTag"); //TODO
 				for(int t=0; t<nodeList1.getLength() ; t++) {
 	                try {
 						Node node1 = nodeList1.item(t);
@@ -351,15 +351,15 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	                Node node1 = nodeList1.item(t);
 	                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
 	                
-					Element firstElement1 = (Element) node1;
+					Element featureTypeElement = (Element) node1;
 					IVgiFeatureType vgiFeatureType = new VgiFeatureTypeImpl();
 					
 					SimpleFeatureTypeBuilder featureType = new SimpleFeatureTypeBuilder();
-					featureType.setName(firstElement1.getAttribute("name"));
+					featureType.setName(featureTypeElement.getAttribute("name"));
 
 					featureType.setCRS(DefaultGeographicCRS.WGS84);
 	    			try {
-	    				switch (firstElement1.getAttribute("geometryType")) {
+	    				switch (featureTypeElement.getAttribute("geometryType")) {
 	    				case "Point":
 	    					featureType.add("geom", Point.class);
 	    					break;
@@ -383,24 +383,37 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	    			featureType.add("deleted", Boolean.class);
 	    			
 	    			/** feature type tags **/
-    				NodeList nodeList2 = firstElement1.getElementsByTagName("filterTag");
-    				for(int v=0; v<nodeList2.getLength() ; v++) {
-    	                Node node2 = nodeList2.item(v);
+    				NodeList nodeListIncludeTags = featureTypeElement.getElementsByTagName("includeTag"); //TODO
+    				for(int v=0; v<nodeListIncludeTags.getLength() ; v++) {
+    	                Node node2 = nodeListIncludeTags.item(v);
     	                if (node2.getNodeType() != Node.ELEMENT_NODE) continue;
 						Element firstElement2 = (Element) node2;
 						String key = firstElement2.getAttribute("key");
-						if (!vgiFeatureType.getFeatureTypeTags().containsKey(key)) {
-							vgiFeatureType.getFeatureTypeTags().put(key, new ArrayList<String>());
+						if (!vgiFeatureType.getFeatureTypeTagsInclude().containsKey(key)) {
+							vgiFeatureType.getFeatureTypeTagsInclude().put(key, new ArrayList<String>());
 						}
 						if (!firstElement2.getAttribute("value").equals("")) {
-							vgiFeatureType.getFeatureTypeTags().get(key).add(firstElement2.getAttribute("value"));
+							vgiFeatureType.getFeatureTypeTagsInclude().get(key).add(firstElement2.getAttribute("value"));
+						}
+    				}
+    				NodeList nodeListExcludeTags = featureTypeElement.getElementsByTagName("excludeTag"); //TODO
+    				for(int v=0; v<nodeListExcludeTags.getLength() ; v++) {
+    	                Node node2 = nodeListExcludeTags.item(v);
+    	                if (node2.getNodeType() != Node.ELEMENT_NODE) continue;
+						Element firstElement2 = (Element) node2;
+						String key = firstElement2.getAttribute("key");
+						if (!vgiFeatureType.getFeatureTypeTagsExclude().containsKey(key)) {
+							vgiFeatureType.getFeatureTypeTagsExclude().put(key, new ArrayList<String>());
+						}
+						if (!firstElement2.getAttribute("value").equals("")) {
+							vgiFeatureType.getFeatureTypeTagsExclude().get(key).add(firstElement2.getAttribute("value"));
 						}
     				}
     				
 	    			/** Property tags **/
-    				NodeList nodeList3 = firstElement1.getElementsByTagName("property");
-    				for(int v=0; v<nodeList3.getLength() ; v++) {
-    	                Node node2 = nodeList3.item(v);
+    				NodeList nodeListProperty = featureTypeElement.getElementsByTagName("property");
+    				for(int v=0; v<nodeListProperty.getLength() ; v++) {
+    	                Node node2 = nodeListProperty.item(v);
     	                if (node2.getNodeType() != Node.ELEMENT_NODE) continue;
 						Element firstElement2 = (Element) node2;
 						String key = firstElement2.getAttribute("key");

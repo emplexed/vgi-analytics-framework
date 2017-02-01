@@ -44,17 +44,12 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	private Logger log = Logger.getLogger(VgiOperationPbfWriterImpl.class);
 	
 	protected FileOutputStream pbfFeatureWriter = null;
-//	protected FileOutputStream pbfStringWriter = null;
 	
 	protected PbfOperationFileList.Builder pbfFileListBuilder;
 	protected PbfOperationFile.Builder pbfFileBuilder = null;
-//	protected PbfStringList.Builder pbfStringListBuilder = null;
 	
 	protected File dataFolder = null;
 	protected File pbfFile = null;
-	
-//	private List<StringEntry> stringList = null;
-//	private int stringEntryIdMax = -1;
 	
 	private long previousPbfOperationOid = 0l;
 	private int previousPbfOperationTimestamp = 0;
@@ -63,7 +58,6 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	private int previousPbfOperationLongitude = 0;
 	private int previousPbfOperationLatitude = 0;
 	
-//	protected int maxFileSize = 5;
 	private int pbfFileOperationCount = 0;
 	private static final int FEATURE_BATCH_SIZE = 100;
 	private static final int NUM_OPERATIONS_PER_FILE = 500000;
@@ -92,8 +86,6 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		previousVgiOperationAttributes = new VgiOperationImpl();
 		
 		pbfFileListBuilder = PbfOperationFileList.newBuilder();
-//		pbfStringListBuilder = PbfStringList.newBuilder();
-//		stringList = new ArrayList<StringEntry>();
 		
 		try {
 			if (new File(dataFolder + "/operationFileList.pbf").exists()) {
@@ -322,23 +314,13 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 			}
 			
 			pbfFile = new File(dataFolder + "/operation_" + elementTypePrefix + "_" + String.valueOf(pbfFileBuilder.getOperationFileId()) + ".pbf");
-//			File stringFile = new File(dataFolder + "/string_" + elementTypePrefix + "_" + String.valueOf((int)Math.floor((double)pbfFileBuilder.getOperationFileId() / 5)) + ".pbf");
 			
 			/** Prepare output stream */
 			try {
 				pbfFeatureWriter = new FileOutputStream(pbfFile, true);
-//				pbfStringWriter = new FileOutputStream(stringFile, true);
-//				pbfStringListBuilder = PbfStringList.parseFrom(new FileInputStream(stringFile)).toBuilder();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
 			}
-
-//			for (PbfStringListEntry entry : pbfStringListBuilder.getEntryList()) {
-//				stringList.add(new StringEntry(entry.getValue(), entry.getSearchId()));
-//				if (entry.getSearchId() > stringEntryIdMax) stringEntryIdMax = entry.getSearchId();
-//			}
 			
 			/** Reset previousOperationAttributes */
 			previousVgiOperationAttributes = new VgiOperationImpl();
@@ -379,24 +361,9 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		pbfFileBuilder.setLastLatitude(previousPbfOperationLatitude);
 		pbfFileOperationCount = 0;
 		
-//		/** Write string file */
-//		for (StringEntry entry : stringList) {
-//			PbfStringListEntry.Builder entryBuilder = PbfStringListEntry.newBuilder();
-//			entryBuilder.setValue(entry.getValue());
-//			entryBuilder.setSearchId(entry.getSearchId());
-//			pbfStringListBuilder.addEntry(entryBuilder.build());
-//		}
-//		stringList.clear();
-//		try {
-//			pbfStringListBuilder.build().writeTo(pbfStringWriter);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		
 		/** Close file */
 		try {
 			pbfFeatureWriter.close();
-//			pbfStringWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -475,10 +442,7 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	 * Writes the PBF file list
 	 */
 	protected void writePbfFileList() {
-//		FileOutputStream pbfFileListWriter = null;
 		try (FileOutputStream pbfFileListWriter = new FileOutputStream(new File(dataFolder + "/operationFileList.pbf"), false)) {
-//			pbfFileListWriter = new FileOutputStream(new File(dataFolder + "/operationFileList.pbf"), false);
-			
 			pbfFileListBuilder.build().writeTo(pbfFileListWriter);
 			
 		} catch (IOException e) {
@@ -534,32 +498,27 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 			
 			if (writeMode.equals(WriteMode.APPEND)) {
 				/** Check if correct element id; if not, close current file and open new one */
-				if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT) && !pbfFileBuilder.getElementType().equals(ElementType.NODE)) {
-//					write(pbfFeatureBatches);
+				if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT) 
+						&& !pbfFileBuilder.getElementType().equals(ElementType.NODE)) {
 					openPbfDataFile(ElementType.NODE, false);
-				} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE) && !pbfFileBuilder.getElementType().equals(ElementType.WAY)) {
-//					write(pbfFeatureBatches);
+				} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE) 
+						&& !pbfFileBuilder.getElementType().equals(ElementType.WAY)) {
 					openPbfDataFile(ElementType.WAY, false);
-				} else if (feature.getVgiGeometryType().equals(VgiGeometryType.RELATION) && !pbfFileBuilder.getElementType().equals(ElementType.RELATION)) {
-//					write(pbfFeatureBatches);
+				} else if (feature.getVgiGeometryType().equals(VgiGeometryType.RELATION) 
+						&& !pbfFileBuilder.getElementType().equals(ElementType.RELATION)) {
 					openPbfDataFile(ElementType.RELATION, false);
 				}
 				
 				/** Create new file if current file size exceeds maximum file size */
 				if (pbfFileOperationCount >= NUM_OPERATIONS_PER_FILE) {
-//						if (pbfFile.length() > maxFileSize*1024*1024) {
-//					log.info("operations: " + pbfFileOperationCount + " " + pbfFileBuilder.getOperationFileId());
+					handleOperationBatch(pbfOperationBatch);
 					if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT)) {
-						handleOperationBatch(pbfOperationBatch);
 						openPbfDataFile(ElementType.NODE, true);
 					} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE)) {
-						handleOperationBatch(pbfOperationBatch);
 						openPbfDataFile(ElementType.WAY, true);
 					} else if (feature.getVgiGeometryType().equals(VgiGeometryType.RELATION)) {
-						handleOperationBatch(pbfOperationBatch);
 						openPbfDataFile(ElementType.RELATION, true);
 					}
-//					log.info("Create new pbf file" + " " + pbfFileBuilder.getOperationFileId());
 				}
 			}
 			
@@ -631,9 +590,6 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	
 	private PbfVgiOperation.Builder buildPbfOperation(IVgiOperation operation) {
 		PbfVgiOperation.Builder pbfOperation = PbfVgiOperation.newBuilder();
-		
-//		pbfOperation.setOid(operation.getOid() - previousPbfOperationOid);
-//		previousPbfOperationOid = operation.getOid();
 
 		/** id */
 		if (operation.getOid() != previousPbfOperationOid) {
@@ -675,20 +631,10 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		if (operation.getKey() != null && !operation.getKey().equals("")) {
 			pbfOperation.setKey(operation.getKey());
 		}
-//		if (operation.getKey() != null && !operation.getKey().equals("")) { //TODO is "" allowed?
-//			int i = addString(operation.getKey());
-//			pbfOperation.setKey(i);
-////			pbfOperation.setKey(addString(operation.getKey()));
-//		}
 		/** value */
 		if (operation.getValue() != null && !operation.getValue().equals("")) {
 			pbfOperation.setValue(operation.getValue());
 		}
-//		if (operation.getValue() != null && !operation.getValue().equals("")) {
-//			int i = addString(operation.getValue());
-//			pbfOperation.setValue(i);
-////			pbfOperation.setValue(addString(operation.getValue()));
-//		}
 		/** position */
 		if (operation.getPosition() != -1) {
 			pbfOperation.setPosition(operation.getPosition());
@@ -705,24 +651,6 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		
 		return pbfOperation;
 	}
-	
-//	private int addString(String newString) {
-////		for (int i=0; i<stringList.size(); i++) {
-////			if (stringList.get(i).equals(newString)) {
-////				return i;
-////			}
-////		}
-////		stringList.add(newString);
-////		return stringList.size()-1;
-//		int index = Collections.binarySearch(this.stringList, new StringEntry(newString, -1), StringEntry.getStringComparator());
-//		if (index < 0) {
-//			stringEntryIdMax++;
-//			stringList.add(index*(-1)-1, new StringEntry(newString, stringEntryIdMax));
-//			return stringEntryIdMax;
-//		} else {
-//			return stringList.get(index).getSearchId();
-//		}
-//	}
 
 	@Override
 	public void setMaxFileSize(int maxFileSize) {

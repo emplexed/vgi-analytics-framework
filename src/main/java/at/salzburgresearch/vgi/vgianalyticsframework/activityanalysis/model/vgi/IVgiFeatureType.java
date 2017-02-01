@@ -21,19 +21,14 @@ import java.util.Map;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public interface IVgiFeatureType {
-	
-//	String getName();
-//	void setName(String name);
-//	
-//	Geometries getGeometryType();
-//	void setGeometryType(Geometries geometryType);
 
 	SimpleFeatureType getFeatureType();
 	void setFeatureType(SimpleFeatureType featureType);
 	
-	Map<String, List<String>> getFeatureTypeTags();
-	void setFeatureTypeTags(Map<String, List<String>> featureTypeTags);
+	Map<String, List<String>> getFeatureTypeTagsInclude();
+	void setFeatureTypeTagsInclude(Map<String, List<String>> featureTypeTagsInclude);
+
+	Map<String, List<String>> getFeatureTypeTagsExclude();
+	void setFeatureTypeTagsExclude(Map<String, List<String>> featureTypeTagsExclude);
 	
-//	List<String> getPropertyTags();
-//	void setPropertyTags(List<String> propertyTags);
 }

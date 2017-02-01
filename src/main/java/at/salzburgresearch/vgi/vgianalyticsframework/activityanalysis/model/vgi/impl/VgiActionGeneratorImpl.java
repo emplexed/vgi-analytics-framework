@@ -307,40 +307,29 @@ public class VgiActionGeneratorImpl implements IVgiActionGenerator {
 			for (String featureTypeName : settings.getFeatureTypeList().keySet()) {
 				IVgiFeatureType featureType = settings.getFeatureTypeList().get(featureTypeName);
 				
-				if (featureType.getFeatureTypeTags().containsKey(tagKey)) {
+				if (featureType.getFeatureTypeTagsInclude().containsKey(tagKey)) {
 					
-					if (featureType.getFeatureTypeTags().get(tagKey).size() == 0) {
+					if (featureType.getFeatureTypeTagsInclude().get(tagKey).size() == 0) {
 						/** (2a) Only tag key is used for feature type */
-//						if (!featureTypes.containsKey(tagKey)) featureTypes.put(tagKey, new ArrayList<String>());
-//						featureTypes.get(tagKey).add("");
+						if (featureType.getFeatureTypeTagsExclude().containsKey(tagKey)) {
+							if (featureType.getFeatureTypeTagsExclude().get(tagKey).contains(currentFeatureTags.get(tagKey))) {
+								continue;
+							}
+						}
 						if (!featureTypes.contains(featureType)) featureTypes.add(featureType);
-//						if (!featureTypes.containsKey(tagKey)) featureTypes.put(tagKey, "");
 						
-					} else if (featureType.getFeatureTypeTags().get(tagKey).size() == 1 && featureType.getFeatureTypeTags().get(tagKey).get(0).equals("_value")) {
+					} else if (featureType.getFeatureTypeTagsInclude().get(tagKey).size() == 1 && 
+							featureType.getFeatureTypeTagsInclude().get(tagKey).get(0).equals("_value")) {
 						/** (2b) All tag values are used for feature type */
 						if (!featureTypes.contains(featureType)) featureTypes.add(featureType);
-//						if (!featureTypes.contains(featureType)) featureTypes.put(tagKey, new ArrayList<String>());
-//						featureTypes.get(tagKey).add(currentFeatureTags.get(tagKey));
-//						if (!featureTypes.containsKey(tagKey)) featureTypes.put(tagKey, currentFeatureTags.get(tagKey));
 						
-					} else if (featureType.getFeatureTypeTags().get(tagKey).contains(currentFeatureTags.get(tagKey))) {
+					} else if (featureType.getFeatureTypeTagsInclude().get(tagKey).contains(currentFeatureTags.get(tagKey))) {
 						/** (2c) Selected tag values are used for feature type */
 						if (!featureTypes.contains(featureType)) featureTypes.add(featureType);
-//						if (!featureTypes.contains(featureType)) featureTypes.put(tagKey, new ArrayList<String>());
-//						featureTypes.get(tagKey).add(currentFeatureTags.get(tagKey));
-//						if (!featureTypes.containsKey(tagKey)) featureTypes.put(tagKey, currentFeatureTags.get(tagKey));
 					}
 				}
 			}
 		}
-		
-//		if (featureTypes.containsKey("addr:housenumber")) {
-//			if (featureTypes.get("addr:housenumber") != null) {
-//				if (featureTypes.get("addr:housenumber").contains("interpolation")) {
-//					
-//				}
-//			}
-//		}
 		
 		return featureTypes;
 	}

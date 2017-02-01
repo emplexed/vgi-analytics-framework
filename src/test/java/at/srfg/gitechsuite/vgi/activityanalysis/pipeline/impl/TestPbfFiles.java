@@ -71,7 +71,7 @@ public class TestPbfFiles {
 		settings.loadSettings(null);
 		settings.setPbfDataFolder(new File(pbfDataFolder));
 		settings.setReadQuadtree(false);
-		settings.setFilterPolygon(null);
+		settings.setCurrentPolygon(null);
 		
 		TLongArrayList filterNode = new TLongArrayList();
 		filterNode.add(288855825l);

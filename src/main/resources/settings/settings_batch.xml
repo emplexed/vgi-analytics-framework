@@ -5,65 +5,67 @@
 		xsi:schemaLocation="http://www.salzburgresearch.at validator.xsd">
 	<general
 		settingName="Batch Default"
-		pbfDataFolder="E:\vgi\data\world_2016_01"
+		pbfDataFolder="E:\vgi\data\austria_2016_01"
 		readQuadtree="true"
 		resultFolder="E:\vgi\results\"
 		filterTimestamp="2020-01-01T00:00:00Z" />
+	
+	<filterTags>
+		<includeTag key="highway" value="motorway" />
+		<includeTag key="highway" value="motorway_link" />
+		<includeTag key="highway" value="trunk" />
+		<includeTag key="highway" value="trunk_link" />
+		<includeTag key="highway" value="primary" />
+		<includeTag key="highway" value="primary_link" />
+		<includeTag key="highway" value="secondary" />
+		<includeTag key="highway" value="secondary_link" />
+		<includeTag key="highway" value="tertiary" />
+		<includeTag key="highway" value="tertiary_link" />
+		<includeTag key="highway" value="residential" />
+		<includeTag key="highway" value="unclassified" />
+		<!--
+		<includeTag key="highway" value="living_street" />
+		<includeTag key="highway" value="service" />
+		<includeTag key="highway" value="track" />
+		<includeTag key="highway" value="road" />
+		
+		<includeTag key="highway" value="footway" />
+		<includeTag key="highway" value="path" />
+		<includeTag key="highway" value="cycleway" />
+		<includeTag key="highway" value="steps" />
+		
+		<includeTag key="building" value="" />--><!--
+		<includeTag key="addr:housenumber" value="" />-->
+	</filterTags>
 		
 	<!-- temporalResolution: eternity, century, decade, year, month, day -->
 	<!-- findRelatedOperations e.g. OP_SPLIT_WAY, OP_MERGE_WAY; very time-consuming -->
 	<!-- actionTimeBuffer: 1000*60*60*24=86400000=1 day ; 1000*60*60*12=43200000=12hours -->
 	<analysis
 		filterElementType="UNDEFINED"
-		analysisStartDate="2015-04-01T00:00:00Z"
+		analysisStartDate="2005-01-01T00:00:00Z"
 		analysisEndDate="2016-01-01T00:00:00Z"
-		temporalResolution="day"
+		temporalResolution="year"
 		findRelatedOperations="true"
 		writeGeometryFiles="false"
 		actionTimeBuffer="43200000">
-		
-		<filterTag key="highway" value="motorway" />
-		<filterTag key="highway" value="motorway_link" />
-		<filterTag key="highway" value="trunk" />
-		<filterTag key="highway" value="trunk_link" />
-		<filterTag key="highway" value="primary" />
-		<filterTag key="highway" value="primary_link" />
-		<filterTag key="highway" value="secondary" />
-		<filterTag key="highway" value="secondary_link" />
-		<filterTag key="highway" value="tertiary" />
-		<filterTag key="highway" value="tertiary_link" />
-		<filterTag key="highway" value="residential" />
-		<filterTag key="highway" value="unclassified" />
-		<filterTag key="highway" value="living_street" />
-		<filterTag key="highway" value="service" />
-		<filterTag key="highway" value="track" />
-		<filterTag key="highway" value="road" />
-		<!--
-		<filterTag key="highway" value="footway" />
-		<filterTag key="highway" value="path" />
-		<filterTag key="highway" value="cycleway" />
-		<filterTag key="highway" value="steps" />
-		-->
-		<filterTag key="building" value="" /><!--
-		<filterTag key="addr:housenumber" value="" />-->
-		
 		<featureType name="street" geometryType="LineString">
-			<filterTag key="highway" value="motorway" />
-			<filterTag key="highway" value="motorway_link" />
-			<filterTag key="highway" value="trunk" />
-			<filterTag key="highway" value="trunk_link" />
-			<filterTag key="highway" value="primary" />
-			<filterTag key="highway" value="primary_link" />
-			<filterTag key="highway" value="secondary" />
-			<filterTag key="highway" value="secondary_link" />
-			<filterTag key="highway" value="tertiary" />
-			<filterTag key="highway" value="tertiary_link" />
-			<filterTag key="highway" value="residential" />
-			<filterTag key="highway" value="unclassified" />
-			<filterTag key="highway" value="living_street" />
-			<filterTag key="highway" value="service" />
-			<filterTag key="highway" value="track" />
-			<filterTag key="highway" value="road" />
+			<includeTag key="highway" value="motorway" />
+			<includeTag key="highway" value="motorway_link" />
+			<includeTag key="highway" value="trunk" />
+			<includeTag key="highway" value="trunk_link" />
+			<includeTag key="highway" value="primary" />
+			<includeTag key="highway" value="primary_link" />
+			<includeTag key="highway" value="secondary" />
+			<includeTag key="highway" value="secondary_link" />
+			<includeTag key="highway" value="tertiary" />
+			<includeTag key="highway" value="tertiary_link" />
+			<includeTag key="highway" value="residential" />
+			<includeTag key="highway" value="unclassified" /><!-- 
+			<includeTag key="highway" value="living_street" />
+			<includeTag key="highway" value="service" />
+			<includeTag key="highway" value="track" />
+			<includeTag key="highway" value="road" />-->
 			<property key="highway" dataType="String" />
 			<property key="name" dataType="String" />
 			<property key="ref" dataType="String" />
@@ -72,12 +74,13 @@
 			<property key="bridge" dataType="String" />
 			<property key="tunnel" dataType="String" />
 			<property key="layer" dataType="String" />
-		</featureType><!--
+		</featureType>
+		<!--
 		<featureType name="path" geometryType="LineString">
-			<filterTag key="highway" value="path" />
-			<filterTag key="highway" value="footway" />
-			<filterTag key="highway" value="cycleway" />
-			<filterTag key="highway" value="steps" />
+			<includeTag key="highway" value="path" />
+			<includeTag key="highway" value="footway" />
+			<includeTag key="highway" value="cycleway" />
+			<includeTag key="highway" value="steps" />
 			<property key="highway" />
 			<property key="name" />
 			<property key="access" />
@@ -86,27 +89,37 @@
 			<property key="layer" dataType="String" />
 		</featureType>
 		<featureType name="buildingPoint" geometryType="Point">
-			<filterTag key="building" value="" />
+			<includeTag key="building" value="" />
 			<property key="building" />
 			<property key="addr:housenumber" />
-		</featureType>-->
+		</featureType>
 		<featureType name="building" geometryType="Polygon">
-			<filterTag key="building" value="" />
+			<includeTag key="building" value="" />
 			<property key="building" />
 			<property key="addr:housenumber" />
 			<property key="addr:street" />
 			<property key="addr:postcode" />
 			<property key="addr:city" />
 			<property key="addr:country" />
-		</featureType><!--
-		<featureType name="housenumber" geometryType="Point">
-			<filterTag key="addr:housenumber" value="" />
+		</featureType>
+		<featureType name="housenumberPoint" geometryType="Point">
+			<includeTag key="addr:housenumber" value="" />
+			<property key="building" />
 			<property key="addr:housenumber" />
 			<property key="addr:street" />
 			<property key="addr:postcode" />
 			<property key="addr:city" />
 			<property key="addr:country" />
-		</featureType>-->
+		</featureType>
+		<featureType name="housenumberPolygon" geometryType="Polygon">
+			<includeTag key="addr:housenumber" value="" />
+			<property key="building" />
+			<property key="addr:housenumber" />
+			<property key="addr:street" />
+			<property key="addr:postcode" />
+			<property key="addr:city" />
+			<property key="addr:country" />
+		</featureType>--><!---->
 		
 		<analysisSubject name="VgiAnalysisBatchGeneral" />
 	
