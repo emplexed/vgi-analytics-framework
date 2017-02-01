@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -43,8 +43,6 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 	private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 	
 	private int keepInCacheMaxLevel = 8;
-	
-	private CSVFileWriter writerQTStructure = new CSVFileWriter("E:/vgi/csv/quadtree_structure.csv");
 
 	public VgiOperationPbfReaderQuadtreeImpl(IVgiPipelineSettings settings) {
 		super(settings);
@@ -79,12 +77,12 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 	
 	protected void readPbfFiles() {
 		/** Writer headings */
-		writerQTStructure.writeLine("geometry;quadtree_path;level;feature_count;border_intersect;");
-		
-		/** Read the quadtree index */
-		PbfQuadtreeIndex pbfQuadtree = null;
-		try {
-
+		try (CSVFileWriter writerQTStructure = new CSVFileWriter("E:/vgi/csv/quadtree_structure.csv")) {
+			writerQTStructure.writeLine("geometry;quadtree_path;level;feature_count;border_intersect;");
+			
+			/** Read the quadtree index */
+			PbfQuadtreeIndex pbfQuadtree = null;
+			
 			if (!new File(settings.getPbfDataFolder() + "/Quadtree/index.pbf").exists()) {
 				log.error("Cannot find file '" + settings.getPbfDataFolder() + "/Quadtree/index.pbf'");
 				return;
@@ -92,16 +90,13 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 			
 			pbfQuadtree = PbfQuadtreeIndex.parseFrom(new FileInputStream(settings.getPbfDataFolder() + "/Quadtree/index.pbf"));
 			
-			readPbfQuadtree(pbfQuadtree.getRoot());
+			readPbfQuadtree(pbfQuadtree.getRoot(), writerQTStructure);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while writing CSV file", e);
 		}
-		
-		/** Close quadtree writer */
-		writerQTStructure.closeFile();
 	}
 	
-	private void readPbfQuadtree(PbfQuadtree pbfQuadtree) {		
+	private void readPbfQuadtree(PbfQuadtree pbfQuadtree, CSVFileWriter qtWriter) throws IOException {		
 		
 		/** Build geometry of this quadrant */
 		Coordinate[] coordinatesQuadrant = new Coordinate[5];
@@ -117,8 +112,8 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 		
 		/** Read this quadtree if it intersects with test region and if it has >0 features */
 		IntersectionMatrix intersectionMatrix = quadrant.relate(quadrant); /** default */
-		if (settings.getFilterPolygon() != null) {
-			intersectionMatrix = settings.getFilterPolygon().getPolygon().relate(quadrant); /** quadrant specific */
+		if (settings.getCurrentPolygon() != null) {
+			intersectionMatrix = settings.getCurrentPolygon().getPolygon().relate(quadrant); /** quadrant specific */
 		}
 		if (intersectionMatrix.isIntersects() && pbfQuadtree.getFeatureCount() > 0) {
 			super.setPbfDataFolder(new File(settings.getPbfDataFolder() + "/Quadtree/" + pbfQuadtree.getPath()));
@@ -145,14 +140,14 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 				super.readPbfFiles(false);
 			}
 			
-			writerQTStructure.writeLine(quadrant.toText() + ";" + pbfQuadtree.getPath() + ";" + pbfQuadtree.getLevel() + ";" + pbfQuadtree.getFeatureCount() + ";" + intersectionMatrix.isOverlaps(2, 2) + ";");
+			qtWriter.writeLine(quadrant.toText() + ";" + pbfQuadtree.getPath() + ";" + pbfQuadtree.getLevel() + ";" + pbfQuadtree.getFeatureCount() + ";" + intersectionMatrix.isOverlaps(2, 2) + ";");
 		}
 		
 		if (pbfQuadtree.hasNw()) {
-			readPbfQuadtree(pbfQuadtree.getNw());
-			readPbfQuadtree(pbfQuadtree.getNe());
-			readPbfQuadtree(pbfQuadtree.getSe());
-			readPbfQuadtree(pbfQuadtree.getSw());
+			readPbfQuadtree(pbfQuadtree.getNw(), qtWriter);
+			readPbfQuadtree(pbfQuadtree.getNe(), qtWriter);
+			readPbfQuadtree(pbfQuadtree.getSe(), qtWriter);
+			readPbfQuadtree(pbfQuadtree.getSw(), qtWriter);
 		}
     }
 }

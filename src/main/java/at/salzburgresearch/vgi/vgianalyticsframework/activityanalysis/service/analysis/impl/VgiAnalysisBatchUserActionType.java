@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,9 +44,10 @@ public class VgiAnalysisBatchUserActionType extends VgiAnalysisParent implements
 	
 	@Override
 	public void write(File path) {
-		
 		AnalysisEntry currentEntry = new AnalysisEntry();
-		currentEntry.name = settings.getFilterPolygon().getLabel();
+		if (settings.getCurrentPolygon() != null) {
+			currentEntry.name = settings.getCurrentPolygon().getLabel();
+		}
 		
 //		for (Entry<Integer, VgiAnalysisUser> user : VgiAnalysisParent.userAnalysis.entrySet()) { //TODO repair
 //
@@ -67,34 +69,36 @@ public class VgiAnalysisBatchUserActionType extends VgiAnalysisParent implements
 		
 		entryList.add(currentEntry);
 		
-		CSVFileWriter writer = new CSVFileWriter(path + "/analysis_batch_user_action_type.csv");
-		/** write header */
-		String heading = "region;time_period;num_user;";
-
-		for (String actionType : actionTypes) {
-			heading += actionType + ";";
-		}
-		writer.writeLine(heading);
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/analysis_batch_user_action_type.csv")) {
+			/** write header */
+			String heading = "region;time_period;num_user;";
 		
-		/** iterate through rows*/
-		for (AnalysisEntry entry : entryList) {
-			
-			for (Date timePeriod : entry.actionCount.keySet()) {
-				String line = entry.name + ";";
-				line += dateFormat.format(timePeriod) + ";";
-				line += entry.userCount.get(timePeriod).size() + ";";
-				
-				for (String actionType : actionTypes) {
-					if (entry.actionCount.get(timePeriod).containsKey(actionType)) {
-						line += entry.actionCount.get(timePeriod).get(actionType) + ";";
-					} else {
-						line += ";";
-					}
-				}
-				writer.writeLine(line);
+			for (String actionType : actionTypes) {
+				heading += actionType + ";";
 			}
+			writer.writeLine(heading);
+			
+			/** iterate through rows*/
+			for (AnalysisEntry entry : entryList) {
+				
+				for (Date timePeriod : entry.actionCount.keySet()) {
+					String line = entry.name + ";";
+					line += dateFormat.format(timePeriod) + ";";
+					line += entry.userCount.get(timePeriod).size() + ";";
+					
+					for (String actionType : actionTypes) {
+						if (entry.actionCount.get(timePeriod).containsKey(actionType)) {
+							line += entry.actionCount.get(timePeriod).get(actionType) + ";";
+						} else {
+							line += ";";
+						}
+					}
+					writer.writeLine(line);
+				}
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

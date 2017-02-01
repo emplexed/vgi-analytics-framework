@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
@@ -79,48 +80,49 @@ public class VgiAnalysisUserPerTags extends VgiAnalysisParent implements IVgiAna
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writerAdd = new CSVFileWriter(path + "/added_tag_per_key.csv");
-		CSVFileWriter writerUpdate = new CSVFileWriter(path + "/modified_tag_per_key.csv");
-		CSVFileWriter writerRemove = new CSVFileWriter(path + "/removed_tag_per_key.csv");
-		/** write header */
-		if (tagKey.equals("")) {
-			writerAdd.writeLine("uid;tag_key;count(n);count(w);count(r)");
-			writerUpdate.writeLine("uid;tag_key;count(n);count(w);count(r)");
-			writerRemove.writeLine("uid;tag_key;count(n);count(w);count(r)");
-		} else {
-			writerAdd.writeLine("uid;tag_value ("+tagKey+");count(n);count(w);count(r)");
-			writerUpdate.writeLine("uid;tag_value ("+tagKey+");count(n);count(w);count(r)");
-			writerRemove.writeLine("uid;tag_value ("+tagKey+");count(n);count(w);count(r)");
+		try (
+				CSVFileWriter writerAdd = new CSVFileWriter(path + "/added_tag_per_key.csv");
+				CSVFileWriter writerUpdate = new CSVFileWriter(path + "/modified_tag_per_key.csv");
+				CSVFileWriter writerRemove = new CSVFileWriter(path + "/removed_tag_per_key.csv");) {
+			/** write header */
+			if (tagKey.equals("")) {
+				writerAdd.writeLine("uid;tag_key;count(n);count(w);count(r)");
+				writerUpdate.writeLine("uid;tag_key;count(n);count(w);count(r)");
+				writerRemove.writeLine("uid;tag_key;count(n);count(w);count(r)");
+			} else {
+				writerAdd.writeLine("uid;tag_value ("+tagKey+");count(n);count(w);count(r)");
+				writerUpdate.writeLine("uid;tag_value ("+tagKey+");count(n);count(w);count(r)");
+				writerRemove.writeLine("uid;tag_value ("+tagKey+");count(n);count(w);count(r)");
+			}
+			/** iterate through rows*/
+			for (int user : userAnalysis.keySet()) {
+				VgiAnalysisUser u = userAnalysis.get(user);
+				
+				/** write row values */
+				for (String type : u.addedTagPerKey.keySet()) {
+					if (u.addedTagPerKey.get(type)[0] + u.addedTagPerKey.get(type)[1] + u.addedTagPerKey.get(type)[2] > 0) {
+						/** remove line breaks because of node 456999774 (amenity &#13;) */
+						writerAdd.writeLine(u.getUid() + ";" + type.replace(";", ",").replace("\n", " ").replace("\r", " ") + ";" + ((u.addedTagPerKey.get(type)[0] != 0) ? u.addedTagPerKey.get(type)[0] : "") + ";" + ((u.addedTagPerKey.get(type)[1] != 0) ? u.addedTagPerKey.get(type)[1] : "") + ";" + ((u.addedTagPerKey.get(type)[2] != 0) ? u.addedTagPerKey.get(type)[2] : ""));
+					}
+				}
+				
+				/** write row values */
+				for (String type : u.modifiedTagPerKey.keySet()) {
+					if (u.modifiedTagPerKey.get(type)[0] + u.modifiedTagPerKey.get(type)[1] + u.modifiedTagPerKey.get(type)[2] > 0) {
+						writerUpdate.writeLine(u.getUid() + ";" + type.replace(";", ",").replace("\n", " ").replace("\r", " ") + ";" + ((u.modifiedTagPerKey.get(type)[0] != 0) ? u.modifiedTagPerKey.get(type)[0] : "") + ";" + ((u.modifiedTagPerKey.get(type)[1] != 0) ? u.modifiedTagPerKey.get(type)[1] : "") + ";" + ((u.modifiedTagPerKey.get(type)[2] != 0) ? u.modifiedTagPerKey.get(type)[2] : ""));
+					}
+				}
+				
+				/** write row values */
+				for (String type : u.removedTagPerKey.keySet()) {
+					if (u.removedTagPerKey.get(type)[0] + u.removedTagPerKey.get(type)[1] + u.removedTagPerKey.get(type)[2] > 0) {
+						writerRemove.writeLine(u.getUid() + ";" + type.replace(";", ",").replace("\n", " ").replace("\r", " ") + ";" + ((u.removedTagPerKey.get(type)[0] != 0) ? u.removedTagPerKey.get(type)[0] : "") + ";" + ((u.removedTagPerKey.get(type)[1] != 0) ? u.removedTagPerKey.get(type)[1] : "") + ";" + ((u.removedTagPerKey.get(type)[2] != 0) ? u.removedTagPerKey.get(type)[2] : ""));
+					}
+				}
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		/** iterate through rows*/
-		for (int user : userAnalysis.keySet()) {
-			VgiAnalysisUser u = userAnalysis.get(user);
-			
-			/** write row values */
-			for (String type : u.addedTagPerKey.keySet()) {
-				if (u.addedTagPerKey.get(type)[0] + u.addedTagPerKey.get(type)[1] + u.addedTagPerKey.get(type)[2] > 0) {
-					/** remove line breaks because of node 456999774 (amenity &#13;) */
-					writerAdd.writeLine(u.getUid() + ";" + type.replace(";", ",").replace("\n", " ").replace("\r", " ") + ";" + ((u.addedTagPerKey.get(type)[0] != 0) ? u.addedTagPerKey.get(type)[0] : "") + ";" + ((u.addedTagPerKey.get(type)[1] != 0) ? u.addedTagPerKey.get(type)[1] : "") + ";" + ((u.addedTagPerKey.get(type)[2] != 0) ? u.addedTagPerKey.get(type)[2] : ""));
-				}
-			}
-			
-			/** write row values */
-			for (String type : u.modifiedTagPerKey.keySet()) {
-				if (u.modifiedTagPerKey.get(type)[0] + u.modifiedTagPerKey.get(type)[1] + u.modifiedTagPerKey.get(type)[2] > 0) {
-					writerUpdate.writeLine(u.getUid() + ";" + type.replace(";", ",").replace("\n", " ").replace("\r", " ") + ";" + ((u.modifiedTagPerKey.get(type)[0] != 0) ? u.modifiedTagPerKey.get(type)[0] : "") + ";" + ((u.modifiedTagPerKey.get(type)[1] != 0) ? u.modifiedTagPerKey.get(type)[1] : "") + ";" + ((u.modifiedTagPerKey.get(type)[2] != 0) ? u.modifiedTagPerKey.get(type)[2] : ""));
-				}
-			}
-			
-			/** write row values */
-			for (String type : u.removedTagPerKey.keySet()) {
-				if (u.removedTagPerKey.get(type)[0] + u.removedTagPerKey.get(type)[1] + u.removedTagPerKey.get(type)[2] > 0) {
-					writerRemove.writeLine(u.getUid() + ";" + type.replace(";", ",").replace("\n", " ").replace("\r", " ") + ";" + ((u.removedTagPerKey.get(type)[0] != 0) ? u.removedTagPerKey.get(type)[0] : "") + ";" + ((u.removedTagPerKey.get(type)[1] != 0) ? u.removedTagPerKey.get(type)[1] : "") + ";" + ((u.removedTagPerKey.get(type)[2] != 0) ? u.removedTagPerKey.get(type)[2] : ""));
-				}
-			}
-		}
-		writerAdd.closeFile();
-		writerUpdate.closeFile();
-		writerRemove.closeFile();
 	}
 
 	@Override

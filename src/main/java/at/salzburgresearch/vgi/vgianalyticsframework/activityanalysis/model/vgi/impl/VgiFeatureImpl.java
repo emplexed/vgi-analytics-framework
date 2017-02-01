@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -161,6 +161,36 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
 		return tags;
 	}
 	
+	/**
+	 * Check whether this feature contains one of the tags specified in filterTag parameter
+	 * @param filter tag list
+	 * @return true if feature contains tag mentioned in tag filter
+	 */
+	public boolean filterByTag(Map<String, List<String>> filterTag) {
+		/** if no tag is defined, return true */
+		if (filterTag.keySet().size() == 0) return true;
+		
+		/** Filter feature by tag */
+		Map<String, List<String>> tags = VgiFeatureImpl.getAllTagsFromOperations(this);
+		
+		for (String tagKey : tags.keySet()) {
+			
+			/** Does filter list contain the key of this operation? */
+			if (filterTag.containsKey(tagKey)) {
+				
+				/** Return true if filter list contains the value of this operation */
+				/** Compare only tag keys */
+				if (filterTag.get(tagKey).size() == 0) return true;
+				
+				/** Compare keys and values */
+				tags.get(tagKey).retainAll(filterTag.get(tagKey));
+				if (tags.get(tagKey).size() > 0) return true;
+			}
+		}
+		/** Otherwise return false */
+		return false;
+	}
+	
     public static Comparator<IVgiFeature> getFeatureComparator() {
         return new Comparator<IVgiFeature>() {
     		public int compare(IVgiFeature f1, IVgiFeature f2) {
@@ -191,7 +221,7 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
 		this.operationList = operationList;
 	}
 	@Override
-	public void addToOperationList(IVgiOperation operation) {
+	public void addOperation(IVgiOperation operation) {
 		this.operationList.add(operation);
 	}
 
@@ -204,7 +234,7 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
 		this.actionList = actionList;
 	}
 	@Override
-	public void addToActionList(IVgiAction action) {
+	public void addAction(IVgiAction action) {
 		this.actionList.add(action);
 	}
 

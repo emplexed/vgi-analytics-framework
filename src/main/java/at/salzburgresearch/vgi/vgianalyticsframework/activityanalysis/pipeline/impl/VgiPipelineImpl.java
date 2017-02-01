@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -196,58 +197,60 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 	 * @param path
 	 */
 	public void writeMetaData(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/metadata.txt");
-		writer.writeLine("Setting Profile: " + (settings.getSettingName()));
-		writer.writeLine("Analysis start: " + (dateTimeFormat.format(timerStart)));
-		writer.writeLine("Analysis end: " + (dateTimeFormat.format(new Date())));
-		writer.writeLine("Analysis duration: " + (new Date().getTime() - timerStart.getTime()) + " ms");
-		
-		writer.writeLine("pbfDataFolder: " + settings.getPbfDataFolder());
-		writer.writeLine("useQuadtree: " + settings.isReadQuadtree());
-		writer.writeLine("resultFolder: " + settings.getResultFolder());
-		
-		writer.writeLine("filterUid: " + settings.getFilterUid());
-		writer.writeLine("filterTimestamp: " + dateFormatOSM.format(settings.getFilterTimestamp()));
-		writer.writeLine("filterElementType: " + settings.getFilterElementType());
-		writer.writeLine("filterTag: " + settings.getFilterTag());
-		
-		writer.writeLine("Analyses:");
-		for (IVgiAnalysisAction analysis : settings.getActionAnalyzerList()) {
-			writer.writeLine(" - " + analysis.toString());
-		}
-		for (IVgiAnalysisOperation analysis : settings.getOperationAnalyzerList()) {
-			writer.writeLine(" - " + analysis.toString());
-		}
-		for (IVgiAnalysisFeature analysis : settings.getFeatureAnalyzerList()) {
-			writer.writeLine(" - " + analysis.toString());
-		}
-		writer.writeLine("analysisStartDate: " + dateFormatOSM.format(settings.getAnalysisStartDate()));
-		writer.writeLine("analysisEndDate: " + dateFormatOSM.format(settings.getAnalysisEndDate()));
-		writer.writeLine("temporalResolution: " + settings.getTemporalResolution());
-		for (IVgiAnalysisFeature analysis : settings.getFeatureAnalyzerList()) {
-			writer.writeLine(" - " + analysis.toString());
-		}
-		writer.writeLine("Feature Types:");
-		for (String featureTypeKey : settings.getFeatureTypeList().keySet()) {
-			writer.writeLine(" - " + featureTypeKey);
-		}
-		writer.writeLine("ignoreFeaturesWithoutTags: " + settings.isIgnoreFeaturesWithoutTags());
-		writer.writeLine("findRelatedOperations: " + settings.isFindRelatedOperations());
-		writer.writeLine("actionTimeBuffer: " + settings.getActionTimeBuffer());
-		writer.writeLine("actionDefinitions: ");
-		for (IVgiAction action : settings.getActionDefinitionList()) {
-			writer.writeLine(" - " + action.getActionName() + " (" + action.getGeometryType() + ")");
-			for (VgiActionDefinitionRule rule : action.getDefinition()) {
-				writer.writeLine(" - - " + rule.getVgiOperationType() + " (" + rule.getEntryPoint() + ")");
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/metadata.txt")) {
+			writer.writeLine("Setting Profile: " + (settings.getSettingName()));
+			writer.writeLine("Analysis start: " + (dateTimeFormat.format(timerStart)));
+			writer.writeLine("Analysis end: " + (dateTimeFormat.format(new Date())));
+			writer.writeLine("Analysis duration: " + (new Date().getTime() - timerStart.getTime()) + " ms");
+			
+			writer.writeLine("pbfDataFolder: " + settings.getPbfDataFolder());
+			writer.writeLine("useQuadtree: " + settings.isReadQuadtree());
+			writer.writeLine("resultFolder: " + settings.getResultFolder());
+			
+			writer.writeLine("filterUid: " + settings.getFilterUid());
+			writer.writeLine("filterTimestamp: " + dateFormatOSM.format(settings.getFilterTimestamp()));
+			writer.writeLine("filterElementType: " + settings.getFilterElementType());
+			writer.writeLine("filterTag: " + settings.getFilterTag());
+			
+			writer.writeLine("Analyses:");
+			for (IVgiAnalysisAction analysis : settings.getActionAnalyzerList()) {
+				writer.writeLine(" - " + analysis.toString() + " (" + analysis.getProcessingTime() + "ms)");
 			}
+			for (IVgiAnalysisOperation analysis : settings.getOperationAnalyzerList()) {
+				writer.writeLine(" - " + analysis.toString() + " (" + analysis.getProcessingTime() + "ms)");
+			}
+			for (IVgiAnalysisFeature analysis : settings.getFeatureAnalyzerList()) {
+				writer.writeLine(" - " + analysis.toString() + " (" + analysis.getProcessingTime() + "ms)");
+			}
+			writer.writeLine("analysisStartDate: " + dateFormatOSM.format(settings.getAnalysisStartDate()));
+			writer.writeLine("analysisEndDate: " + dateFormatOSM.format(settings.getAnalysisEndDate()));
+			writer.writeLine("temporalResolution: " + settings.getTemporalResolution());
+			for (IVgiAnalysisFeature analysis : settings.getFeatureAnalyzerList()) {
+				writer.writeLine(" - " + analysis.toString());
+			}
+			writer.writeLine("Feature Types:");
+			for (String featureTypeKey : settings.getFeatureTypeList().keySet()) {
+				writer.writeLine(" - " + featureTypeKey);
+			}
+			writer.writeLine("ignoreFeaturesWithoutTags: " + settings.isIgnoreFeaturesWithoutTags());
+			writer.writeLine("findRelatedOperations: " + settings.isFindRelatedOperations());
+			writer.writeLine("actionTimeBuffer: " + settings.getActionTimeBuffer());
+			writer.writeLine("actionDefinitions: ");
+			for (IVgiAction action : settings.getActionDefinitionList()) {
+				writer.writeLine(" - " + action.getActionName() + " (" + action.getGeometryType() + ")");
+				for (VgiActionDefinitionRule rule : action.getDefinition()) {
+					writer.writeLine(" - - " + rule.getVgiOperationType() + " (" + rule.getEntryPoint() + ")");
+				}
+			}
+			if (settings.getCurrentPolygon() != null) {
+				writer.writeLine("Test Area Label: " + settings.getCurrentPolygon().getLabel());
+				writer.writeLine("Test Area Polygon: " + settings.getCurrentPolygon().getPolygon().toText());
+			} else {
+				writer.writeLine("Test Area Polygon: (no polygon set)");
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		if (settings.getFilterPolygon() != null) {
-			writer.writeLine("Test Area Label: " + settings.getFilterPolygon().getLabel());
-			writer.writeLine("Test Area Polygon: " + settings.getFilterPolygon().getPolygon().toText());
-		} else {
-			writer.writeLine("Test Area Polygon: (no polygon set)");
-		}
-		writer.closeFile();
 	}
 	
 	public int getQueueSize() {

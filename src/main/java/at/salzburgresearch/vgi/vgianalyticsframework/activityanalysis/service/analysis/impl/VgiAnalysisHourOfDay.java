@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -61,22 +62,24 @@ public class VgiAnalysisHourOfDay extends VgiAnalysisParent implements IVgiAnaly
 
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/action_timestamp_per_hour.csv");
-		/** write header */
-		writer.writeLine("uid;00_06;06_12;12_18;18_00;");
-		/** iterate through rows*/
-		for (Map.Entry<Integer, VgiAnalysisUser> user : userAnalysis.entrySet()) {
-			/** write row values */
-			VgiAnalysisUser u = user.getValue();
-			
-			String line = u.getUid() + ";";
-			line += ((u.actionTimestampPerHour.containsKey(0)) ? u.actionTimestampPerHour.get(0) : "") + ";";
-			line += ((u.actionTimestampPerHour.containsKey(6)) ? u.actionTimestampPerHour.get(6) : "") + ";";
-			line += ((u.actionTimestampPerHour.containsKey(12)) ? u.actionTimestampPerHour.get(12) : "") + ";";
-			line += ((u.actionTimestampPerHour.containsKey(18)) ? u.actionTimestampPerHour.get(18) : "") + ";";
-			writer.writeLine(line);
-		}
-		writer.closeFile();
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/action_timestamp_per_hour.csv")) {
+			/** write header */
+			writer.writeLine("uid;00_06;06_12;12_18;18_00;");
+			/** iterate through rows*/
+			for (Map.Entry<Integer, VgiAnalysisUser> user : userAnalysis.entrySet()) {
+				/** write row values */
+				VgiAnalysisUser u = user.getValue();
+				
+				String line = u.getUid() + ";";
+				line += ((u.actionTimestampPerHour.containsKey(0)) ? u.actionTimestampPerHour.get(0) : "") + ";";
+				line += ((u.actionTimestampPerHour.containsKey(6)) ? u.actionTimestampPerHour.get(6) : "") + ";";
+				line += ((u.actionTimestampPerHour.containsKey(12)) ? u.actionTimestampPerHour.get(12) : "") + ";";
+				line += ((u.actionTimestampPerHour.containsKey(18)) ? u.actionTimestampPerHour.get(18) : "") + ";";
+				writer.writeLine(line);
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
+		} 
 	}
 
 	@Override

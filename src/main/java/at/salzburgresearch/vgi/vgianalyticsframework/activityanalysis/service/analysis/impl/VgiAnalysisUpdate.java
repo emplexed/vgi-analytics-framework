@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,24 +65,26 @@ public class VgiAnalysisUpdate extends VgiAnalysisParent implements IVgiAnalysis
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/update.csv");
-		/** write header */
-		String header = "year;feature_count_delta;feature_count_updated";
-		for (IVgiAction action : settings.getActionDefinitionList()) {
-			if (!action.getActionType().equals(VgiActionImpl.ActionType.UPDATE)) continue;
-			header += ";" + action.getActionName();
-		}
-		writer.writeLine(header);
-		/** iterate through rows*/
-		for (Entry<Date, UpdateEntry> dataEntry : data.entrySet()) {
-			String line = dateFormatYear.format(dataEntry.getKey()) + ";" + dataEntry.getValue().feature_count + ";" + dataEntry.getValue().feature_count_affected;
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/update.csv")) {
+			/** write header */
+			String header = "year;feature_count_delta;feature_count_updated";
 			for (IVgiAction action : settings.getActionDefinitionList()) {
 				if (!action.getActionType().equals(VgiActionImpl.ActionType.UPDATE)) continue;
-				line += ";" + dataEntry.getValue().action_count_updated.get(action.getActionName());
+				header += ";" + action.getActionName();
 			}
-			writer.writeLine(line);
+			writer.writeLine(header);
+			/** iterate through rows*/
+			for (Entry<Date, UpdateEntry> dataEntry : data.entrySet()) {
+				String line = dateFormatYear.format(dataEntry.getKey()) + ";" + dataEntry.getValue().feature_count + ";" + dataEntry.getValue().feature_count_affected;
+				for (IVgiAction action : settings.getActionDefinitionList()) {
+					if (!action.getActionType().equals(VgiActionImpl.ActionType.UPDATE)) continue;
+					line += ";" + dataEntry.getValue().action_count_updated.get(action.getActionName());
+				}
+				writer.writeLine(line);
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 	
 	@Override

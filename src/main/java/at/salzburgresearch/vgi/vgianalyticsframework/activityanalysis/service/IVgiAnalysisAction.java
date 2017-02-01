@@ -28,4 +28,7 @@ public interface IVgiAnalysisAction {
 	
 	void reset();
 
+	void addToProcessingTime(long l);
+
+	long getProcessingTime();
 }

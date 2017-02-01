@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -53,8 +54,10 @@ public class VgiAnalysisBatchContributor extends VgiAnalysisParent implements IV
 
 	@Override
 	public void write(File path) {
+		if (settings.getCurrentPolygon() != null) {
+			currentEntry.name = settings.getCurrentPolygon().getLabel();
+		}
 		
-		currentEntry.name = settings.getFilterPolygon().getLabel();
 		currentEntry.numUser = VgiAnalysisParent.userAnalysis.size();
 		long actionCount = 0;
 		
@@ -80,35 +83,37 @@ public class VgiAnalysisBatchContributor extends VgiAnalysisParent implements IV
 		
 		entryList.add(currentEntry);
 		
-		CSVFileWriter writer = new CSVFileWriter(path + "/analysis_batch_summary.csv");
-		/** write header */
-		String heading = "region;num_user;num_actions;avg_actions_per_user;top_user_id;top_user_action_count;";
-		
-		Collections.sort(timePeriods);
-
-		for (String featureType : featureTypes) {
-			for (Date timePeriod : timePeriods) {
-				for (String actionType : actionTypes) {
-					heading += featureType + "_" + dateFormat.format(timePeriod) + "_" + actionType + ";";
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/analysis_batch_summary.csv")) {
+			/** write header */
+			String heading = "region;num_user;num_actions;avg_actions_per_user;top_user_id;top_user_action_count;";
+			
+			Collections.sort(timePeriods);
+	
+			for (String featureType : featureTypes) {
+				for (Date timePeriod : timePeriods) {
+					for (String actionType : actionTypes) {
+						heading += featureType + "_" + dateFormat.format(timePeriod) + "_" + actionType + ";";
+					}
 				}
 			}
-		}
-		writer.writeLine(heading);
-		
-		/** iterate through rows*/
-		for (AnalysisEntry entry : entryList) {
+			writer.writeLine(heading);
 			
-			/** write row values */
-			String line = entry.name + ";";
-			line += entry.numUser + ";";
-			line += entry.numActions + ";";
-			line += ((entry.numUser > 0) ? Math.round(entry.numActions / entry.numUser) : 0) + ";";
-			line += entry.topUserId + ";";
-			line += entry.topUserActionCount + ";";
-
-			writer.writeLine(line);
+			/** iterate through rows*/
+			for (AnalysisEntry entry : entryList) {
+				
+				/** write row values */
+				String line = entry.name + ";";
+				line += entry.numUser + ";";
+				line += entry.numActions + ";";
+				line += ((entry.numUser > 0) ? Math.round(entry.numActions / entry.numUser) : 0) + ";";
+				line += entry.topUserId + ";";
+				line += entry.topUserActionCount + ";";
+	
+				writer.writeLine(line);
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

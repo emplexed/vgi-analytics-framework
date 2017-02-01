@@ -64,6 +64,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.an
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisBatchGeneral;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisBatchUserActionType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisChangeDetection;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisCountry;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisFeatureStability;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisGeometryType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisHourOfDay;
@@ -97,8 +98,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	private VgiGeometryType filterElementType = VgiGeometryType.UNDEFINED;
 	private Map<String, List<String>> filterTag = null;
 	private List<VgiPolygon> filterPolygonList = null;
-	private VgiPolygon filterPolygon = null;
-//	private String filterPolygonLabel = "Default";
+	private VgiPolygon currentPolygon = null;
 	
 	/** Action generator */
 	private long actionTimeBuffer = 43200000l;
@@ -150,6 +150,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 		featureTypeLine.add("geom", LineString.class);
 		featureTypeLine.setDefaultGeometry("geom");
 		featureTypeLine.add("osm_id", Long.class);
+		featureTypeLine.add("length", Double.class);
 		featureTypeLine.add("deleted", Boolean.class);
 		vgiFeatureTypeLine.setFeatureType(featureTypeLine.buildFeatureType());
 		vgiFeatureTypeLine.getFeatureTypeTags().put("invalid", new ArrayList<String>());
@@ -162,6 +163,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 		featureTypePolygon.add("geom", Polygon.class);
 		featureTypePolygon.setDefaultGeometry("geom");
 		featureTypePolygon.add("osm_id", Long.class);
+		featureTypePolygon.add("area", Double.class);
 		featureTypePolygon.add("deleted", Boolean.class);
 		vgiFeatureTypePolygon.setFeatureType(featureTypePolygon.buildFeatureType());
 		vgiFeatureTypePolygon.getFeatureTypeTags().put("invalid", new ArrayList<String>());
@@ -234,7 +236,42 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	    			}
     			}
             }
+
+            /**
+			 * Parse filter tags
+			 */
+            nodeList = doc.getElementsByTagName("filterTags");
             
+            for(int s=0; s<nodeList.getLength(); s++) {
+            	if (filterTag == null) filterTag = new HashMap<String, List<String>>();
+            	
+                Node node = nodeList.item(s);
+				if (node.getNodeType() != Node.ELEMENT_NODE) continue; 
+					
+				Element firstElement = (Element) node;
+				
+				NodeList nodeList1 = firstElement.getElementsByTagName("filterTag");
+				for(int t=0; t<nodeList1.getLength() ; t++) {
+	                try {
+						Node node1 = nodeList1.item(t);
+		                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
+						Element firstElement1 = (Element) node1;
+						String key = firstElement1.getAttribute("key");
+						if (!filterTag.containsKey(key)) {
+							filterTag.put(key, new ArrayList<String>());
+						}
+						if (!firstElement1.getAttribute("value").equals("")) {
+							filterTag.get(key).add(firstElement1.getAttribute("value"));
+						}
+	    			} catch (Exception ex) {
+	    				log.warn("Cannot parse setting 'filterTag'");
+	    			}
+				}
+            }
+
+            /**
+			 * Parse analysis settings
+			 */
             nodeList = doc.getElementsByTagName("analysis");
             
             for(int s=0; s<nodeList.getLength(); s++) {
@@ -305,29 +342,6 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
         				log.warn("Cannot parse setting 'actionTimeBuffer' (data type: Long)");
         			}
     			}
-				
-    			/**
-    			 * Parse filter tags
-    			 */
-				filterTag = new HashMap<String, List<String>>();
-    			try {
-	    			//feature types
-    				NodeList nodeList1 = firstElement.getElementsByTagName("filterTag");
-    				for(int t=0; t<nodeList1.getLength() ; t++) {
-    	                Node node1 = nodeList1.item(t);
-    	                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
-						Element firstElement1 = (Element) node1;
-						String key = firstElement1.getAttribute("key");
-						if (!filterTag.containsKey(key)) {
-							filterTag.put(key, new ArrayList<String>());
-						}
-						if (!firstElement1.getAttribute("value").equals("")) {
-							filterTag.get(key).add(firstElement1.getAttribute("value"));
-						}
-    				}
-    			} catch (Exception ex) {
-    				log.warn("Cannot parse setting 'filterTag'");
-    			}
     			
     			/**
     			 * Parse feature types
@@ -351,9 +365,11 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	    					break;
 	    				case "LineString":
 	    					featureType.add("geom", LineString.class);
+	    					featureType.add("length", Double.class);
 	    					break;
 	    				case "Polygon":
 	    					featureType.add("geom", Polygon.class);
+	    					featureType.add("area", Double.class);
 	    					break;
 	    				default:
 	    					log.warn("Cannot parse setting 'featureType>geometryType'");
@@ -478,6 +494,8 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 
 					} else if (firstElement1.getAttribute("name").equals("VgiAnalysisFeatureStability")) {
 						featureAnalyzerList.add(new VgiAnalysisFeatureStability(this));
+					} else if (firstElement1.getAttribute("name").equals("VgiAnalysisCountry")) {
+						featureAnalyzerList.add(new VgiAnalysisCountry());
 					} else if (firstElement1.getAttribute("name").equals("VgiAnalysisGeometryType")) {
 						actionAnalyzerList.add(new VgiAnalysisGeometryType());
 					} else if (firstElement1.getAttribute("name").equals("VgiAnalysisHourOfDay")) {
@@ -560,6 +578,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
             nodeList = doc.getElementsByTagName("filterPolygons");
             
             for(int s=0; s<nodeList.getLength(); s++) {
+				WKTReader wktReader = new WKTReader();
             	if (filterPolygonList == null) filterPolygonList = new ArrayList<VgiPolygon>();
             	
                 Node node = nodeList.item(s);
@@ -578,7 +597,6 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 					}
 	    			try {
 	    				if (!firstElement1.getAttribute("geometry").equals("")) {
-		    				WKTReader wktReader = new WKTReader();
 		    				polygon.setPolygon((Polygon)wktReader.read(firstElement1.getAttribute("geometry")));
 		    				filterPolygonList.add(polygon);
 	    				}
@@ -703,12 +721,12 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	}
 
 	@Override
-	public VgiPolygon getFilterPolygon() {
-		return filterPolygon;
+	public VgiPolygon getCurrentPolygon() {
+		return currentPolygon;
 	}
 	@Override
-	public void setFilterPolygon(VgiPolygon polygon) {
-		this.filterPolygon = polygon;
+	public void setCurrentPolygon(VgiPolygon polygon) {
+		this.currentPolygon = polygon;
 	}
 	
 	@Override

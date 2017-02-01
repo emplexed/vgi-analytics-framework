@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,15 +59,17 @@ public class VgiAnalysisActionDetails extends VgiAnalysisParent implements IVgiA
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/action_details.csv");
-		/** write header */
-		writer.writeLine("action_id;oid;geometry_type;feature_type;action_type;operation_type;uid;version;timestamp;changeset;coordinate;key;value;ref_id;position;");
-		/** iterate through rows*/
-		for (String action : actionListWriter) {
-			/** write row values */
-			writer.writeLine(action);
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/action_details.csv")) {
+			/** write header */
+			writer.writeLine("action_id;oid;geometry_type;feature_type;action_type;operation_type;uid;version;timestamp;changeset;coordinate;key;value;ref_id;position;");
+			/** iterate through rows*/
+			for (String action : actionListWriter) {
+				/** write row values */
+				writer.writeLine(action);
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

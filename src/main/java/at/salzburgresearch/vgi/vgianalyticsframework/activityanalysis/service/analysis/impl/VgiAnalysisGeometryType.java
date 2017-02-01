@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,29 +63,31 @@ public class VgiAnalysisGeometryType extends VgiAnalysisParent implements IVgiAn
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/features_per_geometry_type.csv");
-		/** write header */
-		String line = "";
-		for (SimpleFeatureType tag : featureTypes) {
-			line += tag.getName()+";";
-		}
-		writer.writeLine("geometry_type;"+line);
-		/** iterate through rows*/
-		for (Map.Entry<VgiGeometryType, Map<SimpleFeatureType,Double>> featureType : featureByGeometryType.entrySet()) {
-			/** write row values */
-			Map<SimpleFeatureType, Double> m = featureType.getValue();
-
-			double sum = 0.0;
-			line = "";
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/features_per_geometry_type.csv")) {
+			/** write header */
+			String line = "";
 			for (SimpleFeatureType tag : featureTypes) {
-				line += (m.containsKey(tag)) ? decimalFormat.format(m.get(tag)) : "";
-				line += ";";
-				sum += (m.containsKey(tag)) ? m.get(tag) : 0;
+				line += tag.getName()+";";
 			}
-			
-			if (sum > 0) writer.writeLine(featureType.getKey() + ";" + line);
+			writer.writeLine("geometry_type;"+line);
+			/** iterate through rows*/
+			for (Map.Entry<VgiGeometryType, Map<SimpleFeatureType,Double>> featureType : featureByGeometryType.entrySet()) {
+				/** write row values */
+				Map<SimpleFeatureType, Double> m = featureType.getValue();
+	
+				double sum = 0.0;
+				line = "";
+				for (SimpleFeatureType tag : featureTypes) {
+					line += (m.containsKey(tag)) ? decimalFormat.format(m.get(tag)) : "";
+					line += ";";
+					sum += (m.containsKey(tag)) ? m.get(tag) : 0;
+				}
+				
+				if (sum > 0) writer.writeLine(featureType.getKey() + ";" + line);
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

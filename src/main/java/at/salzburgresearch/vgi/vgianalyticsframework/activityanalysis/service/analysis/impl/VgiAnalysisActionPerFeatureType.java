@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,28 +66,30 @@ public class VgiAnalysisActionPerFeatureType extends VgiAnalysisParent implement
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/action_per_featuretype.csv");
-		/** write header */
-		String line = "";
-		for (SimpleFeatureType featureType : featureTypes) {
-			line += featureType.getName().getLocalPart() + ";";
-		}
-		writer.writeLine("uid;time_period;"+line);
-		/** iterate through rows*/
-		for (Map.Entry<Integer, VgiAnalysisUser> user : userAnalysis.entrySet()) {
-			for (Entry<Date, Map<SimpleFeatureType, Integer>> featureType : user.getValue().actionPerFeatureType.entrySet()) {
-
-				Map<SimpleFeatureType, Integer> m = featureType.getValue();
-				
-				line = "";
-				for (SimpleFeatureType tag : featureTypes) {
-					line += (m.containsKey(tag)) ? m.get(tag) : "";
-					line += ";";
-				}
-				writer.writeLine(user.getValue().getUid() + ";" + dateFormat.format(featureType.getKey()) + ";" + line);
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/action_per_featuretype.csv")) {
+			/** write header */
+			String line = "";
+			for (SimpleFeatureType featureType : featureTypes) {
+				line += featureType.getName().getLocalPart() + ";";
 			}
+			writer.writeLine("uid;time_period;"+line);
+			/** iterate through rows*/
+			for (Map.Entry<Integer, VgiAnalysisUser> user : userAnalysis.entrySet()) {
+				for (Entry<Date, Map<SimpleFeatureType, Integer>> featureType : user.getValue().actionPerFeatureType.entrySet()) {
+	
+					Map<SimpleFeatureType, Integer> m = featureType.getValue();
+					
+					line = "";
+					for (SimpleFeatureType tag : featureTypes) {
+						line += (m.containsKey(tag)) ? m.get(tag) : "";
+						line += ";";
+					}
+					writer.writeLine(user.getValue().getUid() + ";" + dateFormat.format(featureType.getKey()) + ";" + line);
+				}
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

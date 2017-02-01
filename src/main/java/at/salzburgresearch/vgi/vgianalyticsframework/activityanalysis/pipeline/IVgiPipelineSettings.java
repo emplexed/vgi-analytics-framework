@@ -59,8 +59,8 @@ public interface IVgiPipelineSettings {
 
 	List<VgiPolygon> getFilterPolygonList();
 	void setFilterPolygonList(List<VgiPolygon> filterPolygonList);
-	VgiPolygon getFilterPolygon();
-	void setFilterPolygon(VgiPolygon polygon);
+	VgiPolygon getCurrentPolygon();
+	void setCurrentPolygon(VgiPolygon polygon);
 
 	Date getAnalysisStartDate();
 	Date getAnalysisEndDate();

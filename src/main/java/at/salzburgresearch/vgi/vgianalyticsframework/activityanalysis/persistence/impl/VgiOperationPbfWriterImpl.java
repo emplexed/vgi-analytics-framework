@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -34,22 +34,27 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistenc
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.ElementType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.PbfOperationFile;
-import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationList;
-import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationList.PbfVgiFeature;
-import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationList.PbfVgiFeatureBytes;
-import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationList.PbfVgiFeatureWrapper;
-import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationList.PbfVgiOperation;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeatureBatch;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeatureBytes;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeatureWrapper;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation;
 
 public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	private Logger log = Logger.getLogger(VgiOperationPbfWriterImpl.class);
 	
-	protected FileOutputStream pbfFeatureListWriter = null;
+	protected FileOutputStream pbfFeatureWriter = null;
+//	protected FileOutputStream pbfStringWriter = null;
 	
 	protected PbfOperationFileList.Builder pbfFileListBuilder;
 	protected PbfOperationFile.Builder pbfFileBuilder = null;
+//	protected PbfStringList.Builder pbfStringListBuilder = null;
 	
 	protected File dataFolder = null;
 	protected File pbfFile = null;
+	
+//	private List<StringEntry> stringList = null;
+//	private int stringEntryIdMax = -1;
 	
 	private long previousPbfOperationOid = 0l;
 	private int previousPbfOperationTimestamp = 0;
@@ -58,7 +63,11 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	private int previousPbfOperationLongitude = 0;
 	private int previousPbfOperationLatitude = 0;
 	
-	protected int maxFileSize = 5;
+//	protected int maxFileSize = 5;
+	private int pbfFileOperationCount = 0;
+	private static final int FEATURE_BATCH_SIZE = 100;
+	private static final int NUM_OPERATIONS_PER_FILE = 500000;
+	public static final int TIMESTAMP_OFFSET = 1104537600; // 1104537600 = 2005-01-01 00:00:00
 	
 	protected WriteMode writeMode = WriteMode.NOT_INITIALIZED;
 	
@@ -83,6 +92,8 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		previousVgiOperationAttributes = new VgiOperationImpl();
 		
 		pbfFileListBuilder = PbfOperationFileList.newBuilder();
+//		pbfStringListBuilder = PbfStringList.newBuilder();
+//		stringList = new ArrayList<StringEntry>();
 		
 		try {
 			if (new File(dataFolder + "/operationFileList.pbf").exists()) {
@@ -209,7 +220,7 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 					pbfFileBuilder = file.toBuilder();
 					
 					pbfFile = new File(dataFolder + "/operation_" + elementTypePrefix + "_" + String.valueOf(pbfFileBuilder.getOperationFileId()) + ".pbf");
-					pbfFeatureListWriter = new FileOutputStream(pbfFile, false);
+					pbfFeatureWriter = new FileOutputStream(pbfFile, false);
 					previousPbfOperationOid = pbfFileBuilder.getMaxElementId();
 					
 					break;
@@ -226,7 +237,7 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 					previousPbfOperationOid = 0;
 					
 					pbfFile = new File(dataFolder + "/operation_" + elementTypePrefix + "_" + String.valueOf(pbfFileBuilder.getOperationFileId()) + ".pbf");
-					pbfFeatureListWriter = new FileOutputStream(pbfFile, false);
+					pbfFeatureWriter = new FileOutputStream(pbfFile, false);
 				}
 			}
 			
@@ -275,11 +286,17 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 					pbfFileBuilder.setOperationFileId(pbfFileListBuilder.getRelationOperationFileCount() + 1);
 					elementTypePrefix = "r";
 				}
+//				log.info("open pbf file " + pbfFileBuilder.getOperationFileId());
 				
 				pbfFileBuilder.setMinElementId(Long.MAX_VALUE);
 				pbfFileBuilder.setMaxElementId(Long.MIN_VALUE);
 				
 				previousPbfOperationOid = 0;
+				previousPbfOperationTimestamp = 0;
+				previousPbfOperationChangesetId = 0;
+				previousPbfOperationRefId = 0l;
+				previousPbfOperationLongitude = 0;
+				previousPbfOperationLatitude = 0;
 				
 			} else {
 				if (elementType.equals(ElementType.NODE)) {
@@ -297,16 +314,31 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 				}
 
 				previousPbfOperationOid = pbfFileBuilder.getMaxElementId();
+				previousPbfOperationTimestamp = pbfFileBuilder.getLastTimestamp();
+				previousPbfOperationChangesetId = pbfFileBuilder.getLastChangesetId();
+				previousPbfOperationRefId = pbfFileBuilder.getLastRefId();
+				previousPbfOperationLongitude = pbfFileBuilder.getLastLongitude();
+				previousPbfOperationLatitude = pbfFileBuilder.getLastLatitude();
 			}
 			
 			pbfFile = new File(dataFolder + "/operation_" + elementTypePrefix + "_" + String.valueOf(pbfFileBuilder.getOperationFileId()) + ".pbf");
+//			File stringFile = new File(dataFolder + "/string_" + elementTypePrefix + "_" + String.valueOf((int)Math.floor((double)pbfFileBuilder.getOperationFileId() / 5)) + ".pbf");
 			
 			/** Prepare output stream */
 			try {
-				pbfFeatureListWriter = new FileOutputStream(pbfFile, true);
+				pbfFeatureWriter = new FileOutputStream(pbfFile, true);
+//				pbfStringWriter = new FileOutputStream(stringFile, true);
+//				pbfStringListBuilder = PbfStringList.parseFrom(new FileInputStream(stringFile)).toBuilder();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
+//			} catch (IOException e) {
+//				e.printStackTrace();
 			}
+
+//			for (PbfStringListEntry entry : pbfStringListBuilder.getEntryList()) {
+//				stringList.add(new StringEntry(entry.getValue(), entry.getSearchId()));
+//				if (entry.getSearchId() > stringEntryIdMax) stringEntryIdMax = entry.getSearchId();
+//			}
 			
 			/** Reset previousOperationAttributes */
 			previousVgiOperationAttributes = new VgiOperationImpl();
@@ -338,11 +370,33 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	 * Closes the current operation PBF file
 	 */
 	protected void closePbfDataFile() {
-		if (pbfFeatureListWriter == null) return; 
+		if (pbfFeatureWriter == null) return;
+//		log.info("close pbf file " + pbfFileBuilder.getOperationFileId() + " " + pbfFileBuilder.getNumEntries());
+		pbfFileBuilder.setLastTimestamp(previousPbfOperationTimestamp);
+		pbfFileBuilder.setLastRefId(previousPbfOperationRefId);
+		pbfFileBuilder.setLastChangesetId(previousPbfOperationChangesetId);
+		pbfFileBuilder.setLastLongitude(previousPbfOperationLongitude);
+		pbfFileBuilder.setLastLatitude(previousPbfOperationLatitude);
+		pbfFileOperationCount = 0;
+		
+//		/** Write string file */
+//		for (StringEntry entry : stringList) {
+//			PbfStringListEntry.Builder entryBuilder = PbfStringListEntry.newBuilder();
+//			entryBuilder.setValue(entry.getValue());
+//			entryBuilder.setSearchId(entry.getSearchId());
+//			pbfStringListBuilder.addEntry(entryBuilder.build());
+//		}
+//		stringList.clear();
+//		try {
+//			pbfStringListBuilder.build().writeTo(pbfStringWriter);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		
 		/** Close file */
 		try {
-			pbfFeatureListWriter.close();
+			pbfFeatureWriter.close();
+//			pbfStringWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -353,7 +407,7 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 				log.warn("pbfFileBuilder.getNumEntries() == 0 (can this happen?)");
 				pbfFile.delete();
 				pbfFile = null;
-				pbfFeatureListWriter = null;
+				pbfFeatureWriter = null;
 				
 			} else {
 				if (pbfFileBuilder.getElementType().equals(ElementType.NODE)) {
@@ -413,7 +467,7 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		
 		writePbfFileList();
 		
-		pbfFeatureListWriter = null;
+		pbfFeatureWriter = null;
 		pbfFile = null;
 	}
 	
@@ -429,8 +483,6 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
-//		} finally {
-//			IOUtils.closeQuietly(pbfFileListWriter);
 		}
 	}
 	
@@ -466,7 +518,7 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		}
 		
 		/** Open PBF feature file */
-		if (pbfFeatureListWriter == null) {
+		if (pbfFeatureWriter == null) {
 			if (featureBatch.get(0).getVgiGeometryType().equals(VgiGeometryType.POINT)) {
 				openPbfDataFile(ElementType.NODE, false);
 			} else if (featureBatch.get(0).getVgiGeometryType().equals(VgiGeometryType.LINE)) {
@@ -476,69 +528,100 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 			}
 		}
 		
-		PbfVgiOperationList.Builder pbfFeatureList = PbfVgiOperationList.newBuilder();
+		List<PbfVgiOperation> pbfOperationBatch = new ArrayList<PbfVgiOperation>();
 		
 		for (IVgiFeature feature : featureBatch) {
 			
 			if (writeMode.equals(WriteMode.APPEND)) {
 				/** Check if correct element id; if not, close current file and open new one */
 				if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT) && !pbfFileBuilder.getElementType().equals(ElementType.NODE)) {
-					write(pbfFeatureList);
+//					write(pbfFeatureBatches);
 					openPbfDataFile(ElementType.NODE, false);
 				} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE) && !pbfFileBuilder.getElementType().equals(ElementType.WAY)) {
-					write(pbfFeatureList);
+//					write(pbfFeatureBatches);
 					openPbfDataFile(ElementType.WAY, false);
 				} else if (feature.getVgiGeometryType().equals(VgiGeometryType.RELATION) && !pbfFileBuilder.getElementType().equals(ElementType.RELATION)) {
-					write(pbfFeatureList);
+//					write(pbfFeatureBatches);
 					openPbfDataFile(ElementType.RELATION, false);
 				}
 				
 				/** Create new file if current file size exceeds maximum file size */
-				if (pbfFile.length() > maxFileSize*1024*1024) {
+				if (pbfFileOperationCount >= NUM_OPERATIONS_PER_FILE) {
+//						if (pbfFile.length() > maxFileSize*1024*1024) {
+//					log.info("operations: " + pbfFileOperationCount + " " + pbfFileBuilder.getOperationFileId());
 					if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT)) {
+						handleOperationBatch(pbfOperationBatch);
 						openPbfDataFile(ElementType.NODE, true);
 					} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE)) {
+						handleOperationBatch(pbfOperationBatch);
 						openPbfDataFile(ElementType.WAY, true);
 					} else if (feature.getVgiGeometryType().equals(VgiGeometryType.RELATION)) {
+						handleOperationBatch(pbfOperationBatch);
 						openPbfDataFile(ElementType.RELATION, true);
 					}
+//					log.info("Create new pbf file" + " " + pbfFileBuilder.getOperationFileId());
 				}
 			}
-			
-			/** build PBF operation */
-			PbfVgiFeature.Builder pbfFeatureBuilder = buildPbfFeature(feature);
-			
-			/** build PBF feature wrapper (including number of bytes) */
-			PbfVgiFeatureWrapper.Builder featureWrapper = PbfVgiFeatureWrapper.newBuilder()
-					.setBytes(PbfVgiFeatureBytes.newBuilder().setBytes(pbfFeatureBuilder.build().toByteArray().length))
-					.setFeature(pbfFeatureBuilder);
-			
-			/** Add PBF feature (wrapper) to PBF feature list */
-			pbfFeatureList.addFeatureWrapper(featureWrapper);
 			
 			/** Calculate statistics for index file */
 			if (feature.getOid() < pbfFileBuilder.getMinElementId()) pbfFileBuilder.setMinElementId(feature.getOid());
 			if (feature.getOid() > pbfFileBuilder.getMaxElementId()) pbfFileBuilder.setMaxElementId(feature.getOid());
 			
 			/** Increase feature counter */
-			pbfFileBuilder.setNumEntries(pbfFileBuilder.getNumEntries() + 1);
+			pbfFileBuilder.setNumEntries(pbfFileBuilder.getNumEntries() + feature.getOperationList().size());
+			pbfFileOperationCount += feature.getOperationList().size();
 			
-			/** Write PBF features to file */
-			if (pbfFeatureList.getFeatureWrapperCount() == 1000) {
-				write(pbfFeatureList);
-				pbfFeatureList = PbfVgiOperationList.newBuilder();
+			/** build PBF feature */
+			pbfOperationBatch.addAll(createPbfOperations(feature));
+			
+			if (pbfOperationBatch.size() >= FEATURE_BATCH_SIZE) {
+				handleOperationBatch(pbfOperationBatch);
 			}
 		}
 		
-		/** Write remaining PBF features to file */
-		write(pbfFeatureList);
+		/** Add PBF feature (wrapper) to PBF feature list */
+		handleOperationBatch(pbfOperationBatch);
 	}
 	
-	private void write(PbfVgiOperationList.Builder pbfFeatureList) {
+	/**
+	 * @param pbfOperationBatch
+	 * @param feature
+	 */
+	private List<PbfVgiOperation> createPbfOperations(IVgiFeature feature) {
+		List<PbfVgiOperation> pbfOperationBatch = new ArrayList<PbfVgiOperation>();
+		Collections.sort(feature.getOperationList(), VgiOperationImpl.getVersionComparator());
+		for (IVgiOperation operation : feature.getOperationList()) {
+			PbfVgiOperation b = buildPbfOperation(operation).build();
+			pbfOperationBatch.add(b);
+		}
+		return pbfOperationBatch;
+	}
+	
+	/**
+	 * @param pbfOperationBatch
+	 */
+	private void handleOperationBatch(List<PbfVgiOperation> pbfOperationBatch) {
+		PbfVgiOperationContainer.Builder pbfFeatureBatches = PbfVgiOperationContainer.newBuilder();
+		
+		PbfVgiFeatureBatch.Builder pbfFeatureBatchBuilder = PbfVgiFeatureBatch.newBuilder();
+		pbfFeatureBatchBuilder.addAllOperation(pbfOperationBatch);
+		pbfOperationBatch.clear();
+		
+		/** build PBF feature wrapper (including number of bytes) */
+		PbfVgiFeatureWrapper.Builder pbfFeatureWrapper = PbfVgiFeatureWrapper.newBuilder()
+				.setBytes(PbfVgiFeatureBytes.newBuilder().setBytes(pbfFeatureBatchBuilder.build().toByteArray().length))
+				.setFeature(pbfFeatureBatchBuilder);
+		
+		pbfFeatureBatches.addFeatureWrapper(pbfFeatureWrapper);
+		write(pbfFeatureBatches);
+		pbfFeatureBatches = PbfVgiOperationContainer.newBuilder();
+	}
+	
+	private void write(PbfVgiOperationContainer.Builder pbfFeatureBatches) {
 		/** Write the new operation file back to disk.*/
 		try {
-			pbfFeatureList.build().writeTo(pbfFeatureListWriter);
-			pbfFeatureList.clear();
+			pbfFeatureBatches.build().writeTo(pbfFeatureWriter);
+			pbfFeatureBatches.clear();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -546,90 +629,103 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 		}
 	}
 	
-	private PbfVgiFeature.Builder buildPbfFeature(IVgiFeature feature) {		
-		PbfVgiFeature.Builder pbfFeatureBuilder = PbfVgiFeature.newBuilder();
+	private PbfVgiOperation.Builder buildPbfOperation(IVgiOperation operation) {
+		PbfVgiOperation.Builder pbfOperation = PbfVgiOperation.newBuilder();
 		
-		pbfFeatureBuilder.setOid(feature.getOid() - previousPbfOperationOid);
-		previousPbfOperationOid = feature.getOid();
-		
-		List<PbfVgiOperation> pbfOperationList = new ArrayList<PbfVgiOperation>();
-		
-		Collections.sort(feature.getOperationList(), VgiOperationImpl.getVersionComparator());
-		
-		previousPbfOperationTimestamp = 0;
-		previousPbfOperationChangesetId = 0;
-		previousPbfOperationRefId = 0l;
-		previousPbfOperationLongitude = 0;
-		previousPbfOperationLatitude = 0;
-		
-		for (IVgiOperation operation : feature.getOperationList()) {
+//		pbfOperation.setOid(operation.getOid() - previousPbfOperationOid);
+//		previousPbfOperationOid = operation.getOid();
 
-			PbfVgiOperation.Builder pbfOperation = PbfVgiOperation.newBuilder();
+		/** id */
+		if (operation.getOid() != previousPbfOperationOid) {
+			pbfOperation.setOid(operation.getOid() - previousPbfOperationOid);
+			previousPbfOperationOid = operation.getOid();
+		}
+		/** operation type */
+		if (!operation.getVgiOperationType().equals(previousVgiOperationAttributes.getVgiOperationType())) {
+			pbfOperation.setVgiOperationType(operation.getVgiOperationType().getId());
+			previousVgiOperationAttributes.setVgiOperationType(operation.getVgiOperationType());
+		}
+		/** user id */
+		if (operation.getUid() != previousVgiOperationAttributes.getUid()) {
+			pbfOperation.setUid(operation.getUid());
+			previousVgiOperationAttributes.setUid(operation.getUid());
+		}
+		/** time stamp */
+		int timestamp = (int)(operation.getTimestamp().getTime() / 1000 - TIMESTAMP_OFFSET);
+		if (timestamp != previousPbfOperationTimestamp) {
+			pbfOperation.setTimestamp(timestamp - previousPbfOperationTimestamp);
+			previousPbfOperationTimestamp = timestamp;
+		}
+		/** change set */
+		if (operation.getChangesetid() != previousPbfOperationChangesetId) {
+			pbfOperation.setChangesetId(operation.getChangesetid() - previousPbfOperationChangesetId);
+			previousPbfOperationChangesetId = operation.getChangesetid();
+		}
+		/** version */
+		if (operation.getVersion() != previousVgiOperationAttributes.getVersion()) {
+			pbfOperation.setVersion(operation.getVersion());
+			previousVgiOperationAttributes.setVersion(operation.getVersion());
+		}
+		/** reference Id */
+		if (operation.getRefId() != -1) {
+			pbfOperation.setRef(operation.getRefId() - previousPbfOperationRefId);
+			previousPbfOperationRefId = operation.getRefId();
+		}
+		/** key */
+		if (operation.getKey() != null && !operation.getKey().equals("")) {
+			pbfOperation.setKey(operation.getKey());
+		}
+//		if (operation.getKey() != null && !operation.getKey().equals("")) { //TODO is "" allowed?
+//			int i = addString(operation.getKey());
+//			pbfOperation.setKey(i);
+////			pbfOperation.setKey(addString(operation.getKey()));
+//		}
+		/** value */
+		if (operation.getValue() != null && !operation.getValue().equals("")) {
+			pbfOperation.setValue(operation.getValue());
+		}
+//		if (operation.getValue() != null && !operation.getValue().equals("")) {
+//			int i = addString(operation.getValue());
+//			pbfOperation.setValue(i);
+////			pbfOperation.setValue(addString(operation.getValue()));
+//		}
+		/** position */
+		if (operation.getPosition() != -1) {
+			pbfOperation.setPosition(operation.getPosition());
+		}
+		/** point geometry */
+		if (operation.getCoordinate() != null) {
+			int[] coordinate = operation.getCoordinateAsInteger();
+			pbfOperation.setLongitude(coordinate[0] - previousPbfOperationLongitude);
+			pbfOperation.setLatitude(coordinate[1] - previousPbfOperationLatitude);
 			
-			/** operation type */
-			if (!operation.getVgiOperationType().equals(previousVgiOperationAttributes.getVgiOperationType())) {
-				pbfOperation.setVgiOperationType(operation.getVgiOperationType().getId());
-				previousVgiOperationAttributes.setVgiOperationType(operation.getVgiOperationType());
-			}
-			/** uid */
-			if (operation.getUid() != previousVgiOperationAttributes.getUid()) {
-				pbfOperation.setUid(operation.getUid());
-				previousVgiOperationAttributes.setUid(operation.getUid());
-			}
-			/** timestamp */
-			/** 1104537600 = 2005-01-01 00:00:00 */
-			int timestamp = (int)(operation.getTimestamp().getTime() / 1000 - 1104537600);
-			if (timestamp != previousPbfOperationTimestamp) {
-				pbfOperation.setTimestamp(timestamp - previousPbfOperationTimestamp);
-				previousPbfOperationTimestamp = timestamp;
-			}
-			/** changeset */
-			if (operation.getChangesetid() != previousPbfOperationChangesetId) {
-				pbfOperation.setChangesetId(operation.getChangesetid() - previousPbfOperationChangesetId);
-				previousPbfOperationChangesetId = operation.getChangesetid();
-			}
-			/** version */
-			if (operation.getVersion() != previousVgiOperationAttributes.getVersion()) {
-				pbfOperation.setVersion(operation.getVersion());
-				previousVgiOperationAttributes.setVersion(operation.getVersion());
-			}
-			/** Ref Id */
-			if (operation.getRefId() != -1) {
-				pbfOperation.setRef(operation.getRefId() - previousPbfOperationRefId);
-				previousPbfOperationRefId = operation.getRefId();
-			}
-			/** key */
-			if (!operation.getKey().equals("")) {
-				pbfOperation.setKey(operation.getKey());
-			}
-			/** value */
-			if (!operation.getValue().equals("")) {
-				pbfOperation.setValue(operation.getValue());
-			}
-			/** position */
-			if (operation.getPosition() != -1) {
-				pbfOperation.setPosition(operation.getPosition());
-			}
-			/** point geometry */
-			if (operation.getCoordinate() != null) {
-				int[] coordinate = operation.getCoordinateAsInteger();
-				pbfOperation.setLongitude(coordinate[0] - previousPbfOperationLongitude);
-				pbfOperation.setLatitude(coordinate[1] - previousPbfOperationLatitude);
-				
-				previousPbfOperationLongitude = coordinate[0];
-				previousPbfOperationLatitude = coordinate[1];
-			}
-			
-			pbfOperationList.add(pbfOperation.build());
+			previousPbfOperationLongitude = coordinate[0];
+			previousPbfOperationLatitude = coordinate[1];
 		}
 		
-		pbfFeatureBuilder.addAllOperation(pbfOperationList);
-		
-		return pbfFeatureBuilder;
+		return pbfOperation;
 	}
+	
+//	private int addString(String newString) {
+////		for (int i=0; i<stringList.size(); i++) {
+////			if (stringList.get(i).equals(newString)) {
+////				return i;
+////			}
+////		}
+////		stringList.add(newString);
+////		return stringList.size()-1;
+//		int index = Collections.binarySearch(this.stringList, new StringEntry(newString, -1), StringEntry.getStringComparator());
+//		if (index < 0) {
+//			stringEntryIdMax++;
+//			stringList.add(index*(-1)-1, new StringEntry(newString, stringEntryIdMax));
+//			return stringEntryIdMax;
+//		} else {
+//			return stringList.get(index).getSearchId();
+//		}
+//	}
 
 	@Override
 	public void setMaxFileSize(int maxFileSize) {
-		this.maxFileSize = maxFileSize;
+//		this.maxFileSize = maxFileSize;
 	}
 }

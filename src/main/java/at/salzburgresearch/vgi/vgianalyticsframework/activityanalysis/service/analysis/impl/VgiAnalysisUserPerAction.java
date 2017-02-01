@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -64,52 +65,54 @@ public class VgiAnalysisUserPerAction extends VgiAnalysisParent implements IVgiA
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/user_per_action.csv");
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/user_per_action.csv")) {
 		
-		Collections.sort(actionTypes);
-		
-		/** write header */
-		String actionHeader = "uid;time_period";
-		for (String a : actionTypes) {
-			actionHeader += ";"+a;
-		}
-		writer.writeLine(actionHeader);
-		
-		/** iterate through users*/
-		for (int user : userAnalysis.keySet()) {
-			List<Date> writtenDates = new ArrayList<Date>();
+			Collections.sort(actionTypes);
 			
-			VgiAnalysisUser u = userAnalysis.get(user);
-			for (String type : u.actionCount.keySet()) {
-				for (Date period : u.actionCount.get(type).keySet()) {
-					if (writtenDates.contains(period)) continue;
-					
-					if (u.actionCount.get(type).get(period) > 0) {
-						String line = u.getUid() + ";" + dateFormat.format(period);
-						long count = 0;
-						for (String a : actionTypes) {
-							Map<Date, Integer> actionCountInAllPeriods = u.actionCount.get(a);
-							
-							if (actionCountInAllPeriods != null) {
-								Integer actionCountInPeriod = actionCountInAllPeriods.get(period);
-								if (actionCountInPeriod != null) {
-									line += ";"+decimalFormat.format(actionCountInPeriod);
-									count += actionCountInPeriod;
+			/** write header */
+			String actionHeader = "uid;time_period";
+			for (String a : actionTypes) {
+				actionHeader += ";"+a;
+			}
+			writer.writeLine(actionHeader);
+			
+			/** iterate through users*/
+			for (int user : userAnalysis.keySet()) {
+				List<Date> writtenDates = new ArrayList<Date>();
+				
+				VgiAnalysisUser u = userAnalysis.get(user);
+				for (String type : u.actionCount.keySet()) {
+					for (Date period : u.actionCount.get(type).keySet()) {
+						if (writtenDates.contains(period)) continue;
+						
+						if (u.actionCount.get(type).get(period) > 0) {
+							String line = u.getUid() + ";" + dateFormat.format(period);
+							long count = 0;
+							for (String a : actionTypes) {
+								Map<Date, Integer> actionCountInAllPeriods = u.actionCount.get(a);
+								
+								if (actionCountInAllPeriods != null) {
+									Integer actionCountInPeriod = actionCountInAllPeriods.get(period);
+									if (actionCountInPeriod != null) {
+										line += ";"+decimalFormat.format(actionCountInPeriod);
+										count += actionCountInPeriod;
+									} else {
+										line += ";";
+									}
 								} else {
 									line += ";";
 								}
-							} else {
-								line += ";";
+								writtenDates.add(period);
 							}
-							writtenDates.add(period);
+							line += "";
+							if (count>0) writer.writeLine(line);
 						}
-						line += "";
-						if (count>0) writer.writeLine(line);
 					}
 				}
 			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

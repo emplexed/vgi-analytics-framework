@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,17 +108,18 @@ public class VgiAnalysisUpdateGeometry extends VgiAnalysisParent implements IVgi
 	@Override
 	public void write(File path) {
 		
-		CSVFileWriter writer = new CSVFileWriter(path + "/update_geometry.csv");
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/update_geometry.csv")) {
+				
+			writer.writeLine("wayId;nodeCount;updatesCount;sumCoordinateDelta");
 			
-		writer.writeLine("wayId;nodeCount;updatesCount;sumCoordinateDelta");
-		
-		for (Short key : data.keySet()) {
-			GeometryUpdates g = data.get(key);
-			writer.writeLine(key + ";" + g.coordinates.size() + ";" + g.updatesCount + ";" + decimalFormat.format(g.sumCoordinateDelta));
-//			writer.writeLine(dateFormatYear.format(key) + ";" + g.coordinates.size() + ";" + g.updatesCount + ";" + decimalFormat.format(g.sumCoordinateDelta));
+			for (Short key : data.keySet()) {
+				GeometryUpdates g = data.get(key);
+				writer.writeLine(key + ";" + g.coordinates.size() + ";" + g.updatesCount + ";" + decimalFormat.format(g.sumCoordinateDelta));
+		//			writer.writeLine(dateFormatYear.format(key) + ";" + g.coordinates.size() + ";" + g.updatesCount + ";" + decimalFormat.format(g.sumCoordinateDelta));
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		
-		writer.closeFile();
 	}
 	
 	@Override

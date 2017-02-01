@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,15 +51,17 @@ public class VgiAnalysisFeatureStability extends VgiAnalysisParent implements IV
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/feature_stability.csv");
-		/** write header */
-		writer.writeLine("durationUntilEdit;featureCount");
-		/** iterate through rows*/
-		for (Long durationUntilEdit : featureStability.keySet()) {
-			/** write row values */
-			writer.writeLine(durationUntilEdit + ";" + featureStability.get(durationUntilEdit));
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/feature_stability.csv")) {
+			/** write header */
+			writer.writeLine("durationUntilEdit;featureCount");
+			/** iterate through rows*/
+			for (Long durationUntilEdit : featureStability.keySet()) {
+				/** write row values */
+				writer.writeLine(durationUntilEdit + ";" + featureStability.get(durationUntilEdit));
+			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

@@ -35,6 +35,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiOperationImpl;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiOperationType;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiPolygon;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.IVgiOperationPbfWriter;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipeline;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
@@ -91,6 +92,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			if (!currentPhase.equals(Phases.NODES)) {
 				vgiOperationPbfWriter.initializePbfWriterToAppend(settings.getPbfDataFolder());
 				log.info("Output path: " + settings.getPbfDataFolder());
+				log.info("Start node phase");
 				currentPhase = Phases.NODES;
 			}
 			enqueueOperations(vgiOperationGenerator.generateNodeOperations((Node)osmElement, (Node)lastOsmElement));
@@ -102,6 +104,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				flushQueue();
 				vgiOperationPbfWriter.terminatePbfWriter();
 				vgiOperationPbfWriter.initializePbfWriterToAppend(settings.getPbfDataFolder());
+				log.info("Start way phase");
 				currentPhase = Phases.WAYS;
 			}
 			enqueueOperations(vgiOperationGenerator.generateWayOperations((Way)osmElement, (Way)lastOsmElement));
@@ -113,6 +116,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				flushQueue();
 				vgiOperationPbfWriter.terminatePbfWriter();
 				vgiOperationPbfWriter.initializePbfWriterToAppend(settings.getPbfDataFolder());
+				log.info("Start relation phase");
 				currentPhase = Phases.RELATIONS;
 			}
 //			enqueueOperations(vgiOperationGenerator.generateRelationOperations((Relation)osmElement, (Relation)lastOsmElement));
@@ -142,19 +146,41 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 		if (operationList == null || operationList.size() == 0) return;
 		
 		/** Process feature */
-		if (currentFeature != null && 
-				(currentFeature.getOid() != operationList.get(0).getOid() || !currentFeature.getVgiGeometryType().equals(operationList.get(0).getVgiGeometryType()))) {
-			featureList.add(currentFeature);
+		if (currentFeature != null 
+				&& (currentFeature.getOid() != operationList.get(0).getOid()
+				|| !currentFeature.getVgiGeometryType().equals(operationList.get(0).getVgiGeometryType()))) {
+			
+			/** Add all nodes and filtered ways/relations to feature list */
+			if (currentFeature.getVgiGeometryType().equals(VgiGeometryType.POINT) ||
+					currentFeature.filterByTag(settings.getFilterTag())) {
+				featureList.add(currentFeature);
+				
+				/** Retrieve children elements */
+				for (IVgiOperation operation : currentFeature.getOperationList()) {
+					if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
+						childNodeList.add(operation.getRefId());
+					} else if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
+						if (operation.getKey().equals("n")) {
+							childNodeList.add(operation.getRefId());
+						} else if (operation.getKey().equals("w")) {
+							childWayList.add(operation.getRefId());
+						} else if (operation.getKey().equals("r")) {
+							childRelationList.add(operation.getRefId());
+						}
+					} 
+				}
+			}
 			currentFeature = null;
 			if (featureList.size() >= 300000 || childNodeList.size() >= 3000000 || 
 					Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory() < 1024*1024*1024*4) {
 				try {
-					Thread.sleep(1000);
+					log.info("Sleep for 0.2 second...");
+					Thread.sleep(200); //TODO test if this is still necessary
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 
-				log.info("Memory: Free=" + Runtime.getRuntime().freeMemory() + "; Total="
+				log.debug("Memory: Free=" + Runtime.getRuntime().freeMemory() + "; Total="
 						+ Runtime.getRuntime().totalMemory() + " Max=" + Runtime.getRuntime().maxMemory());
 				log.info("#Parsed: " + numParsedNodes + "n|" + numParsedWays + "w|" + numParsedRelations
 						+ "r #Features: " + featureList.size() + " - #ChildNodes: " + childNodeList.size());
@@ -168,21 +194,8 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			currentFeature.setVgiGeometryType(operationList.get(0).getVgiGeometryType());
 		}
 		
-		for (IVgiOperation operation : operationList) {
-			currentFeature.addToOperationList(operation);
-			
-			if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
-				childNodeList.add(operation.getRefId());
-			} else if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
-				if (operation.getKey().equals("n")) {
-					childNodeList.add(operation.getRefId());
-				} else if (operation.getKey().equals("w")) {
-					childWayList.add(operation.getRefId());
-				} else if (operation.getKey().equals("r")) {
-					childRelationList.add(operation.getRefId());
-				}
-			} 
-		}
+		/** Add operations to current feature */
+		currentFeature.getOperationList().addAll(operationList);
 	}
 	
 	/**
@@ -207,8 +220,8 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			pipeline.setFilterWayId(childWayList);
 			pipeline.setFilterRelationId(childRelationList);
 			pipeline.start();
-
-			log.info("Find coordinates for " + childNodeList.size() + " child nodes - End");
+			
+			log.debug("Find coordinates for " + childNodeList.size() + " child nodes - End");
 			childNodeList.clear();
 			childNodeList.trimToSize();
 			childWayList.clear();
@@ -219,34 +232,33 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			/** Add geometries to operations */
 			log.info("Add coordinates to operations - Start");
 			addCoordinateToOperations(((ReadAllFeaturesConsumer)pipeline.getConsumers().get(0)).getFeatureList());
-			log.info("Add coordinates to operations - End");
+			log.debug("Add coordinates to operations - End");
 		}
 		
-		if (settings.getFilterPolygon() != null) {
-			List<IVgiFeature> newFeatureList = new ArrayList<IVgiFeature>();
+		if (settings.getFilterPolygonList() != null && !settings.getFilterPolygonList().isEmpty()) {
+			List<IVgiFeature> filteredFeatureList = new ArrayList<IVgiFeature>();
 			for (IVgiFeature feature : featureList) {
-				if (feature.getOid() == 172281) {
-					log.info("");
-				}
 				boolean withinBBox = false;
 				for (IVgiOperation operation : feature.getOperationList()) {
-					if (operation.getCoordinate() != null && settings.getFilterPolygon().getPolygon().getEnvelopeInternal().contains(operation.getCoordinate())) {
-						withinBBox = true;
-						break;
+					for (VgiPolygon polygon : settings.getFilterPolygonList()) {
+						if (operation.getCoordinate() != null && polygon.getPolygon().getEnvelopeInternal().contains(operation.getCoordinate())) {
+							withinBBox = true;
+							break;
+						}
 					}
 				}
 				if (withinBBox) {
-					newFeatureList.add(feature);
+					filteredFeatureList.add(feature);
 				}
 			}
-			log.info("Polygon filter: " + newFeatureList.size() + " of " + featureList.size() + " features found!");
-			featureList = newFeatureList;
+			log.info("Polygon filter: " + filteredFeatureList.size() + " of " + featureList.size() + " features found!");
+			featureList = filteredFeatureList;
 		}
 		
 		if (featureList.size() > 0) {
 			log.info("Write " + featureList.size() + " features to PBF files - Start");
 			vgiOperationPbfWriter.writePbfFeatures(featureList);
-			log.info("Write " + featureList.size() + " features to PBF files - End");
+			log.debug("Write " + featureList.size() + " features to PBF files - End");
 		}
 		
 		featureList = new ArrayList<IVgiFeature>();
@@ -309,9 +321,11 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 					numFound++;
 				} else {
 					numNotFound++;
-					if (settings.getFilterPolygon() == null) {
+					if (settings.getCurrentPolygon() == null) {
 						/** only write error if no polygon filter is set */
-						if (numNotFound % 10000 == 0) log.error(featureOperation.getVgiGeometryType() + "/" + featureOperation.getOid() + "/v" + featureOperation.getVersion() + ": Cannot find ref element " + refElementForSearch.getVgiGeometryType() + "/" + refElementForSearch.getOid() + " (" + numNotFound + "/" + (numFound + numNotFound) + ")");
+						if (numNotFound < 100 || numNotFound % 10000 == 0) {
+							log.error(featureOperation.getVgiGeometryType() + "/" + featureOperation.getOid() + "/v" + featureOperation.getVersion() + ": Cannot find ref element " + refElementForSearch.getVgiGeometryType() + "/" + refElementForSearch.getOid() + " (" + numNotFound + "/" + (numFound + numNotFound) + ")");
+						}
 					}
 					continue;
 				}
@@ -387,6 +401,8 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			/** Sort operations */
 			Collections.sort(feature.getOperationList(), VgiOperationImpl.getVersionComparator());
 		}
+		
+		log.info(numNotFound + " of " + (numNotFound + numFound) + " ref elements not found!");
 	}
 	
 	public IOsmVgiOperationGenerator getVgiOperationGenerator() {

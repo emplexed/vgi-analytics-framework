@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,19 +46,21 @@ public class VgiAnalysisOperationPerType extends VgiAnalysisParent implements IV
 
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/operation_per_type.csv");
-		/** write header */
-		writer.writeLine("operation_type;time_period;count;");
-		/** iterate through rows*/
-		for (VgiOperationType type : operationsPerType.keySet()) {		
-			for (Date period : operationsPerType.get(type).keySet()) {
-				/** write row values */
-				if (operationsPerType.get(type).get(period) > 0) {
-					writer.writeLine(type + ";" + dateFormat.format(period) + ";" + operationsPerType.get(type).get(period) + ";");
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/operation_per_type.csv")) {
+			/** write header */
+			writer.writeLine("operation_type;time_period;count;");
+			/** iterate through rows*/
+			for (VgiOperationType type : operationsPerType.keySet()) {		
+				for (Date period : operationsPerType.get(type).keySet()) {
+					/** write row values */
+					if (operationsPerType.get(type).get(period) > 0) {
+						writer.writeLine(type + ";" + dateFormat.format(period) + ";" + operationsPerType.get(type).get(period) + ";");
+					}
 				}
 			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

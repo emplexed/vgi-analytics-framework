@@ -340,22 +340,67 @@ public final class OperationFileListProto {
       at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.ElementType getElementType();
 
       /**
-       * <code>required int64 minElementId = 5;</code>
+       * <code>optional uint64 minElementId = 5;</code>
        */
       boolean hasMinElementId();
       /**
-       * <code>required int64 minElementId = 5;</code>
+       * <code>optional uint64 minElementId = 5;</code>
        */
       long getMinElementId();
 
       /**
-       * <code>required int64 maxElementId = 6;</code>
+       * <code>optional uint64 maxElementId = 6;</code>
        */
       boolean hasMaxElementId();
       /**
-       * <code>required int64 maxElementId = 6;</code>
+       * <code>optional uint64 maxElementId = 6;</code>
        */
       long getMaxElementId();
+
+      /**
+       * <code>optional uint32 lastTimestamp = 8;</code>
+       */
+      boolean hasLastTimestamp();
+      /**
+       * <code>optional uint32 lastTimestamp = 8;</code>
+       */
+      int getLastTimestamp();
+
+      /**
+       * <code>optional uint32 lastChangesetId = 9;</code>
+       */
+      boolean hasLastChangesetId();
+      /**
+       * <code>optional uint32 lastChangesetId = 9;</code>
+       */
+      int getLastChangesetId();
+
+      /**
+       * <code>optional uint64 lastRefId = 10;</code>
+       */
+      boolean hasLastRefId();
+      /**
+       * <code>optional uint64 lastRefId = 10;</code>
+       */
+      long getLastRefId();
+
+      /**
+       * <code>optional sint32 lastLongitude = 11;</code>
+       */
+      boolean hasLastLongitude();
+      /**
+       * <code>optional sint32 lastLongitude = 11;</code>
+       */
+      int getLastLongitude();
+
+      /**
+       * <code>optional sint32 lastLatitude = 12;</code>
+       */
+      boolean hasLastLatitude();
+      /**
+       * <code>optional sint32 lastLatitude = 12;</code>
+       */
+      int getLastLatitude();
     }
     /**
      * Protobuf type {@code impl.PbfOperationFileList.PbfOperationFile}
@@ -432,12 +477,37 @@ public final class OperationFileListProto {
               }
               case 40: {
                 bitField0_ |= 0x00000008;
-                minElementId_ = input.readInt64();
+                minElementId_ = input.readUInt64();
                 break;
               }
               case 48: {
                 bitField0_ |= 0x00000010;
-                maxElementId_ = input.readInt64();
+                maxElementId_ = input.readUInt64();
+                break;
+              }
+              case 64: {
+                bitField0_ |= 0x00000020;
+                lastTimestamp_ = input.readUInt32();
+                break;
+              }
+              case 72: {
+                bitField0_ |= 0x00000040;
+                lastChangesetId_ = input.readUInt32();
+                break;
+              }
+              case 80: {
+                bitField0_ |= 0x00000080;
+                lastRefId_ = input.readUInt64();
+                break;
+              }
+              case 88: {
+                bitField0_ |= 0x00000100;
+                lastLongitude_ = input.readSInt32();
+                break;
+              }
+              case 96: {
+                bitField0_ |= 0x00000200;
+                lastLatitude_ = input.readSInt32();
                 break;
               }
             }
@@ -528,13 +598,13 @@ public final class OperationFileListProto {
       public static final int MINELEMENTID_FIELD_NUMBER = 5;
       private long minElementId_;
       /**
-       * <code>required int64 minElementId = 5;</code>
+       * <code>optional uint64 minElementId = 5;</code>
        */
       public boolean hasMinElementId() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>required int64 minElementId = 5;</code>
+       * <code>optional uint64 minElementId = 5;</code>
        */
       public long getMinElementId() {
         return minElementId_;
@@ -543,16 +613,91 @@ public final class OperationFileListProto {
       public static final int MAXELEMENTID_FIELD_NUMBER = 6;
       private long maxElementId_;
       /**
-       * <code>required int64 maxElementId = 6;</code>
+       * <code>optional uint64 maxElementId = 6;</code>
        */
       public boolean hasMaxElementId() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required int64 maxElementId = 6;</code>
+       * <code>optional uint64 maxElementId = 6;</code>
        */
       public long getMaxElementId() {
         return maxElementId_;
+      }
+
+      public static final int LASTTIMESTAMP_FIELD_NUMBER = 8;
+      private int lastTimestamp_;
+      /**
+       * <code>optional uint32 lastTimestamp = 8;</code>
+       */
+      public boolean hasLastTimestamp() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional uint32 lastTimestamp = 8;</code>
+       */
+      public int getLastTimestamp() {
+        return lastTimestamp_;
+      }
+
+      public static final int LASTCHANGESETID_FIELD_NUMBER = 9;
+      private int lastChangesetId_;
+      /**
+       * <code>optional uint32 lastChangesetId = 9;</code>
+       */
+      public boolean hasLastChangesetId() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional uint32 lastChangesetId = 9;</code>
+       */
+      public int getLastChangesetId() {
+        return lastChangesetId_;
+      }
+
+      public static final int LASTREFID_FIELD_NUMBER = 10;
+      private long lastRefId_;
+      /**
+       * <code>optional uint64 lastRefId = 10;</code>
+       */
+      public boolean hasLastRefId() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional uint64 lastRefId = 10;</code>
+       */
+      public long getLastRefId() {
+        return lastRefId_;
+      }
+
+      public static final int LASTLONGITUDE_FIELD_NUMBER = 11;
+      private int lastLongitude_;
+      /**
+       * <code>optional sint32 lastLongitude = 11;</code>
+       */
+      public boolean hasLastLongitude() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional sint32 lastLongitude = 11;</code>
+       */
+      public int getLastLongitude() {
+        return lastLongitude_;
+      }
+
+      public static final int LASTLATITUDE_FIELD_NUMBER = 12;
+      private int lastLatitude_;
+      /**
+       * <code>optional sint32 lastLatitude = 12;</code>
+       */
+      public boolean hasLastLatitude() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional sint32 lastLatitude = 12;</code>
+       */
+      public int getLastLatitude() {
+        return lastLatitude_;
       }
 
       private void initFields() {
@@ -561,6 +706,11 @@ public final class OperationFileListProto {
         elementType_ = at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.ElementType.UNDEFINED;
         minElementId_ = 0L;
         maxElementId_ = 0L;
+        lastTimestamp_ = 0;
+        lastChangesetId_ = 0;
+        lastRefId_ = 0L;
+        lastLongitude_ = 0;
+        lastLatitude_ = 0;
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -573,14 +723,6 @@ public final class OperationFileListProto {
           return false;
         }
         if (!hasNumEntries()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        if (!hasMinElementId()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        if (!hasMaxElementId()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -601,10 +743,25 @@ public final class OperationFileListProto {
           output.writeEnum(4, elementType_.getNumber());
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
-          output.writeInt64(5, minElementId_);
+          output.writeUInt64(5, minElementId_);
         }
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          output.writeInt64(6, maxElementId_);
+          output.writeUInt64(6, maxElementId_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          output.writeUInt32(8, lastTimestamp_);
+        }
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          output.writeUInt32(9, lastChangesetId_);
+        }
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          output.writeUInt64(10, lastRefId_);
+        }
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          output.writeSInt32(11, lastLongitude_);
+        }
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          output.writeSInt32(12, lastLatitude_);
         }
         getUnknownFields().writeTo(output);
       }
@@ -629,11 +786,31 @@ public final class OperationFileListProto {
         }
         if (((bitField0_ & 0x00000008) == 0x00000008)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(5, minElementId_);
+            .computeUInt64Size(5, minElementId_);
         }
         if (((bitField0_ & 0x00000010) == 0x00000010)) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(6, maxElementId_);
+            .computeUInt64Size(6, maxElementId_);
+        }
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(8, lastTimestamp_);
+        }
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(9, lastChangesetId_);
+        }
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(10, lastRefId_);
+        }
+        if (((bitField0_ & 0x00000100) == 0x00000100)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeSInt32Size(11, lastLongitude_);
+        }
+        if (((bitField0_ & 0x00000200) == 0x00000200)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeSInt32Size(12, lastLatitude_);
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -732,7 +909,7 @@ public final class OperationFileListProto {
                   at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.PbfOperationFile.class, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.PbfOperationFile.Builder.class);
         }
 
-        // Construct using at.srfg.vgianalyzer.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.PbfOperationFile.newBuilder()
+        // Construct using at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.PbfOperationFile.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -762,6 +939,16 @@ public final class OperationFileListProto {
           bitField0_ = (bitField0_ & ~0x00000008);
           maxElementId_ = 0L;
           bitField0_ = (bitField0_ & ~0x00000010);
+          lastTimestamp_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000020);
+          lastChangesetId_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000040);
+          lastRefId_ = 0L;
+          bitField0_ = (bitField0_ & ~0x00000080);
+          lastLongitude_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000100);
+          lastLatitude_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000200);
           return this;
         }
 
@@ -810,6 +997,26 @@ public final class OperationFileListProto {
             to_bitField0_ |= 0x00000010;
           }
           result.maxElementId_ = maxElementId_;
+          if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+            to_bitField0_ |= 0x00000020;
+          }
+          result.lastTimestamp_ = lastTimestamp_;
+          if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+            to_bitField0_ |= 0x00000040;
+          }
+          result.lastChangesetId_ = lastChangesetId_;
+          if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+            to_bitField0_ |= 0x00000080;
+          }
+          result.lastRefId_ = lastRefId_;
+          if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+            to_bitField0_ |= 0x00000100;
+          }
+          result.lastLongitude_ = lastLongitude_;
+          if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+            to_bitField0_ |= 0x00000200;
+          }
+          result.lastLatitude_ = lastLatitude_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -841,6 +1048,21 @@ public final class OperationFileListProto {
           if (other.hasMaxElementId()) {
             setMaxElementId(other.getMaxElementId());
           }
+          if (other.hasLastTimestamp()) {
+            setLastTimestamp(other.getLastTimestamp());
+          }
+          if (other.hasLastChangesetId()) {
+            setLastChangesetId(other.getLastChangesetId());
+          }
+          if (other.hasLastRefId()) {
+            setLastRefId(other.getLastRefId());
+          }
+          if (other.hasLastLongitude()) {
+            setLastLongitude(other.getLastLongitude());
+          }
+          if (other.hasLastLatitude()) {
+            setLastLatitude(other.getLastLatitude());
+          }
           this.mergeUnknownFields(other.getUnknownFields());
           return this;
         }
@@ -851,14 +1073,6 @@ public final class OperationFileListProto {
             return false;
           }
           if (!hasNumEntries()) {
-            
-            return false;
-          }
-          if (!hasMinElementId()) {
-            
-            return false;
-          }
-          if (!hasMaxElementId()) {
             
             return false;
           }
@@ -985,19 +1199,19 @@ public final class OperationFileListProto {
 
         private long minElementId_ ;
         /**
-         * <code>required int64 minElementId = 5;</code>
+         * <code>optional uint64 minElementId = 5;</code>
          */
         public boolean hasMinElementId() {
           return ((bitField0_ & 0x00000008) == 0x00000008);
         }
         /**
-         * <code>required int64 minElementId = 5;</code>
+         * <code>optional uint64 minElementId = 5;</code>
          */
         public long getMinElementId() {
           return minElementId_;
         }
         /**
-         * <code>required int64 minElementId = 5;</code>
+         * <code>optional uint64 minElementId = 5;</code>
          */
         public Builder setMinElementId(long value) {
           bitField0_ |= 0x00000008;
@@ -1006,7 +1220,7 @@ public final class OperationFileListProto {
           return this;
         }
         /**
-         * <code>required int64 minElementId = 5;</code>
+         * <code>optional uint64 minElementId = 5;</code>
          */
         public Builder clearMinElementId() {
           bitField0_ = (bitField0_ & ~0x00000008);
@@ -1017,19 +1231,19 @@ public final class OperationFileListProto {
 
         private long maxElementId_ ;
         /**
-         * <code>required int64 maxElementId = 6;</code>
+         * <code>optional uint64 maxElementId = 6;</code>
          */
         public boolean hasMaxElementId() {
           return ((bitField0_ & 0x00000010) == 0x00000010);
         }
         /**
-         * <code>required int64 maxElementId = 6;</code>
+         * <code>optional uint64 maxElementId = 6;</code>
          */
         public long getMaxElementId() {
           return maxElementId_;
         }
         /**
-         * <code>required int64 maxElementId = 6;</code>
+         * <code>optional uint64 maxElementId = 6;</code>
          */
         public Builder setMaxElementId(long value) {
           bitField0_ |= 0x00000010;
@@ -1038,11 +1252,171 @@ public final class OperationFileListProto {
           return this;
         }
         /**
-         * <code>required int64 maxElementId = 6;</code>
+         * <code>optional uint64 maxElementId = 6;</code>
          */
         public Builder clearMaxElementId() {
           bitField0_ = (bitField0_ & ~0x00000010);
           maxElementId_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private int lastTimestamp_ ;
+        /**
+         * <code>optional uint32 lastTimestamp = 8;</code>
+         */
+        public boolean hasLastTimestamp() {
+          return ((bitField0_ & 0x00000020) == 0x00000020);
+        }
+        /**
+         * <code>optional uint32 lastTimestamp = 8;</code>
+         */
+        public int getLastTimestamp() {
+          return lastTimestamp_;
+        }
+        /**
+         * <code>optional uint32 lastTimestamp = 8;</code>
+         */
+        public Builder setLastTimestamp(int value) {
+          bitField0_ |= 0x00000020;
+          lastTimestamp_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint32 lastTimestamp = 8;</code>
+         */
+        public Builder clearLastTimestamp() {
+          bitField0_ = (bitField0_ & ~0x00000020);
+          lastTimestamp_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int lastChangesetId_ ;
+        /**
+         * <code>optional uint32 lastChangesetId = 9;</code>
+         */
+        public boolean hasLastChangesetId() {
+          return ((bitField0_ & 0x00000040) == 0x00000040);
+        }
+        /**
+         * <code>optional uint32 lastChangesetId = 9;</code>
+         */
+        public int getLastChangesetId() {
+          return lastChangesetId_;
+        }
+        /**
+         * <code>optional uint32 lastChangesetId = 9;</code>
+         */
+        public Builder setLastChangesetId(int value) {
+          bitField0_ |= 0x00000040;
+          lastChangesetId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint32 lastChangesetId = 9;</code>
+         */
+        public Builder clearLastChangesetId() {
+          bitField0_ = (bitField0_ & ~0x00000040);
+          lastChangesetId_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private long lastRefId_ ;
+        /**
+         * <code>optional uint64 lastRefId = 10;</code>
+         */
+        public boolean hasLastRefId() {
+          return ((bitField0_ & 0x00000080) == 0x00000080);
+        }
+        /**
+         * <code>optional uint64 lastRefId = 10;</code>
+         */
+        public long getLastRefId() {
+          return lastRefId_;
+        }
+        /**
+         * <code>optional uint64 lastRefId = 10;</code>
+         */
+        public Builder setLastRefId(long value) {
+          bitField0_ |= 0x00000080;
+          lastRefId_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional uint64 lastRefId = 10;</code>
+         */
+        public Builder clearLastRefId() {
+          bitField0_ = (bitField0_ & ~0x00000080);
+          lastRefId_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private int lastLongitude_ ;
+        /**
+         * <code>optional sint32 lastLongitude = 11;</code>
+         */
+        public boolean hasLastLongitude() {
+          return ((bitField0_ & 0x00000100) == 0x00000100);
+        }
+        /**
+         * <code>optional sint32 lastLongitude = 11;</code>
+         */
+        public int getLastLongitude() {
+          return lastLongitude_;
+        }
+        /**
+         * <code>optional sint32 lastLongitude = 11;</code>
+         */
+        public Builder setLastLongitude(int value) {
+          bitField0_ |= 0x00000100;
+          lastLongitude_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional sint32 lastLongitude = 11;</code>
+         */
+        public Builder clearLastLongitude() {
+          bitField0_ = (bitField0_ & ~0x00000100);
+          lastLongitude_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int lastLatitude_ ;
+        /**
+         * <code>optional sint32 lastLatitude = 12;</code>
+         */
+        public boolean hasLastLatitude() {
+          return ((bitField0_ & 0x00000200) == 0x00000200);
+        }
+        /**
+         * <code>optional sint32 lastLatitude = 12;</code>
+         */
+        public int getLastLatitude() {
+          return lastLatitude_;
+        }
+        /**
+         * <code>optional sint32 lastLatitude = 12;</code>
+         */
+        public Builder setLastLatitude(int value) {
+          bitField0_ |= 0x00000200;
+          lastLatitude_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>optional sint32 lastLatitude = 12;</code>
+         */
+        public Builder clearLastLatitude() {
+          bitField0_ = (bitField0_ & ~0x00000200);
+          lastLatitude_ = 0;
           onChanged();
           return this;
         }
@@ -1326,7 +1700,7 @@ public final class OperationFileListProto {
                 at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.class, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.Builder.class);
       }
 
-      // Construct using at.srfg.vgianalyzer.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.newBuilder()
+      // Construct using at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationFileListProto.PbfOperationFileList.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2309,22 +2683,25 @@ public final class OperationFileListProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\030operation_filelist.proto\022\004impl\"\346\003\n\024Pbf" +
+      "\n\030operation_filelist.proto\022\004impl\"\326\004\n\024Pbf" +
       "OperationFileList\022F\n\021nodeOperationFile\030\001" +
       " \003(\0132+.impl.PbfOperationFileList.PbfOper" +
       "ationFile\022E\n\020wayOperationFile\030\002 \003(\0132+.im" +
       "pl.PbfOperationFileList.PbfOperationFile" +
       "\022J\n\025relationOperationFile\030\003 \003(\0132+.impl.P" +
-      "bfOperationFileList.PbfOperationFile\032\263\001\n" +
+      "bfOperationFileList.PbfOperationFile\032\243\002\n" +
       "\020PbfOperationFile\022\027\n\017operationFileId\030\001 \002" +
       "(\005\022\022\n\nnumEntries\030\003 \002(\005\022F\n\013elementType\030\004 " +
       "\001(\0162&.impl.PbfOperationFileList.ElementT",
-      "ype:\tUNDEFINED\022\024\n\014minElementId\030\005 \002(\003\022\024\n\014" +
-      "maxElementId\030\006 \002(\003\"=\n\013ElementType\022\010\n\004NOD" +
-      "E\020\000\022\007\n\003WAY\020\001\022\014\n\010RELATION\020\002\022\r\n\tUNDEFINED\020" +
-      "\003BN\n4at.srfg.vgianalyzer.activityanalysi" +
-      "s.persistence.pbfB\026OperationFileListProt" +
-      "o"
+      "ype:\tUNDEFINED\022\024\n\014minElementId\030\005 \001(\004\022\024\n\014" +
+      "maxElementId\030\006 \001(\004\022\025\n\rlastTimestamp\030\010 \001(" +
+      "\r\022\027\n\017lastChangesetId\030\t \001(\r\022\021\n\tlastRefId\030" +
+      "\n \001(\004\022\025\n\rlastLongitude\030\013 \001(\021\022\024\n\014lastLati" +
+      "tude\030\014 \001(\021\"=\n\013ElementType\022\010\n\004NODE\020\000\022\007\n\003W" +
+      "AY\020\001\022\014\n\010RELATION\020\002\022\r\n\tUNDEFINED\020\003Bh\nNat." +
+      "salzburgresearch.vgi.vgianalyticsframewo" +
+      "rk.activityanalysis.persistence.pbfB\026Ope" +
+      "rationFileListProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2349,7 +2726,7 @@ public final class OperationFileListProto {
     internal_static_impl_PbfOperationFileList_PbfOperationFile_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_impl_PbfOperationFileList_PbfOperationFile_descriptor,
-        new java.lang.String[] { "OperationFileId", "NumEntries", "ElementType", "MinElementId", "MaxElementId", });
+        new java.lang.String[] { "OperationFileId", "NumEntries", "ElementType", "MinElementId", "MaxElementId", "LastTimestamp", "LastChangesetId", "LastRefId", "LastLongitude", "LastLatitude", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

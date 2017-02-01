@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -53,9 +54,11 @@ public class VgiAnalysisBatchGeneral extends VgiAnalysisParent implements IVgiAn
 		this.settings = settings;
 
 		/** write header */
-		CSVFileWriter writer = new CSVFileWriter(settings.getResultFolder() + "/analysis_batch_feature_type.csv", true);
-		writer.writeLine("region;feature_type;time_period;action_type;action_count;affected_count;user_count;");
-		writer.closeFile();
+		try (CSVFileWriter writer = new CSVFileWriter(settings.getResultFolder() + "/analysis_batch_feature_type.csv", true)) {
+			writer.writeLine("region;feature_type;time_period;action_type;action_count;affected_count;user_count;");
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
+		}
 	}
 	
 	@Override
@@ -101,40 +104,44 @@ public class VgiAnalysisBatchGeneral extends VgiAnalysisParent implements IVgiAn
 	
 	@Override
 	public void write(File path) {
-		currentEntry.name = settings.getFilterPolygon().getLabel();
+		if (settings.getCurrentPolygon() != null) {
+			currentEntry.name = settings.getCurrentPolygon().getLabel();
+		}
 		entryList.add(currentEntry);
 		
-		CSVFileWriter writer = new CSVFileWriter(settings.getResultFolder() + "/analysis_batch_feature_type.csv", true);
-		
-		Collections.sort(timePeriods);
-
-		/** iterate through rows*/
-		for (AnalysisEntry entry : entryList) {
+		try (CSVFileWriter writer = new CSVFileWriter(settings.getResultFolder() + "/analysis_batch_feature_type.csv", true)) {
 			
-			/** write row values */
-			for (SimpleFeatureType featureType : featureTypes) {
-				for (Date timePeriod : timePeriods) {
-					for (String actionType : actionTypes) {
-						
-						if (!entry.actionCount.containsKey(timePeriod)) continue;
-						if (!entry.actionCount.get(timePeriod).containsKey(featureType)) continue;
-						if (!entry.actionCount.get(timePeriod).get(featureType).containsKey(actionType)) continue;
-
-						/** Write row if value is > 0 */
-						int value = entry.actionCount.get(timePeriod).get(featureType).get(actionType).value;
-						if (value > 0) {
-							String line = "";
-							line += entry.name + ";" + featureType.getName().getLocalPart() + ";" + dateFormat.format(timePeriod) + ";" + actionType + ";";
-							line += value + ";";
-							line += entry.actionCount.get(timePeriod).get(featureType).get(actionType).feature_count_affected + ";";
-							line += entry.actionCount.get(timePeriod).get(featureType).get(actionType).userList.size();
-							writer.writeLine(line);
+			Collections.sort(timePeriods);
+	
+			/** iterate through rows*/
+			for (AnalysisEntry entry : entryList) {
+				
+				/** write row values */
+				for (SimpleFeatureType featureType : featureTypes) {
+					for (Date timePeriod : timePeriods) {
+						for (String actionType : actionTypes) {
+							
+							if (!entry.actionCount.containsKey(timePeriod)) continue;
+							if (!entry.actionCount.get(timePeriod).containsKey(featureType)) continue;
+							if (!entry.actionCount.get(timePeriod).get(featureType).containsKey(actionType)) continue;
+	
+							/** Write row if value is > 0 */
+							int value = entry.actionCount.get(timePeriod).get(featureType).get(actionType).value;
+							if (value > 0) {
+								String line = "";
+								line += entry.name + ";" + featureType.getName().getLocalPart() + ";" + dateFormat.format(timePeriod) + ";" + actionType + ";";
+								line += value + ";";
+								line += entry.actionCount.get(timePeriod).get(featureType).get(actionType).feature_count_affected + ";";
+								line += entry.actionCount.get(timePeriod).get(featureType).get(actionType).userList.size();
+								writer.writeLine(line);
+							}
 						}
 					}
 				}
 			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 	
 	@Override

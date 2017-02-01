@@ -42,6 +42,8 @@ public abstract class VgiAnalysisParent {
 
 	protected static Map<Integer, VgiAnalysisUser> userAnalysis = new ConcurrentHashMap<Integer, VgiAnalysisUser>();
 	private static VgiAnalysisUser previousUser = null;
+	
+	protected long processingTime = 0;
 
 	public VgiAnalysisParent() {
 		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -66,7 +68,16 @@ public abstract class VgiAnalysisParent {
 	}
 	
 	public static void resetParent() {
-		userAnalysis.clear();
-		previousUser = null;
+		VgiAnalysisParent.userAnalysis.clear();
+		VgiAnalysisParent.previousUser = null;
+//		durationMs = 0;
+	}
+	
+	public void addToProcessingTime(long time) {
+		processingTime += time;
+	}
+	
+	public long getProcessingTime() {
+		return processingTime;
 	}
 }

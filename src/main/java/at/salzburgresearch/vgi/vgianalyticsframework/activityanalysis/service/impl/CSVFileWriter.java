@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.impl;
 
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,31 +23,17 @@ import java.io.Writer;
 
 import org.apache.log4j.Logger;
 
-public class CSVFileWriter {
+public class CSVFileWriter implements Closeable {
 	private static Logger log = Logger.getLogger(CSVFileWriter.class);
 	
 	private Writer fw = null;
 	private String filename = "";
 	
-	public CSVFileWriter(String filename) {
-		this.filename = filename;
-		do {
-			try {
-				fw = new FileWriter(filename, false);
-			} catch (FileNotFoundException e) {
-				log.warn(e);
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			} catch (IOException e) {
-				log.error("Exception " + e);
-			}
-		} while (fw == null);
+	public CSVFileWriter(String filename) throws IOException {
+		this(filename, false);
 	}
 	
-	public CSVFileWriter(String filename, boolean append) {
+	public CSVFileWriter(String filename, boolean append) throws IOException {
 		this.filename = filename;
 		do {
 			try {
@@ -58,13 +45,11 @@ public class CSVFileWriter {
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-			} catch (IOException e) {
-				log.error("Exception " + e);
 			}
 		} while (fw == null);
 	}
 	
-	public void writeLine(String line) {
+	public void writeLine(String line) throws IOException {
 		try {
 			fw.write(line);
 			fw.append(System.getProperty("line.separator"));
@@ -73,14 +58,11 @@ public class CSVFileWriter {
 		}
 	}
 	
-	public void closeFile() {
+	@Override
+	public void close() throws IOException {
 		if (fw != null) {
-			try {
-				fw.close();
-				log.info("File [" +filename + "] written!");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			fw.close();
+			log.info("File [" +filename + "] written!");
 		}
 	}
 }

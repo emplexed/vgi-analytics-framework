@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -140,8 +140,8 @@ public class VgiAnalysis {
 			} else {
 				log.info(settings.getFilterPolygonList().size() + " filter polygons found!");
 				for (VgiPolygon polygon : settings.getFilterPolygonList()) {
-					settings.setFilterPolygon(polygon);
-					log.info("Start analysis... " + settings.getFilterPolygon().getLabel());
+					settings.setCurrentPolygon(polygon);
+					log.info("Start analysis... " + settings.getCurrentPolygon().getLabel());
 					pipeline.start();
 				}
 			}

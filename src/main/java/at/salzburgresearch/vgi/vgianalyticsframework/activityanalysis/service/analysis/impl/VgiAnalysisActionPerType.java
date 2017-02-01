@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,19 +47,21 @@ public class VgiAnalysisActionPerType extends VgiAnalysisParent implements IVgiA
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/action_per_type.csv");
-		/** write header */
-		writer.writeLine("action_type;time_period;count;");
-		/** iterate through rows*/
-		for (String type : actionsPerType.keySet()) {
-			for (Date period : actionsPerType.get(type).keySet()) {
-				/** write row values */
-				if (actionsPerType.get(type).get(period) > 0) {
-					writer.writeLine(type + ";" + dateFormat.format(period) + ";" + actionsPerType.get(type).get(period) + ";");
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/action_per_type.csv")) {
+			/** write header */
+			writer.writeLine("action_type;time_period;count;");
+			/** iterate through rows*/
+			for (String type : actionsPerType.keySet()) {
+				for (Date period : actionsPerType.get(type).keySet()) {
+					/** write row values */
+					if (actionsPerType.get(type).get(period) > 0) {
+						writer.writeLine(type + ";" + dateFormat.format(period) + ";" + actionsPerType.get(type).get(period) + ";");
+					}
 				}
 			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

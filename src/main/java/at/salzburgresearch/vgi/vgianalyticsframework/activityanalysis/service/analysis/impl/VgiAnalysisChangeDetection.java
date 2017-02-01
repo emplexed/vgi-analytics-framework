@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -293,50 +294,49 @@ public class VgiAnalysisChangeDetection extends VgiAnalysisParent implements IVg
 		/** iterate through users*/
 		for (SimpleFeatureType ft : editingActionList.keySet()) {
 			
-			CSVFileWriter writer = new CSVFileWriter(path + "/change_detection_" + ft.getName().getLocalPart() + "_geometry.csv");
-			/** write header */
-			writer.writeLine("changeId;elementType;osmId;version;changesest;timestamp;status;valueOld;valueNew;geometryOld;geometryNew;geometryDiff");
-			
-			int i = 1;
-			
-			for (EditingAction e : editingActionList.get(ft)) {
-				writer.writeLine(i++ + ";" +
-						e.elementType + ";" + 
-						e.osmId + ";" + 
-						e.version + ";" + 
-						e.changeset + ";" + 
-						dateTimeFormat.format(e.timestamp) + ";" + 
-						e.status + ";" + 
-						(e.valueOld != null ? (e.valueOld instanceof Double ? decimalFormat.format(e.valueOld) : "\""+e.valueOld.toString()+"\"") : "") + ";" + 
-						(e.valueNew != null ? (e.valueNew instanceof Double ? decimalFormat.format(e.valueNew) : "\""+e.valueNew.toString()+"\"") : "") + ";" + 
-						(e.geometryOld != null ? e.geometryOld.toText() : "") + ";" + 
-						(e.geometryNew != null ? e.geometryNew.toText() : "") + ";" + 
-						(e.geometryDiff != null ? e.geometryDiff.toText() : ""));
+			try (
+					CSVFileWriter writerGeom = new CSVFileWriter(path + "/change_detection_" + ft.getName().getLocalPart() + "_geometry.csv");
+					CSVFileWriter writer = new CSVFileWriter(path + "/change_detection_" + ft.getName().getLocalPart() + ".csv");) {
+				/** write header */
+				writerGeom.writeLine("changeId;elementType;osmId;version;changesest;timestamp;status;valueOld;valueNew;geometryOld;geometryNew;geometryDiff");
+				
+				int i = 1;
+				
+				for (EditingAction e : editingActionList.get(ft)) {
+					writerGeom.writeLine(i++ + ";" +
+							e.elementType + ";" + 
+							e.osmId + ";" + 
+							e.version + ";" + 
+							e.changeset + ";" + 
+							dateTimeFormat.format(e.timestamp) + ";" + 
+							e.status + ";" + 
+							(e.valueOld != null ? (e.valueOld instanceof Double ? decimalFormat.format(e.valueOld) : "\""+e.valueOld.toString()+"\"") : "") + ";" + 
+							(e.valueNew != null ? (e.valueNew instanceof Double ? decimalFormat.format(e.valueNew) : "\""+e.valueNew.toString()+"\"") : "") + ";" + 
+							(e.geometryOld != null ? e.geometryOld.toText() : "") + ";" + 
+							(e.geometryNew != null ? e.geometryNew.toText() : "") + ";" + 
+							(e.geometryDiff != null ? e.geometryDiff.toText() : ""));
+				}
+				
+				/** write header */
+				writer.writeLine("changeId;elementType;osmId;version;changesest;timestamp;status;valueOld;valueNew;geometryOld;geometryNew;geometryDiff");
+				
+				i = 1;
+				
+				for (EditingAction e : editingActionList.get(ft)) {
+					writer.writeLine(i++ + ";" +
+							e.elementType + ";" + 
+							e.osmId + ";" + 
+							e.version + ";" + 
+							e.changeset + ";" + 
+							dateTimeFormat.format(e.timestamp) + ";" + 
+							e.status + ";" + 
+							(e.valueOld != null ? (e.valueOld instanceof Double ? decimalFormat.format(e.valueOld) : "\""+e.valueOld.toString()+"\"") : "") + ";" + 
+							(e.valueNew != null ? (e.valueNew instanceof Double ? decimalFormat.format(e.valueNew) : "\""+e.valueNew.toString()+"\"") : ""));
+				}
+				
+			} catch (IOException e) {
+				log.error("Error while writing CSV file", e);
 			}
-			
-			writer.closeFile();
-			
-			/** NO GEOM */
-			
-			writer = new CSVFileWriter(path + "/change_detection_" + ft.getName().getLocalPart() + ".csv");
-			/** write header */
-			writer.writeLine("changeId;elementType;osmId;version;changesest;timestamp;status;valueOld;valueNew;geometryOld;geometryNew;geometryDiff");
-			
-			i = 1;
-			
-			for (EditingAction e : editingActionList.get(ft)) {
-				writer.writeLine(i++ + ";" +
-						e.elementType + ";" + 
-						e.osmId + ";" + 
-						e.version + ";" + 
-						e.changeset + ";" + 
-						dateTimeFormat.format(e.timestamp) + ";" + 
-						e.status + ";" + 
-						(e.valueOld != null ? (e.valueOld instanceof Double ? decimalFormat.format(e.valueOld) : "\""+e.valueOld.toString()+"\"") : "") + ";" + 
-						(e.valueNew != null ? (e.valueNew instanceof Double ? decimalFormat.format(e.valueNew) : "\""+e.valueNew.toString()+"\"") : ""));
-			}
-			
-			writer.closeFile();
 		}
 	}
 	

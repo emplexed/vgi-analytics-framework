@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -41,12 +41,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiActionGenerator;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiOperation;
-import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiFeatureImpl;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiOperationType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipeline;
@@ -56,6 +56,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IV
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.IVgiAnalysisOperation;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl.VgiAnalysisParent;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.impl.GeomUtils;
 import gnu.trove.list.array.TLongArrayList;
 
 public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationContextAware {
@@ -88,8 +89,8 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 	@Override
 	public void doBeforeFirstBatch() {
 		/** Write analysis result */
-		if (settings.getFilterPolygon() != null) {
-			resultDir = new File(settings.getResultFolder() + File.separator + settings.getFilterPolygon().getLabel() + File.separator);
+		if (settings.getCurrentPolygon() != null) {
+			resultDir = new File(settings.getResultFolder() + File.separator + settings.getCurrentPolygon().getLabel() + File.separator);
 		} else {
 			resultDir = new File(settings.getResultFolder() + File.separator);
 		}
@@ -164,34 +165,37 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
     }
 	
 	/**
-	 * Filters operations, aggregates operations to actions and analyzes all of them
+	 * Filters operations and triggers the analysis
 	 */
 	private void prepareOperations(List<IVgiFeature> batch) {
-		
-		/** Filter feature; generate and process actions */
-		log.info("Prepare " + batch.size() + " features");
-		
 		for (IVgiFeature feature : batch) {
 			
 			/** Filter by tag */
-			if (!filterByTag(feature)) continue;
+			if (!feature.filterByTag(settings.getFilterTag())) continue;
 			
-			if (settings.getFilterPolygon() != null || settings.isWriteGeometryFiles()) {
-				if (settings.getFilterPolygon() != null) {
-					if (!settings.getFilterPolygon().getPolygon().getEnvelopeInternal().intersects(feature.getBBox())) continue;
+			if (settings.getCurrentPolygon() != null || settings.isWriteGeometryFiles()) {
+				if (settings.getCurrentPolygon() != null) {
+					if (!settings.getCurrentPolygon().getPolygon().getEnvelopeInternal().intersects(feature.getBBox())) continue;
 				}
 				
 				SimpleFeature f = geometryAssemblerConsumer.assembleGeometry(feature, null);
 				if (f == null) continue;
 				
-				if (settings.getFilterPolygon() != null) {
+				if (((Geometry)f.getDefaultGeometry()).getGeometryType().equals("LineString")) {
+					double length = GeomUtils.calculateLengthMeterFromWGS84LineStringAndoyer((LineString)f.getDefaultGeometry());
+					f.setAttribute("length", length);
+				}
+				
+				if (settings.getCurrentPolygon() != null) {
 					Geometry geometry = (Geometry)f.getDefaultGeometry();
-					if (geometry == null || geometry.disjoint(settings.getFilterPolygon().getPolygon())) continue;					
+					if (geometry == null || geometry.disjoint(settings.getCurrentPolygon().getPolygon())) continue;					
 				}
 				
 				if (settings.isWriteGeometryFiles()) {
 					if (!mapFeatures.containsKey(f.getFeatureType())) mapFeatures.put(f.getFeatureType(), new DefaultFeatureCollection(f.getFeatureType().getTypeName(), f.getFeatureType()));
-					mapFeatures.get(f.getFeatureType()).add(f);
+					if (!(boolean)f.getAttribute("deleted")) {
+						mapFeatures.get(f.getFeatureType()).add(f);
+					}
 				}
 			}
 			
@@ -208,7 +212,7 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 			findRelatedOperations();
 		}
 
-		log.info("Analyze " + featureList.size() + " Features");
+		if (featureList.size() > 0) log.info("Analyze " + featureList.size() + " Features");
 		for (IVgiFeature feature : this.featureList) {
 			analyzeFeature(feature);
 		}
@@ -258,7 +262,9 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 		if (settings.getOperationAnalyzerList().size() > 0) {
 			for (IVgiOperation operation : feature.getOperationList()) {
 				for (IVgiAnalysisOperation analysis : settings.getOperationAnalyzerList()) {
+					long startTime = System.currentTimeMillis();
 					analysis.analyze(operation, deriveTimePeriod(operation)[0]);
+					analysis.addToProcessingTime(System.currentTimeMillis() - startTime);
 				}
 			}
 		}
@@ -282,7 +288,9 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 				
 				/** Analyze action */
 				for (IVgiAnalysisAction analysis : settings.getActionAnalyzerList()) {
+					long startTime = System.currentTimeMillis();
 					analysis.analyze(action, deriveTimePeriod(firstOperation)[0]);
+					analysis.addToProcessingTime(System.currentTimeMillis() - startTime);
 				}
 			}
 		}
@@ -295,7 +303,9 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 			if (firstOperation.getTimestamp().after(settings.getAnalysisEndDate())) return;
 			
 			for (IVgiAnalysisFeature analysis : settings.getFeatureAnalyzerList()) {
+				long startTime = System.currentTimeMillis();
 				analysis.analyze(feature, null);
+				analysis.addToProcessingTime(System.currentTimeMillis() - startTime);
 			}
 		}
 		
@@ -350,36 +360,6 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 		}
 		
 		return timePeriod;
-	}
-	
-	/**
-	 * Retrieves tags which exist at the time of <code>timestamp</code> and applies feature type filter
-	 * @param feature
-	 * @return true if feature contains tag mentioned in tag filter
-	 */
-	private boolean filterByTag(IVgiFeature feature) {
-		/** if no tag is defined, return true */
-		if (settings.getFilterTag().keySet().size() == 0) return true;
-		
-		/** Filter feature by tag */
-		Map<String, List<String>> tags = VgiFeatureImpl.getAllTagsFromOperations(feature);
-		
-		for (String tagKey : tags.keySet()) {
-			
-			/** Does filter list contain the key of this operation? */
-			if (settings.getFilterTag().containsKey(tagKey)) {
-				
-				/** Return true if filter list contains the value of this operation */
-				/** Compare only tag keys */
-				if (settings.getFilterTag().get(tagKey).size() == 0) return true;
-				
-				/** Compare keys and values */
-				tags.get(tagKey).retainAll(settings.getFilterTag().get(tagKey));
-				if (tags.get(tagKey).size() > 0) return true;
-			}
-		}
-		/** Otherwise return false */
-		return false;
 	}
 
 	@Override

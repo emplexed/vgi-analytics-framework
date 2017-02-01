@@ -910,7 +910,7 @@ public final class QuadtreeIndexProto {
                   at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.PbfQuadtree.class, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.PbfQuadtree.Builder.class);
         }
 
-        // Construct using at.srfg.vgianalyzer.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.PbfQuadtree.newBuilder()
+        // Construct using at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.PbfQuadtree.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -2092,7 +2092,7 @@ public final class QuadtreeIndexProto {
                 at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.class, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.Builder.class);
       }
 
-      // Construct using at.srfg.vgianalyzer.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.newBuilder()
+      // Construct using at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.QuadtreeIndexProto.PbfQuadtreeIndex.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2366,8 +2366,9 @@ public final class QuadtreeIndexProto {
       "\014featureCount\030\006 \002(\005\022\014\n\004path\030\010 \002(\t\022\r\n\005lev" +
       "el\030\t \002(\005\022\016\n\006splitx\030\n \002(\001\022\016\n\006splity\030\013 \002(\001",
       "\022\022\n\ndimensionx\030\014 \002(\001\022\022\n\ndimensiony\030\r \002(\001" +
-      "BJ\n4at.srfg.vgianalyzer.activityanalysis" +
-      ".persistence.pbfB\022QuadtreeIndexProto"
+      "Bd\nNat.salzburgresearch.vgi.vgianalytics" +
+      "framework.activityanalysis.persistence.p" +
+      "bfB\022QuadtreeIndexProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,20 +16,23 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi;
 
 import java.util.List;
+import java.util.Map;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiFeatureImpl.LocalizeType;
 
 public interface IVgiFeature extends IVgiBaseObject {
+	
+	boolean filterByTag(Map<String, List<String>> filterTag);
 
 	List<IVgiOperation> getOperationList();
 	void setOperationList(List<IVgiOperation> operationList);
-	void addToOperationList(IVgiOperation operation);
+	void addOperation(IVgiOperation operation);
 	
 	List<IVgiAction> getActionList();
 	void setActionList(List<IVgiAction> actionList);
-	void addToActionList(IVgiAction action);
+	void addAction(IVgiAction action);
 
 	Envelope getBBox();
 	void setBBox(Envelope bbox);

@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,21 +76,23 @@ public class VgiAnalysisTags extends VgiAnalysisParent implements IVgiAnalysisOp
 	
 	@Override
 	public void write(File path) {
-		CSVFileWriter writer = new CSVFileWriter(path + "/tags.csv");
-		/** write header */
-		writer.writeLine("time_period;tag_key;OP_ADD_TAG;OP_MODIFY_TAG_VALUE;OP_REMOVE_TAG");
-
-		/** iterate through rows */
-		for (Entry<Date, Map<String, Map<VgiOperationType, Long>>> entryTimePeriod : data.entrySet()) {
-			for (Entry<String, Map<VgiOperationType, Long>> entryTag : entryTimePeriod.getValue().entrySet()) {
-				String line = dateFormat.format(entryTimePeriod.getKey()) + ";" + entryTag.getKey() + ";"
-						+ entryTag.getValue().get(VgiOperationType.OP_ADD_TAG) + ";"
-						+ entryTag.getValue().get(VgiOperationType.OP_MODIFY_TAG_VALUE) + ";"
-						+ entryTag.getValue().get(VgiOperationType.OP_REMOVE_TAG);
-				writer.writeLine(line);
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/tags.csv")) {
+			/** write header */
+			writer.writeLine("time_period;tag_key;OP_ADD_TAG;OP_MODIFY_TAG_VALUE;OP_REMOVE_TAG");
+	
+			/** iterate through rows */
+			for (Entry<Date, Map<String, Map<VgiOperationType, Long>>> entryTimePeriod : data.entrySet()) {
+				for (Entry<String, Map<VgiOperationType, Long>> entryTag : entryTimePeriod.getValue().entrySet()) {
+					String line = dateFormat.format(entryTimePeriod.getKey()) + ";" + entryTag.getKey() + ";"
+							+ entryTag.getValue().get(VgiOperationType.OP_ADD_TAG) + ";"
+							+ entryTag.getValue().get(VgiOperationType.OP_MODIFY_TAG_VALUE) + ";"
+							+ entryTag.getValue().get(VgiOperationType.OP_REMOVE_TAG);
+					writer.writeLine(line);
+				}
 			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override

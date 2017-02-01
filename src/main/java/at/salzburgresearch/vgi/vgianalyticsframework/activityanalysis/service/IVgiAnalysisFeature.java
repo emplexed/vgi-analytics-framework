@@ -27,4 +27,8 @@ public interface IVgiAnalysisFeature {
 	void write(File path);
 	
 	void reset();
+
+	void addToProcessingTime(long time);
+
+	long getProcessingTime();
 }

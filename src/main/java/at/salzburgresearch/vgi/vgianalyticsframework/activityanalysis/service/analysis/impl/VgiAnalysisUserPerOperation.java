@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.analysis.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,22 +65,24 @@ public class VgiAnalysisUserPerOperation extends VgiAnalysisParent implements IV
 	@Override
 	public void write(File path) {
 		
-		CSVFileWriter writer = new CSVFileWriter(path + "/user_per_operation.csv");
+		try (CSVFileWriter writer = new CSVFileWriter(path + "/user_per_operation.csv")) {
+				
+			String operationHeader = "uid;operation_type;time_period;count;";
+			writer.writeLine(operationHeader);
 			
-		String operationHeader = "uid;operation_type;time_period;count;";
-		writer.writeLine(operationHeader);
-		
-		for (int user : userAnalysis.keySet()) {
-			VgiAnalysisUser u1 = userAnalysis.get(user);
-			for (VgiOperationType type : u1.operationCount.keySet()) {
-				for (Date period : u1.operationCount.get(type).keySet()) {
-					if (u1.operationCount.get(type).get(period) > 0) {
-						writer.writeLine(u1.getUid() + ";" + type + ";" + dateFormat.format(period) + ";" + u1.operationCount.get(type).get(period) + ";");
+			for (int user : userAnalysis.keySet()) {
+				VgiAnalysisUser u1 = userAnalysis.get(user);
+				for (VgiOperationType type : u1.operationCount.keySet()) {
+					for (Date period : u1.operationCount.get(type).keySet()) {
+						if (u1.operationCount.get(type).get(period) > 0) {
+							writer.writeLine(u1.getUid() + ";" + type + ";" + dateFormat.format(period) + ";" + u1.operationCount.get(type).get(period) + ";");
+						}
 					}
 				}
 			}
+		} catch (IOException e) {
+			log.error("Error while writing CSV file", e);
 		}
-		writer.closeFile();
 	}
 
 	@Override
