@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -200,7 +202,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 				settingName = firstElement.getAttribute("settingName");
 				
 				/** pbfDataFolder */
-				pbfDataFolder = new File(firstElement.getAttribute("pbfDataFolder"));
+				pbfDataFolder = new File(prepareFile(firstElement.getAttribute("pbfDataFolder")));
 				if (!pbfDataFolder.exists()) {
 					log.error("Cannot find pbfDataFolder!");
 					System.exit(1);
@@ -208,7 +210,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 				
 				/** resultFolder */
     			if (firstElement.hasAttribute("resultFolder")) {
-					resultFolder = new File(firstElement.getAttribute("resultFolder"));
+					resultFolder = new File(prepareFile(firstElement.getAttribute("resultFolder")));
 					if (!resultFolder.exists()) {
 						log.error("Cannot find resultFolder!");
 						System.exit(1);
@@ -631,6 +633,15 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	    log.info("Settings '" + this.getSettingName() + "' loaded");
 	}
 
+	private String prepareFile(String fileString) {
+		Pattern pattern = Pattern.compile("%.+%");
+		Matcher matcher = pattern.matcher(fileString);
+		if (matcher.find()) {
+			String property = matcher.group(0).replace("%", "");
+			fileString = System.getProperty(property) + "\\" + fileString.replaceFirst("%.+%", "");
+		}
+		return fileString;
+	}
 
 	@Override
 	public String getSettingName() {

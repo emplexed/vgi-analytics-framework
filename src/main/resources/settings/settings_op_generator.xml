@@ -5,7 +5,7 @@
 		xsi:schemaLocation="http://www.salzburgresearch.at validator.xsd">
 	<general
 		settingName="Op Generator"
-		pbfDataFolder="E:\vgi\data\austria_2016_01"
+		pbfDataFolder="%user.home%\Documents\_d\vgi\data\austria_2016_01"
 		filterTimestamp="2020-01-01T00:00:00Z" />
 		
 	<filterTags>
