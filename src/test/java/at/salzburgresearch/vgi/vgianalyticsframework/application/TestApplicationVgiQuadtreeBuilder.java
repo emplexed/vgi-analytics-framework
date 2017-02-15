@@ -13,8 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package at.srfg.gitechsuite.vgi.activityanalysis.application;
-
+package at.salzburgresearch.vgi.vgianalyticsframework.application;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,9 +22,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipeline;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
-import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.OsmDataConsumer;
-import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.impl.VgiOperationGeneratorDataHandlerImpl;
 import junit.framework.Assert;
 
 /**
@@ -33,18 +31,18 @@ import junit.framework.Assert;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/application-context-osm-op-generator.xml"})
-public class TestApplicationOsmHistoryImporter {
+@ContextConfiguration(locations = { "classpath:/application-context-vgi-quadtree.xml"})
+public class TestApplicationVgiQuadtreeBuilder {
 
 	@Autowired
 	private ApplicationContext ctx;
 	
 	@Test
-    public void testApplicationOsmHistoryImporter() {
+    public void testApplicationVgiAnalysis() {
 		IVgiPipelineSettings settings = ((IVgiPipelineSettings)ctx.getBean("vgiPipelineSettings"));
-		OsmDataConsumer osmDataConsumer = ((VgiOperationGeneratorDataHandlerImpl)ctx.getBean("vgiOperationGeneratorDataHandler"));
+		IVgiPipeline pipeline = ((IVgiPipeline) ctx.getBean("vgiPipeline"));
 		
 		Assert.assertNotNull(settings);
-		Assert.assertNotNull(osmDataConsumer);
+		Assert.assertNotNull(pipeline);
 	}
 }

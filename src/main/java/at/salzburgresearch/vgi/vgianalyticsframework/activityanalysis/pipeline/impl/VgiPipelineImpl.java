@@ -225,9 +225,6 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 			writer.writeLine("analysisStartDate: " + dateFormatOSM.format(settings.getAnalysisStartDate()));
 			writer.writeLine("analysisEndDate: " + dateFormatOSM.format(settings.getAnalysisEndDate()));
 			writer.writeLine("temporalResolution: " + settings.getTemporalResolution());
-			for (IVgiAnalysisFeature analysis : settings.getFeatureAnalyzerList()) {
-				writer.writeLine(" - " + analysis.toString());
-			}
 			writer.writeLine("Feature Types:");
 			for (String featureTypeKey : settings.getFeatureTypeList().keySet()) {
 				writer.writeLine(" - " + featureTypeKey);

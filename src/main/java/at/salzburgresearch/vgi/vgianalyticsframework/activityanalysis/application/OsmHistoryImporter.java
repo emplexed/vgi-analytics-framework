@@ -112,7 +112,7 @@ public class OsmHistoryImporter {
         } catch (Exception e) {
             HelpFormatter helpFormatter = new HelpFormatter();
             if (e.getMessage() != null) {
-                log.error(e.getMessage() + '\n');
+            	e.printStackTrace();
             } else {
                 log.error("Unknown error",e);
             }

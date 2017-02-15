@@ -16,6 +16,7 @@ limitations under the License.
 package at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -51,46 +52,65 @@ public class VgiOperationGeneratorOsmRelationImpl extends AbstractVgiOperationOs
 		List<IVgiOperation> operationList = new ArrayList<IVgiOperation>();
 		
 		if (oldValue == null) {
-			operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION, VgiOperationType.OP_CREATE_RELATION, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", -1, -1));
+			operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION,
+					VgiOperationType.OP_CREATE_RELATION, value.getUid(), value.getUsername(), value.getTimestamp(),
+					(short) value.getVersion(), (int) value.getChangesetId(), null, "", "", -1, -1));
 		}
 		
 		List<RelationMember> valueMembers = (value != null) ? value.getMembers() : new ArrayList<RelationMember>();
 		List<RelationMember> oldValueMembers = (oldValue != null) ? oldValue.getMembers() : new ArrayList<RelationMember>();
 
 		List<RelationMember> currentMembers = new ArrayList<RelationMember>(oldValueMembers);
-		
-		/** PHASE A: Find OpRemoveNode operations */
 		List<RelationMember> availableMembers = new ArrayList<RelationMember>(valueMembers);
+		availableMembers.sort(getRelationMemberComparator());
+		
+		/** PHASE A: Find OpRemoveMember operations */
 		for (int i=oldValueMembers.size()-1; i>=0; i--) {
-			if (findMember(availableMembers, oldValueMembers.get(i)) == null) {
-				operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION, VgiOperationType.OP_REMOVE_MEMBER, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", 0, i));
+			int iMember = Collections.binarySearch(availableMembers, oldValueMembers.get(i), getRelationMemberComparator());
+			if (iMember < 0) {
+				operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION,
+						VgiOperationType.OP_REMOVE_MEMBER, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), null, "", "", 0, i));
+				
 				/** Remove node from current node list */
 				currentMembers.remove(i);
 			} else {
 				/** Remove node from available node list */
-				availableMembers.remove(findMember(availableMembers, oldValueMembers.get(i)));
+				availableMembers.remove(iMember);
 			}
 		}
 		
-		
-		/** PHASE B: Find OpAddNode operations */
+		/** PHASE B: Find OpAddMember operations */
 		availableMembers = new ArrayList<RelationMember>(oldValueMembers);
+		availableMembers.sort(getRelationMemberComparator());
+		
 		for (int i=0; i<valueMembers.size(); i++) {
-			if (findMember(availableMembers, valueMembers.get(i)) == null) {
-				//TODO change memberType to EntityType
-				String memberType = ((valueMembers.get(i).equals(OsmElementType.NODE)) ? "n" : (valueMembers.get(i).equals(OsmElementType.WAY)) ? "w" : (valueMembers.get(i).equals(OsmElementType.RELATION)) ? "r" : "");
-				operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION, VgiOperationType.OP_ADD_MEMBER, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, memberType, valueMembers.get(i).getRole(), valueMembers.get(i).getId(), i));
+			int iMember = Collections.binarySearch(availableMembers, valueMembers.get(i), getRelationMemberComparator());
+			if (iMember < 0) {
+				String memberType = "";
+				if (valueMembers.get(i).getElementType().equals(OsmElementType.NODE)) {
+					memberType = "n";
+				} else if (valueMembers.get(i).getElementType().equals(OsmElementType.WAY)) {
+					memberType = "w";
+				} else if (valueMembers.get(i).getElementType().equals(OsmElementType.RELATION)) {
+					memberType = "r";
+				}
+				operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION,
+						VgiOperationType.OP_ADD_MEMBER, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), null, memberType,
+						valueMembers.get(i).getRole(), valueMembers.get(i).getId(), i));
+				
 				/** Adds node to current node list */
 				currentMembers.add(i, valueMembers.get(i));
 			} else {
 				/** Remove node from available node list */
-				availableMembers.remove(findMember(availableMembers, valueMembers.get(i)));
+				availableMembers.remove(iMember);
 			}
 		}
 		
 		if (currentMembers.size() != valueMembers.size()) {
-			log.error("Current Node Ref List has " + currentMembers.size() + " items, while Value Node Ref List has " + valueMembers.size() + " items");
-			log.info(" - Relation " + value.getId() + " v" + value.getVersion());
+			log.error("Current member list has " + currentMembers.size() + " items, while value member list has "
+					+ valueMembers.size() + " items (relation " + value.getId() + " v" + value.getVersion() + ")");
 			String listString = "";
 			for (RelationMember s : currentMembers) {
 			    listString += s.getId() + "  ";
@@ -104,16 +124,15 @@ public class VgiOperationGeneratorOsmRelationImpl extends AbstractVgiOperationOs
 		}
 		
 		/** PHASE C: Find OpReorderNode operations */
-//		int position = 0;
-//		while(position < currentMembers.size()) {
 		for (int position = 0; position < currentMembers.size(); position++) {
-//			if (!currentMembers.get(position).equals(valueMembers.get(position))) { //TODO equals cannot work
 			if (getRelationMemberComparator().compare(currentMembers.get(position), valueMembers.get(position)) != 0) {
 				/** Find next valueNodeRef in remaining currentNodeRefs */
 				for (int i=position+1; i<currentMembers.size(); i++) {
-//					if (currentMembers.get(i).equals(valueMembers.get(position))) { //TODO equals cannot work
-					if (getRelationMemberComparator().compare(currentMembers.get(i), valueMembers.get(position)) != 0) {
-						operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION, VgiOperationType.OP_REORDER_MEMBER, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", i, position));
+					if (getRelationMemberComparator().compare(currentMembers.get(i), valueMembers.get(position)) == 0) {
+						operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION,
+								VgiOperationType.OP_REORDER_MEMBER, value.getUid(), value.getUsername(),
+								value.getTimestamp(), (short) value.getVersion(), (int) value.getChangesetId(), null,
+								"", "", i, position));
 						/** Reorder node within node list */
 						currentMembers.remove(i);
 						currentMembers.add(position, valueMembers.get(position));
@@ -121,42 +140,27 @@ public class VgiOperationGeneratorOsmRelationImpl extends AbstractVgiOperationOs
 					}
 				}
 			}
-//			position++;
 		}
 		
-
-		//TODO test
 		/** PHASE D: Find OpModifyRole operations */
 		for (int i=0; i<currentMembers.size(); i++) {
 			if (!currentMembers.get(i).getRole().equals(valueMembers.get(i).getRole())) {
-				operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION, VgiOperationType.OP_MODIFY_ROLE, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", valueMembers.get(i).getRole(), -1, i));
+				operationList.add(operationFactory.newOperation(value.getId(), VgiGeometryType.RELATION,
+						VgiOperationType.OP_MODIFY_ROLE, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), null, "",
+						valueMembers.get(i).getRole(), -1, i));
 			}
 		}
 		
 		return operationList;
 	}
 	
-	/**
-	 * Checks if IOsmEntry is contained in memberList
-	 * @param memberList
-	 * @param member
-	 * @return
-	 */
-	private RelationMember findMember(List<RelationMember> memberList, RelationMember member) {
-		for (RelationMember iMember : memberList) {
-			if (getRelationMemberComparator().compare(iMember, member) == 0) {
-				return iMember;
-			}
-		}
-		return null;
-	}
-	
     public static Comparator<RelationMember> getRelationMemberComparator() {
         return new Comparator<RelationMember>() {
         	/**
         	 * Compares two <code>RelationMember</code> by member type and id
-        	 * @param m1
-        	 * @param m2
+        	 * @param m1 member 1
+        	 * @param m2 member 2
         	 * @return
         	 */
 			public int compare(RelationMember m1, RelationMember m2) {
@@ -175,7 +179,7 @@ public class VgiOperationGeneratorOsmRelationImpl extends AbstractVgiOperationOs
 				} else if (m1.getElementType().equals(OsmElementType.WAY) && !(m2.getElementType().equals(OsmElementType.WAY))) {
 					return -1;
 				} else {
-					return 0;
+					return 1;
 				}
 			}
         };

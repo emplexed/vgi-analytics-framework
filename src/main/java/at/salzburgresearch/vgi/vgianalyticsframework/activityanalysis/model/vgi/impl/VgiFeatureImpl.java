@@ -162,6 +162,21 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
 	}
 	
 	/**
+	 * Removes all data which is not related to position (changeset id, ref id,
+	 * uid, user, key, value)
+	 */
+	public void stripFeature() {
+		for (IVgiOperation operation : this.operationList) {
+			operation.setChangesetid(0);
+			operation.setRefId(0);
+			operation.setUid(0);
+			operation.setUser(null);
+			operation.setKey(null);
+			operation.setValue(null);
+		}
+	}
+	
+	/**
 	 * Check whether this feature contains one of the tags specified in filterTag parameter
 	 * @param filter tag list
 	 * @return true if feature contains tag mentioned in tag filter

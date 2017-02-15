@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package at.srfg.gitechsuite.vgi.activityanalysis.application;
+package at.salzburgresearch.vgi.vgianalyticsframework.application;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

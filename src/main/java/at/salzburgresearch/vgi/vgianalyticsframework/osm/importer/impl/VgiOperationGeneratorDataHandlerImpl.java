@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.IOsmElement;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Node;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Relation;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Way;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiOperation;
@@ -119,7 +120,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				log.info("Start relation phase");
 				currentPhase = Phases.RELATIONS;
 			}
-//			enqueueOperations(vgiOperationGenerator.generateRelationOperations((Relation)osmElement, (Relation)lastOsmElement));
+			enqueueOperations(vgiOperationGenerator.generateRelationOperations((Relation)osmElement, (Relation)lastOsmElement));
 			numParsedRelations++;
 			break;
 			
@@ -151,8 +152,11 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				|| !currentFeature.getVgiGeometryType().equals(operationList.get(0).getVgiGeometryType()))) {
 			
 			/** Add all nodes and filtered ways/relations to feature list */
-			if (currentFeature.getVgiGeometryType().equals(VgiGeometryType.POINT) ||
-					currentFeature.filterByTag(settings.getFilterTag())) {
+			boolean filterByTag = currentFeature.filterByTag(settings.getFilterTag());
+			if (currentFeature.getVgiGeometryType().equals(VgiGeometryType.POINT) || filterByTag) {
+				if (!filterByTag) {
+					currentFeature.stripFeature();
+				}
 				featureList.add(currentFeature);
 				
 				/** Retrieve children elements */
@@ -160,14 +164,14 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 					if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
 						childNodeList.add(operation.getRefId());
 					} else if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
-						if (operation.getKey().equals("n")) {
-							childNodeList.add(operation.getRefId());
-						} else if (operation.getKey().equals("w")) {
-							childWayList.add(operation.getRefId());
-						} else if (operation.getKey().equals("r")) {
-							childRelationList.add(operation.getRefId());
-						}
-					} 
+//						if (operation.getKey().equals("n")) {
+//							childNodeList.add(operation.getRefId());
+//						} else if (operation.getKey().equals("w")) {
+//							childWayList.add(operation.getRefId());
+//						} else if (operation.getKey().equals("r")) {
+//							childRelationList.add(operation.getRefId());
+//						}
+					}
 				}
 			}
 			currentFeature = null;
@@ -207,7 +211,8 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 		
 		log.info("Flush " + featureList.size() + " features with " + childNodeList.size() + " child nodes");
 		
-		if (childNodeList.size() > 0 || childWayList.size() > 0 || childRelationList.size() > 0) {
+//		if (childNodeList.size() > 0 || childWayList.size() > 0 || childRelationList.size() > 0) {
+		if (childNodeList.size() > 0) {
 			/** Find coordinates using a VGI pipeline */
 			childNodeList.sort();
 			childWayList.sort();
@@ -247,7 +252,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 						}
 					}
 				}
-				if (withinBBox) {
+				if (withinBBox || feature.getVgiGeometryType().equals(VgiGeometryType.RELATION)) {
 					filteredFeatureList.add(feature);
 				}
 			}
@@ -286,10 +291,10 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			for (IVgiOperation featureOperation : feature.getOperationList()) {
 				
 				/** Create childElementHistory (will be used for adding OpModifyWayCoordinate) */
-				if (featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE) 
-						|| featureOperation.getVgiOperationType().equals(VgiOperationType.OP_REMOVE_NODE)
-						|| featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)
-						|| featureOperation.getVgiOperationType().equals(VgiOperationType.OP_REMOVE_MEMBER)) {
+				if (featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
+//						|| featureOperation.getVgiOperationType().equals(VgiOperationType.OP_REMOVE_NODE)
+//						|| featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)
+//						|| featureOperation.getVgiOperationType().equals(VgiOperationType.OP_REMOVE_MEMBER)) {
 					if (!childElementHistories.containsKey(featureOperation.getRefId())) {
 						/** Initialize child element history */
 						childElementHistories.put(featureOperation.getRefId(), new ArrayList<IVgiOperation>());
@@ -297,7 +302,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 					childElementHistories.get(featureOperation.getRefId()).add(featureOperation);
 				}
 				
-				/** Only OpAddNode (and OpAddMember) */ //TODO relations are not implemented from here to end
+				/** Only OpAddNode (and OpAddMember) */
 				if (!featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) continue;
 				
 				/** Find ref element */
@@ -306,14 +311,14 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				refElementForSearch.setOid(featureOperation.getRefId());
 				if (featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
 					refElementForSearch.setVgiGeometryType(VgiGeometryType.POINT);
-				} else if (featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
-					if (featureOperation.getKey().equals("n")) {
-						refElementForSearch.setVgiGeometryType(VgiGeometryType.POINT);
-					} else if (featureOperation.getKey().equals("w")) {
-						refElementForSearch.setVgiGeometryType(VgiGeometryType.LINE);
-					} else if (featureOperation.getKey().equals("r")) {
-						refElementForSearch.setVgiGeometryType(VgiGeometryType.RELATION);
-					}
+//				} else if (featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
+//					if (featureOperation.getKey().equals("n")) {
+//						refElementForSearch.setVgiGeometryType(VgiGeometryType.POINT);
+//					} else if (featureOperation.getKey().equals("w")) {
+//						refElementForSearch.setVgiGeometryType(VgiGeometryType.LINE);
+//					} else if (featureOperation.getKey().equals("r")) {
+//						refElementForSearch.setVgiGeometryType(VgiGeometryType.RELATION);
+//					}
 				}
 				int index = Collections.binarySearch(refElements, refElementForSearch, VgiFeatureImpl.getFeatureComparator());
 				if (index >= 0) {
@@ -324,7 +329,10 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 					if (settings.getCurrentPolygon() == null) {
 						/** only write error if no polygon filter is set */
 						if (numNotFound < 100 || numNotFound % 10000 == 0) {
-							log.error(featureOperation.getVgiGeometryType() + "/" + featureOperation.getOid() + "/v" + featureOperation.getVersion() + ": Cannot find ref element " + refElementForSearch.getVgiGeometryType() + "/" + refElementForSearch.getOid() + " (" + numNotFound + "/" + (numFound + numNotFound) + ")");
+							log.error(featureOperation.getVgiGeometryType() + "/" + featureOperation.getOid() + "/v"
+									+ featureOperation.getVersion() + ": Cannot find ref element "
+									+ refElementForSearch.getVgiGeometryType() + "/" + refElementForSearch.getOid()
+									+ " (" + numNotFound + "/" + (numFound + numNotFound) + ")");
 						}
 					}
 					continue;
@@ -382,8 +390,11 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 					if (membershipCount == 0) continue;
 					
 					/** Add OP_UPDATE_WAY_COORDINATE */
-					IVgiOperation newOperation = new VgiOperationImpl(feature.getOid(), feature.getVgiGeometryType(), VgiOperationType.OP_MODIFY_WAY_COORDINATE, nodeOperation.getUid(), nodeOperation.getUser(), nodeOperation.getTimestamp(), Short.MAX_VALUE, nodeOperation.getChangesetid(), nodeOperation.getCoordinate(), "", "", nodeOperation.getOid(), -1);
-					
+					IVgiOperation newOperation = new VgiOperationImpl(feature.getOid(), feature.getVgiGeometryType(),
+							VgiOperationType.OP_MODIFY_WAY_COORDINATE, nodeOperation.getUid(), nodeOperation.getUser(),
+							nodeOperation.getTimestamp(), Short.MAX_VALUE, nodeOperation.getChangesetid(),
+							nodeOperation.getCoordinate(), "", "", nodeOperation.getOid(), -1);
+
 					/** Find index and version with feature operation list */
 					int index = Collections.binarySearch(feature.getOperationList(), newOperation, VgiOperationImpl.getTimestampComparator());
 					if (index >= 0) {

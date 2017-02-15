@@ -42,4 +42,6 @@ public interface IVgiFeature extends IVgiBaseObject {
 	
 	LocalizeType getLocalizeType();
 	void setLocalizeType(LocalizeType localizeType);
+
+	void stripFeature();
 }
