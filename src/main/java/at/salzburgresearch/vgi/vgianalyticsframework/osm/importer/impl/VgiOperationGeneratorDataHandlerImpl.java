@@ -1,4 +1,4 @@
-/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+﻿/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -154,9 +154,6 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			/** Add all nodes and filtered ways/relations to feature list */
 			boolean filterByTag = currentFeature.filterByTag(settings.getFilterTag());
 			if (currentFeature.getVgiGeometryType().equals(VgiGeometryType.POINT) || filterByTag) {
-				if (!filterByTag) {
-					currentFeature.stripFeature();
-				}
 				featureList.add(currentFeature);
 				
 				/** Retrieve children elements */

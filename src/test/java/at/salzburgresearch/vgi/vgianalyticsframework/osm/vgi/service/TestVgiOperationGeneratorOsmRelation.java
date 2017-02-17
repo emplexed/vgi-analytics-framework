@@ -173,6 +173,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 		Assert.assertEquals(1, operations.size());
 		
 		Assert.assertEquals(VgiOperationType.OP_REMOVE_MEMBER, operations.get(0).getVgiOperationType());
+		Assert.assertEquals(3, operations.get(0).getPosition());
 	}
 	
 	@Test
@@ -239,6 +240,40 @@ public class TestVgiOperationGeneratorOsmRelation {
 		Assert.assertEquals(6, operations.get(3).getRefId());
 		Assert.assertEquals("r", operations.get(3).getKey());
 		Assert.assertEquals(2, operations.get(3).getPosition());
+	}
+	
+	@Test
+    public void testRelation879() {
+		Relation r1 = new Relation();
+		r1.setId(879);
+		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
+		memberlist1.add(new RelationMember(315642822, OsmElementType.NODE, ""));
+		memberlist1.add(new RelationMember(4870766, OsmElementType.WAY, "outer"));
+		memberlist1.add(new RelationMember(8154192, OsmElementType.WAY, "inner"));
+		memberlist1.add(new RelationMember(25692566, OsmElementType.WAY, ""));
+		r1.setMembers(memberlist1);
+		
+		Relation r2 = new Relation();
+		r2.setId(879);
+		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
+		memberlist2.add(new RelationMember(315642822, OsmElementType.NODE, ""));
+		memberlist2.add(new RelationMember(315642830, OsmElementType.NODE, ""));
+		memberlist2.add(new RelationMember(4870766, OsmElementType.WAY, "outer"));
+		memberlist2.add(new RelationMember(8154192, OsmElementType.WAY, "inner"));
+		memberlist2.add(new RelationMember(25692566, OsmElementType.WAY, ""));
+		r2.setMembers(memberlist2);
+		
+		IVgiModelFactory factory = new VgiModelFactoryImpl();
+		VgiOperationGeneratorOsmRelationImpl opGenerator = new VgiOperationGeneratorOsmRelationImpl(factory);
+		
+		List<IVgiOperation> operations = opGenerator.generateRelationOperations(r2, r1);
+		
+		Assert.assertEquals(1, operations.size());
+		
+		Assert.assertEquals(VgiOperationType.OP_ADD_MEMBER, operations.get(0).getVgiOperationType());
+		Assert.assertEquals(315642830, operations.get(0).getRefId());
+		Assert.assertEquals("n", operations.get(0).getKey());
+		Assert.assertEquals(1, operations.get(0).getPosition());
 	}
 	
 	@Test
