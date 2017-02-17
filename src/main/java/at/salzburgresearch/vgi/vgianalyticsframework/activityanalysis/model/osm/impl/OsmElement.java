@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -33,7 +33,9 @@ public abstract class OsmElement implements IOsmElement {
 	protected boolean visible = false;
 	protected Map<String, String> tags = null;
 
-	public OsmElement() {
+	public OsmElement(OsmElementType elementType, long id) {
+		this.elementType = elementType;
+		this.id = id;
 		tags = new HashMap<String, String>();
 	}
 	

@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,14 +17,9 @@ package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm
 
 public class RelationMember extends OsmElement {
 	private String role = null;
-	
-	public RelationMember() {
-		super();
-	}
 
 	public RelationMember(long memberId, OsmElementType elementType, String role) {
-		this.id = memberId;
-		this.elementType = elementType;
+		super(elementType, memberId);
 		this.role = role;
 	}
 

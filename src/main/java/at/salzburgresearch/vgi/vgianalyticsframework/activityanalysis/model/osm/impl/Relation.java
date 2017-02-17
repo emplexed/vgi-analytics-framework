@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ public class Relation extends OsmElement {
 	
 	private List<RelationMember> members = null;
 	
-	public Relation() {
-		super();
+	public Relation(long id) {
+		super(OsmElementType.RELATION, id);
 	}
 	public Relation(OsmElementType elementType, long id, int uid, String username, Date timestamp, int changesetId,
 			short version, boolean visible, Map<String, String> tags, List<RelationMember> members) {

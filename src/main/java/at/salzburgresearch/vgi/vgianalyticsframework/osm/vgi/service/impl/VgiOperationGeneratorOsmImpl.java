@@ -1,4 +1,4 @@
-/** Copyright 2016, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
+/** Copyright 2017, Simon Gröchenig, Salzburg Research Forschungsgesellschaft m.b.H.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -134,23 +134,37 @@ public class VgiOperationGeneratorOsmImpl extends AbstractVgiOperationOsmGenerat
 		List<IVgiOperation> operationList = new ArrayList<IVgiOperation>();
 		
 		if (!value.isVisible() && (oldValue == null || oldValue.isVisible())) {
-			if (value instanceof Node) {
-				operationList.add(operationFactory.newOperation(value.getId(), geometryType, VgiOperationType.OP_DELETE_NODE, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", -1, -1));
-			} else if (value instanceof Way) {
-				operationList.add(operationFactory.newOperation(value.getId(), geometryType, VgiOperationType.OP_DELETE_WAY, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", -1, -1));
-			} else if (value instanceof Relation) {
-				operationList.add(operationFactory.newOperation(value.getId(), geometryType, VgiOperationType.OP_DELETE_RELATION, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", -1, -1));
+			if (value.getElementType().equals(OsmElementType.NODE)) {
+				operationList.add(operationFactory.newOperation(value.getId(), geometryType,
+						VgiOperationType.OP_DELETE_NODE, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), null, "", "", -1, -1));
+			} else if (value.getElementType().equals(OsmElementType.WAY)) {
+				operationList.add(operationFactory.newOperation(value.getId(), geometryType,
+						VgiOperationType.OP_DELETE_WAY, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), null, "", "", -1, -1));
+			} else if (value.getElementType().equals(OsmElementType.RELATION)) {
+				operationList.add(operationFactory.newOperation(value.getId(), geometryType,
+						VgiOperationType.OP_DELETE_RELATION, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), null, "", "", -1, -1));
 			}
 		}
 		
 		if (value.isVisible() && (oldValue != null && !oldValue.isVisible())) {
 			if (value.getElementType().equals(OsmElementType.NODE)) {
-				Coordinate coordinate = new Coordinate(((Node) value).getCoordinate().x, ((Node) value).getCoordinate().y);
-				operationList.add(operationFactory.newOperation(value.getId(), geometryType, VgiOperationType.OP_RECREATE_NODE, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), coordinate, "", "", -1, -1));
+				Coordinate coordinate = new Coordinate(((Node) value).getCoordinate().x,
+						((Node) value).getCoordinate().y);
+				operationList.add(operationFactory.newOperation(value.getId(), geometryType,
+						VgiOperationType.OP_RECREATE_NODE, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), coordinate, "", "", -1, -1));
 			} else if (value.getElementType().equals(OsmElementType.WAY)) {
-				operationList.add(operationFactory.newOperation(value.getId(), geometryType, VgiOperationType.OP_RECREATE_WAY, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", -1, -1));
+				operationList.add(operationFactory.newOperation(value.getId(), geometryType,
+						VgiOperationType.OP_RECREATE_WAY, value.getUid(), value.getUsername(), value.getTimestamp(),
+						(short) value.getVersion(), (int) value.getChangesetId(), null, "", "", -1, -1));
 			} else if (value.getElementType().equals(OsmElementType.RELATION)) {
-				operationList.add(operationFactory.newOperation(value.getId(), geometryType, VgiOperationType.OP_RECREATE_RELATION, value.getUid(), value.getUsername(), value.getTimestamp(), (short)value.getVersion(), (int)value.getChangesetId(), null, "", "", -1, -1));
+				operationList.add(operationFactory.newOperation(value.getId(), geometryType,
+						VgiOperationType.OP_RECREATE_RELATION, value.getUid(), value.getUsername(),
+						value.getTimestamp(), (short) value.getVersion(), (int) value.getChangesetId(), null, "", "",
+						-1, -1));
 			}
 		}
 		

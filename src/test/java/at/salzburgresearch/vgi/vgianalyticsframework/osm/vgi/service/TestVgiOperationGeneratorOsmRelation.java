@@ -38,15 +38,37 @@ import junit.framework.Assert;
 public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
+	public void testCreateRelation() {
+		Relation r2 = new Relation(1);
+		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
+		memberlist2.add(new RelationMember(1, OsmElementType.NODE, ""));
+		memberlist2.add(new RelationMember(2, OsmElementType.NODE, ""));
+		memberlist2.add(new RelationMember(3, OsmElementType.NODE, ""));
+		memberlist2.add(new RelationMember(4, OsmElementType.NODE, ""));
+		r2.setMembers(memberlist2);
+		
+		IVgiModelFactory factory = new VgiModelFactoryImpl();
+		VgiOperationGeneratorOsmRelationImpl opGenerator = new VgiOperationGeneratorOsmRelationImpl(factory);
+		
+		List<IVgiOperation> operations = opGenerator.generateRelationOperations(r2, null);
+		
+		Assert.assertEquals(5, operations.size());
+
+		Assert.assertEquals(VgiOperationType.OP_CREATE_RELATION, operations.get(0).getVgiOperationType());
+		Assert.assertEquals(VgiOperationType.OP_ADD_MEMBER, operations.get(1).getVgiOperationType());
+		Assert.assertEquals(1, operations.get(1).getRefId());
+	}
+	
+	@Test
     public void testAddNodeMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(3, OsmElementType.NODE, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist2.add(new RelationMember(2, OsmElementType.NODE, ""));
@@ -67,14 +89,14 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testAddWayMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.WAY, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.WAY, ""));
 		memberlist1.add(new RelationMember(3, OsmElementType.WAY, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.WAY, ""));
 		memberlist2.add(new RelationMember(2, OsmElementType.WAY, ""));
@@ -95,14 +117,14 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testAddRelationMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.RELATION, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.RELATION, ""));
 		memberlist1.add(new RelationMember(3, OsmElementType.RELATION, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.RELATION, ""));
 		memberlist2.add(new RelationMember(2, OsmElementType.RELATION, ""));
@@ -123,7 +145,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testRemoveNodeMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.NODE, ""));
@@ -131,7 +153,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 		memberlist1.add(new RelationMember(4, OsmElementType.NODE, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist2.add(new RelationMember(2, OsmElementType.NODE, ""));
@@ -150,7 +172,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testRemoveWayMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.WAY, ""));
@@ -158,7 +180,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 		memberlist1.add(new RelationMember(4, OsmElementType.WAY, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist2.add(new RelationMember(2, OsmElementType.WAY, ""));
@@ -178,7 +200,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testRemoveRelationMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.WAY, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.WAY, ""));
@@ -186,7 +208,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 		memberlist1.add(new RelationMember(4, OsmElementType.RELATION, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.WAY, ""));
 		memberlist2.add(new RelationMember(2, OsmElementType.WAY, ""));
@@ -205,7 +227,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testAddAndRemoveMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.WAY, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.WAY, ""));
@@ -213,7 +235,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 		memberlist1.add(new RelationMember(4, OsmElementType.RELATION, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.WAY, ""));
 		memberlist2.add(new RelationMember(5, OsmElementType.WAY, ""));
@@ -244,8 +266,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testRelation879() {
-		Relation r1 = new Relation();
-		r1.setId(879);
+		Relation r1 = new Relation(879);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(315642822, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(4870766, OsmElementType.WAY, "outer"));
@@ -253,8 +274,7 @@ public class TestVgiOperationGeneratorOsmRelation {
 		memberlist1.add(new RelationMember(25692566, OsmElementType.WAY, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
-		r2.setId(879);
+		Relation r2 = new Relation(879);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(315642822, OsmElementType.NODE, ""));
 		memberlist2.add(new RelationMember(315642830, OsmElementType.NODE, ""));
@@ -278,14 +298,14 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testModifyRole() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(3, OsmElementType.NODE, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist2.add(new RelationMember(2, OsmElementType.NODE, "newrole"));
@@ -306,14 +326,14 @@ public class TestVgiOperationGeneratorOsmRelation {
 	
 	@Test
     public void testReorderMember() {
-		Relation r1 = new Relation();
+		Relation r1 = new Relation(1);
 		List<RelationMember> memberlist1 = new ArrayList<RelationMember>();
 		memberlist1.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(2, OsmElementType.NODE, ""));
 		memberlist1.add(new RelationMember(3, OsmElementType.NODE, ""));
 		r1.setMembers(memberlist1);
 		
-		Relation r2 = new Relation();
+		Relation r2 = new Relation(1);
 		List<RelationMember> memberlist2 = new ArrayList<RelationMember>();
 		memberlist2.add(new RelationMember(1, OsmElementType.NODE, ""));
 		memberlist2.add(new RelationMember(3, OsmElementType.NODE, ""));
