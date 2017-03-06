@@ -73,8 +73,10 @@ public class VgiQuadtreeBuilder {
 			
 			IVgiPipeline pipeline = ((IVgiPipeline)ctx.getBean("vgiPipeline"));
 			
-			IVgiPipelineSettings settings = ((IVgiPipelineSettings)ctx.getBean("vgiPipelineSettings"));
-			settings.loadSettings(settingsFile);
+			IVgiPipelineSettings settings = ((IVgiPipelineSettings) ctx.getBean("vgiPipelineSettings"));
+			if (!settings.loadSettings(settingsFile)) {
+				System.exit(1);
+			}
 			
 			pipeline.start();
 

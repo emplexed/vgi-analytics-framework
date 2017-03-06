@@ -36,6 +36,11 @@ import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.OsmDataConsume
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.impl.OsmPbfParser;
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.impl.VgiOperationGeneratorDataHandlerImpl;
 
+/**
+ * TODO use application context to load settings and data handler
+ * @author sgroeche
+ *
+ */
 public class OsmHistoryImporter {
 	private static Logger log = Logger.getLogger(OsmHistoryImporter.class);
 
@@ -93,13 +98,14 @@ public class OsmHistoryImporter {
             }
 			
 			IVgiPipelineSettings settings = ((IVgiPipelineSettings)ctx.getBean("vgiPipelineSettings"));
-			settings.loadSettings(settingsFile);
+			if (!settings.loadSettings(settingsFile)) {
+				System.exit(1);
+			}
 			
 			InputStream input = new FileInputStream(osmHistoryFile);
 			OsmPbfParser osmParser = new OsmPbfParser();
 
 			OsmDataConsumer osmDataConsumer = ((VgiOperationGeneratorDataHandlerImpl)ctx.getBean("vgiOperationGeneratorDataHandler"));
-			settings.loadSettings(settingsFile);
 			osmParser.setSink(osmDataConsumer);
 			new BlockInputStream(input, osmParser).process();
 			

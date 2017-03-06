@@ -102,9 +102,11 @@ public class VgiAnalysis {
 			WKTReader wktReader = new WKTReader();
 
 			IVgiPipeline pipeline = ((IVgiPipeline) ctx.getBean("vgiPipeline"));
-
+			
 			IVgiPipelineSettings settings = ((IVgiPipelineSettings) ctx.getBean("vgiPipelineSettings"));
-			settings.loadSettings(settingsFile);
+			if (!settings.loadSettings(settingsFile)) {
+				System.exit(1);
+			}
 
 			if (batchProcessing) {
             	if (settings.getFilterPolygonList() == null) {

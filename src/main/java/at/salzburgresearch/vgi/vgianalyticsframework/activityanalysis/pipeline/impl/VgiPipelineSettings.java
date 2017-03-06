@@ -173,14 +173,14 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	}
 	
 	@Override
-	public void loadSettings(File url) {
+	public boolean loadSettings(File url) {
 		if (settingsLoaded) {
 			log.info("Settings already loaded!");
-			return;
+			return true;
 		}
 		if (url == null) {
 			log.info("No settings file specified");
-			return;
+			return false;
 		}
 		
 	    try {
@@ -623,14 +623,18 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
             }
             settingsLoaded = true;
 	    } catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			log.error("Cannot parse settings file!");
+			return false;
 	    } catch (SAXException e) {
-			e.printStackTrace();
+			log.error("Cannot interpret settings file!");
+			return false;
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Cannot read settings file!");
+			return false;
 		}
 	    
 	    log.info("Settings '" + this.getSettingName() + "' loaded");
+	    return true;
 	}
 
 	private String prepareFile(String fileString) {

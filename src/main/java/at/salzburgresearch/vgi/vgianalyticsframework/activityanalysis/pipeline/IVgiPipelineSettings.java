@@ -33,8 +33,9 @@ public interface IVgiPipelineSettings {
 
 	/**
 	 * Reads VGI settings from a XML file
+	 * @return 
 	 */
-	void loadSettings(File file);
+	boolean loadSettings(File file);
 	
 	String getSettingName();
 	void setSettingName(String name);
