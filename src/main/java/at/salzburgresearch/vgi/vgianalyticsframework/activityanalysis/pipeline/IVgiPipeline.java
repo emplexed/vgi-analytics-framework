@@ -20,6 +20,7 @@ import java.util.List;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.IVgiPipelineConsumer;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.producer.IVgiAnalysisPipelineProducer;
 import gnu.trove.list.array.TLongArrayList;
 
 /**
@@ -35,13 +36,11 @@ public interface IVgiPipeline {
 	void setConsumers(List<IVgiPipelineConsumer> consumers);
 	List<IVgiPipelineConsumer> getConsumers();
 
-	String getProducerName();
-	void setProducerName(String producerName);
+	void setProducer(IVgiAnalysisPipelineProducer producer);
+	void setProducerQuadtree(IVgiAnalysisPipelineProducer producerQuadtree);
 	
 	void setPbfDataFolder(File file);
 	void setNumThreads(int threadCount);
-
-	void setVgiPipelineSettings(IVgiPipelineSettings settings);
 	
 	/**
 	 * Sets a node ID filter. Set an empty list if no ways should be processed.

@@ -1291,6 +1291,30 @@ public final class OperationProto {
        */
       at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder getOperationOrBuilder(
           int index);
+
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> 
+          getRelationMemberOperationList();
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation getRelationMemberOperation(int index);
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      int getRelationMemberOperationCount();
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      java.util.List<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
+          getRelationMemberOperationOrBuilderList();
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder getRelationMemberOperationOrBuilder(
+          int index);
     }
     /**
      * Protobuf type {@code impl.PbfVgiOperationContainer.PbfVgiFeatureBatch}
@@ -1352,6 +1376,14 @@ public final class OperationProto {
                 operation_.add(input.readMessage(at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.PARSER, extensionRegistry));
                 break;
               }
+              case 26: {
+                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                  relationMemberOperation_ = new java.util.ArrayList<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation>();
+                  mutable_bitField0_ |= 0x00000002;
+                }
+                relationMemberOperation_.add(input.readMessage(at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.PARSER, extensionRegistry));
+                break;
+              }
             }
           }
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -1362,6 +1394,9 @@ public final class OperationProto {
         } finally {
           if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
             operation_ = java.util.Collections.unmodifiableList(operation_);
+          }
+          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+            relationMemberOperation_ = java.util.Collections.unmodifiableList(relationMemberOperation_);
           }
           this.unknownFields = unknownFields.build();
           makeExtensionsImmutable();
@@ -1429,8 +1464,44 @@ public final class OperationProto {
         return operation_.get(index);
       }
 
+      public static final int RELATIONMEMBEROPERATION_FIELD_NUMBER = 3;
+      private java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> relationMemberOperation_;
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      public java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> getRelationMemberOperationList() {
+        return relationMemberOperation_;
+      }
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      public java.util.List<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
+          getRelationMemberOperationOrBuilderList() {
+        return relationMemberOperation_;
+      }
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      public int getRelationMemberOperationCount() {
+        return relationMemberOperation_.size();
+      }
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation getRelationMemberOperation(int index) {
+        return relationMemberOperation_.get(index);
+      }
+      /**
+       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+       */
+      public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder getRelationMemberOperationOrBuilder(
+          int index) {
+        return relationMemberOperation_.get(index);
+      }
+
       private void initFields() {
         operation_ = java.util.Collections.emptyList();
+        relationMemberOperation_ = java.util.Collections.emptyList();
       }
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
@@ -1448,6 +1519,9 @@ public final class OperationProto {
         for (int i = 0; i < operation_.size(); i++) {
           output.writeMessage(1, operation_.get(i));
         }
+        for (int i = 0; i < relationMemberOperation_.size(); i++) {
+          output.writeMessage(3, relationMemberOperation_.get(i));
+        }
         getUnknownFields().writeTo(output);
       }
 
@@ -1460,6 +1534,10 @@ public final class OperationProto {
         for (int i = 0; i < operation_.size(); i++) {
           size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(1, operation_.get(i));
+        }
+        for (int i = 0; i < relationMemberOperation_.size(); i++) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(3, relationMemberOperation_.get(i));
         }
         size += getUnknownFields().getSerializedSize();
         memoizedSerializedSize = size;
@@ -1571,6 +1649,7 @@ public final class OperationProto {
         private void maybeForceBuilderInitialization() {
           if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
             getOperationFieldBuilder();
+            getRelationMemberOperationFieldBuilder();
           }
         }
         private static Builder create() {
@@ -1584,6 +1663,12 @@ public final class OperationProto {
             bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             operationBuilder_.clear();
+          }
+          if (relationMemberOperationBuilder_ == null) {
+            relationMemberOperation_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            relationMemberOperationBuilder_.clear();
           }
           return this;
         }
@@ -1620,6 +1705,15 @@ public final class OperationProto {
             result.operation_ = operation_;
           } else {
             result.operation_ = operationBuilder_.build();
+          }
+          if (relationMemberOperationBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) == 0x00000002)) {
+              relationMemberOperation_ = java.util.Collections.unmodifiableList(relationMemberOperation_);
+              bitField0_ = (bitField0_ & ~0x00000002);
+            }
+            result.relationMemberOperation_ = relationMemberOperation_;
+          } else {
+            result.relationMemberOperation_ = relationMemberOperationBuilder_.build();
           }
           onBuilt();
           return result;
@@ -1659,6 +1753,32 @@ public final class OperationProto {
                      getOperationFieldBuilder() : null;
               } else {
                 operationBuilder_.addAllMessages(other.operation_);
+              }
+            }
+          }
+          if (relationMemberOperationBuilder_ == null) {
+            if (!other.relationMemberOperation_.isEmpty()) {
+              if (relationMemberOperation_.isEmpty()) {
+                relationMemberOperation_ = other.relationMemberOperation_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+              } else {
+                ensureRelationMemberOperationIsMutable();
+                relationMemberOperation_.addAll(other.relationMemberOperation_);
+              }
+              onChanged();
+            }
+          } else {
+            if (!other.relationMemberOperation_.isEmpty()) {
+              if (relationMemberOperationBuilder_.isEmpty()) {
+                relationMemberOperationBuilder_.dispose();
+                relationMemberOperationBuilder_ = null;
+                relationMemberOperation_ = other.relationMemberOperation_;
+                bitField0_ = (bitField0_ & ~0x00000002);
+                relationMemberOperationBuilder_ = 
+                  com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                     getRelationMemberOperationFieldBuilder() : null;
+              } else {
+                relationMemberOperationBuilder_.addAllMessages(other.relationMemberOperation_);
               }
             }
           }
@@ -1929,6 +2049,246 @@ public final class OperationProto {
           return operationBuilder_;
         }
 
+        private java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> relationMemberOperation_ =
+          java.util.Collections.emptyList();
+        private void ensureRelationMemberOperationIsMutable() {
+          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+            relationMemberOperation_ = new java.util.ArrayList<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation>(relationMemberOperation_);
+            bitField0_ |= 0x00000002;
+           }
+        }
+
+        private com.google.protobuf.RepeatedFieldBuilder<
+            at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> relationMemberOperationBuilder_;
+
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> getRelationMemberOperationList() {
+          if (relationMemberOperationBuilder_ == null) {
+            return java.util.Collections.unmodifiableList(relationMemberOperation_);
+          } else {
+            return relationMemberOperationBuilder_.getMessageList();
+          }
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public int getRelationMemberOperationCount() {
+          if (relationMemberOperationBuilder_ == null) {
+            return relationMemberOperation_.size();
+          } else {
+            return relationMemberOperationBuilder_.getCount();
+          }
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation getRelationMemberOperation(int index) {
+          if (relationMemberOperationBuilder_ == null) {
+            return relationMemberOperation_.get(index);
+          } else {
+            return relationMemberOperationBuilder_.getMessage(index);
+          }
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder setRelationMemberOperation(
+            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation value) {
+          if (relationMemberOperationBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureRelationMemberOperationIsMutable();
+            relationMemberOperation_.set(index, value);
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.setMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder setRelationMemberOperation(
+            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder builderForValue) {
+          if (relationMemberOperationBuilder_ == null) {
+            ensureRelationMemberOperationIsMutable();
+            relationMemberOperation_.set(index, builderForValue.build());
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.setMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder addRelationMemberOperation(at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation value) {
+          if (relationMemberOperationBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureRelationMemberOperationIsMutable();
+            relationMemberOperation_.add(value);
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.addMessage(value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder addRelationMemberOperation(
+            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation value) {
+          if (relationMemberOperationBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            ensureRelationMemberOperationIsMutable();
+            relationMemberOperation_.add(index, value);
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.addMessage(index, value);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder addRelationMemberOperation(
+            at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder builderForValue) {
+          if (relationMemberOperationBuilder_ == null) {
+            ensureRelationMemberOperationIsMutable();
+            relationMemberOperation_.add(builderForValue.build());
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.addMessage(builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder addRelationMemberOperation(
+            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder builderForValue) {
+          if (relationMemberOperationBuilder_ == null) {
+            ensureRelationMemberOperationIsMutable();
+            relationMemberOperation_.add(index, builderForValue.build());
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.addMessage(index, builderForValue.build());
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder addAllRelationMemberOperation(
+            java.lang.Iterable<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> values) {
+          if (relationMemberOperationBuilder_ == null) {
+            ensureRelationMemberOperationIsMutable();
+            com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, relationMemberOperation_);
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.addAllMessages(values);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder clearRelationMemberOperation() {
+          if (relationMemberOperationBuilder_ == null) {
+            relationMemberOperation_ = java.util.Collections.emptyList();
+            bitField0_ = (bitField0_ & ~0x00000002);
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.clear();
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public Builder removeRelationMemberOperation(int index) {
+          if (relationMemberOperationBuilder_ == null) {
+            ensureRelationMemberOperationIsMutable();
+            relationMemberOperation_.remove(index);
+            onChanged();
+          } else {
+            relationMemberOperationBuilder_.remove(index);
+          }
+          return this;
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder getRelationMemberOperationBuilder(
+            int index) {
+          return getRelationMemberOperationFieldBuilder().getBuilder(index);
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder getRelationMemberOperationOrBuilder(
+            int index) {
+          if (relationMemberOperationBuilder_ == null) {
+            return relationMemberOperation_.get(index);  } else {
+            return relationMemberOperationBuilder_.getMessageOrBuilder(index);
+          }
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public java.util.List<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
+             getRelationMemberOperationOrBuilderList() {
+          if (relationMemberOperationBuilder_ != null) {
+            return relationMemberOperationBuilder_.getMessageOrBuilderList();
+          } else {
+            return java.util.Collections.unmodifiableList(relationMemberOperation_);
+          }
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder addRelationMemberOperationBuilder() {
+          return getRelationMemberOperationFieldBuilder().addBuilder(
+              at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder addRelationMemberOperationBuilder(
+            int index) {
+          return getRelationMemberOperationFieldBuilder().addBuilder(
+              index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.getDefaultInstance());
+        }
+        /**
+         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation relationMemberOperation = 3;</code>
+         */
+        public java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder> 
+             getRelationMemberOperationBuilderList() {
+          return getRelationMemberOperationFieldBuilder().getBuilderList();
+        }
+        private com.google.protobuf.RepeatedFieldBuilder<
+            at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
+            getRelationMemberOperationFieldBuilder() {
+          if (relationMemberOperationBuilder_ == null) {
+            relationMemberOperationBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+                at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder>(
+                    relationMemberOperation_,
+                    ((bitField0_ & 0x00000002) == 0x00000002),
+                    getParentForChildren(),
+                    isClean());
+            relationMemberOperation_ = null;
+          }
+          return relationMemberOperationBuilder_;
+        }
+
         // @@protoc_insertion_point(builder_scope:impl.PbfVgiOperationContainer.PbfVgiFeatureBatch)
       }
 
@@ -1938,771 +2298,6 @@ public final class OperationProto {
       }
 
       // @@protoc_insertion_point(class_scope:impl.PbfVgiOperationContainer.PbfVgiFeatureBatch)
-    }
-
-    public interface PbfVgiFeatureOrBuilder extends
-        // @@protoc_insertion_point(interface_extends:impl.PbfVgiOperationContainer.PbfVgiFeature)
-        com.google.protobuf.MessageOrBuilder {
-
-      /**
-       * <code>required uint64 oid = 2;</code>
-       */
-      boolean hasOid();
-      /**
-       * <code>required uint64 oid = 2;</code>
-       */
-      long getOid();
-
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> 
-          getOperationList();
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation getOperation(int index);
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      int getOperationCount();
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      java.util.List<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
-          getOperationOrBuilderList();
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder getOperationOrBuilder(
-          int index);
-    }
-    /**
-     * Protobuf type {@code impl.PbfVgiOperationContainer.PbfVgiFeature}
-     */
-    public static final class PbfVgiFeature extends
-        com.google.protobuf.GeneratedMessage implements
-        // @@protoc_insertion_point(message_implements:impl.PbfVgiOperationContainer.PbfVgiFeature)
-        PbfVgiFeatureOrBuilder {
-      // Use PbfVgiFeature.newBuilder() to construct.
-      private PbfVgiFeature(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-        super(builder);
-        this.unknownFields = builder.getUnknownFields();
-      }
-      private PbfVgiFeature(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-      private static final PbfVgiFeature defaultInstance;
-      public static PbfVgiFeature getDefaultInstance() {
-        return defaultInstance;
-      }
-
-      public PbfVgiFeature getDefaultInstanceForType() {
-        return defaultInstance;
-      }
-
-      private final com.google.protobuf.UnknownFieldSet unknownFields;
-      @java.lang.Override
-      public final com.google.protobuf.UnknownFieldSet
-          getUnknownFields() {
-        return this.unknownFields;
-      }
-      private PbfVgiFeature(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        initFields();
-        int mutable_bitField0_ = 0;
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-            com.google.protobuf.UnknownFieldSet.newBuilder();
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              default: {
-                if (!parseUnknownField(input, unknownFields,
-                                       extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
-              case 16: {
-                bitField0_ |= 0x00000001;
-                oid_ = input.readUInt64();
-                break;
-              }
-              case 26: {
-                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                  operation_ = new java.util.ArrayList<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation>();
-                  mutable_bitField0_ |= 0x00000002;
-                }
-                operation_.add(input.readMessage(at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.PARSER, extensionRegistry));
-                break;
-              }
-            }
-          }
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(this);
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(
-              e.getMessage()).setUnfinishedMessage(this);
-        } finally {
-          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-            operation_ = java.util.Collections.unmodifiableList(operation_);
-          }
-          this.unknownFields = unknownFields.build();
-          makeExtensionsImmutable();
-        }
-      }
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature.class, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature.Builder.class);
-      }
-
-      public static com.google.protobuf.Parser<PbfVgiFeature> PARSER =
-          new com.google.protobuf.AbstractParser<PbfVgiFeature>() {
-        public PbfVgiFeature parsePartialFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return new PbfVgiFeature(input, extensionRegistry);
-        }
-      };
-
-      @java.lang.Override
-      public com.google.protobuf.Parser<PbfVgiFeature> getParserForType() {
-        return PARSER;
-      }
-
-      private int bitField0_;
-      public static final int OID_FIELD_NUMBER = 2;
-      private long oid_;
-      /**
-       * <code>required uint64 oid = 2;</code>
-       */
-      public boolean hasOid() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required uint64 oid = 2;</code>
-       */
-      public long getOid() {
-        return oid_;
-      }
-
-      public static final int OPERATION_FIELD_NUMBER = 3;
-      private java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> operation_;
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      public java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> getOperationList() {
-        return operation_;
-      }
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      public java.util.List<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
-          getOperationOrBuilderList() {
-        return operation_;
-      }
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      public int getOperationCount() {
-        return operation_.size();
-      }
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation getOperation(int index) {
-        return operation_.get(index);
-      }
-      /**
-       * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-       */
-      public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder getOperationOrBuilder(
-          int index) {
-        return operation_.get(index);
-      }
-
-      private void initFields() {
-        oid_ = 0L;
-        operation_ = java.util.Collections.emptyList();
-      }
-      private byte memoizedIsInitialized = -1;
-      public final boolean isInitialized() {
-        byte isInitialized = memoizedIsInitialized;
-        if (isInitialized == 1) return true;
-        if (isInitialized == 0) return false;
-
-        if (!hasOid()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-        memoizedIsInitialized = 1;
-        return true;
-      }
-
-      public void writeTo(com.google.protobuf.CodedOutputStream output)
-                          throws java.io.IOException {
-        getSerializedSize();
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          output.writeUInt64(2, oid_);
-        }
-        for (int i = 0; i < operation_.size(); i++) {
-          output.writeMessage(3, operation_.get(i));
-        }
-        getUnknownFields().writeTo(output);
-      }
-
-      private int memoizedSerializedSize = -1;
-      public int getSerializedSize() {
-        int size = memoizedSerializedSize;
-        if (size != -1) return size;
-
-        size = 0;
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeUInt64Size(2, oid_);
-        }
-        for (int i = 0; i < operation_.size(); i++) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(3, operation_.get(i));
-        }
-        size += getUnknownFields().getSerializedSize();
-        memoizedSerializedSize = size;
-        return size;
-      }
-
-      private static final long serialVersionUID = 0L;
-      @java.lang.Override
-      protected java.lang.Object writeReplace()
-          throws java.io.ObjectStreamException {
-        return super.writeReplace();
-      }
-
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(
-          com.google.protobuf.ByteString data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(
-          com.google.protobuf.ByteString data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(byte[] data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(
-          byte[] data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseDelimitedFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseDelimitedFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseDelimitedFrom(input, extensionRegistry);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(
-          com.google.protobuf.CodedInputStream input)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input);
-      }
-      public static at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parseFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return PARSER.parseFrom(input, extensionRegistry);
-      }
-
-      public static Builder newBuilder() { return Builder.create(); }
-      public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder(at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature prototype) {
-        return newBuilder().mergeFrom(prototype);
-      }
-      public Builder toBuilder() { return newBuilder(this); }
-
-      @java.lang.Override
-      protected Builder newBuilderForType(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        Builder builder = new Builder(parent);
-        return builder;
-      }
-      /**
-       * Protobuf type {@code impl.PbfVgiOperationContainer.PbfVgiFeature}
-       */
-      public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-          // @@protoc_insertion_point(builder_implements:impl.PbfVgiOperationContainer.PbfVgiFeature)
-          at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeatureOrBuilder {
-        public static final com.google.protobuf.Descriptors.Descriptor
-            getDescriptor() {
-          return at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_descriptor;
-        }
-
-        protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-            internalGetFieldAccessorTable() {
-          return at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_fieldAccessorTable
-              .ensureFieldAccessorsInitialized(
-                  at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature.class, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature.Builder.class);
-        }
-
-        // Construct using at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature.newBuilder()
-        private Builder() {
-          maybeForceBuilderInitialization();
-        }
-
-        private Builder(
-            com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-          super(parent);
-          maybeForceBuilderInitialization();
-        }
-        private void maybeForceBuilderInitialization() {
-          if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-            getOperationFieldBuilder();
-          }
-        }
-        private static Builder create() {
-          return new Builder();
-        }
-
-        public Builder clear() {
-          super.clear();
-          oid_ = 0L;
-          bitField0_ = (bitField0_ & ~0x00000001);
-          if (operationBuilder_ == null) {
-            operation_ = java.util.Collections.emptyList();
-            bitField0_ = (bitField0_ & ~0x00000002);
-          } else {
-            operationBuilder_.clear();
-          }
-          return this;
-        }
-
-        public Builder clone() {
-          return create().mergeFrom(buildPartial());
-        }
-
-        public com.google.protobuf.Descriptors.Descriptor
-            getDescriptorForType() {
-          return at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_descriptor;
-        }
-
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature getDefaultInstanceForType() {
-          return at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature.getDefaultInstance();
-        }
-
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature build() {
-          at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature result = buildPartial();
-          if (!result.isInitialized()) {
-            throw newUninitializedMessageException(result);
-          }
-          return result;
-        }
-
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature buildPartial() {
-          at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature result = new at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature(this);
-          int from_bitField0_ = bitField0_;
-          int to_bitField0_ = 0;
-          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-            to_bitField0_ |= 0x00000001;
-          }
-          result.oid_ = oid_;
-          if (operationBuilder_ == null) {
-            if (((bitField0_ & 0x00000002) == 0x00000002)) {
-              operation_ = java.util.Collections.unmodifiableList(operation_);
-              bitField0_ = (bitField0_ & ~0x00000002);
-            }
-            result.operation_ = operation_;
-          } else {
-            result.operation_ = operationBuilder_.build();
-          }
-          result.bitField0_ = to_bitField0_;
-          onBuilt();
-          return result;
-        }
-
-        public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature) {
-            return mergeFrom((at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature)other);
-          } else {
-            super.mergeFrom(other);
-            return this;
-          }
-        }
-
-        public Builder mergeFrom(at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature other) {
-          if (other == at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature.getDefaultInstance()) return this;
-          if (other.hasOid()) {
-            setOid(other.getOid());
-          }
-          if (operationBuilder_ == null) {
-            if (!other.operation_.isEmpty()) {
-              if (operation_.isEmpty()) {
-                operation_ = other.operation_;
-                bitField0_ = (bitField0_ & ~0x00000002);
-              } else {
-                ensureOperationIsMutable();
-                operation_.addAll(other.operation_);
-              }
-              onChanged();
-            }
-          } else {
-            if (!other.operation_.isEmpty()) {
-              if (operationBuilder_.isEmpty()) {
-                operationBuilder_.dispose();
-                operationBuilder_ = null;
-                operation_ = other.operation_;
-                bitField0_ = (bitField0_ & ~0x00000002);
-                operationBuilder_ = 
-                  com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                     getOperationFieldBuilder() : null;
-              } else {
-                operationBuilder_.addAllMessages(other.operation_);
-              }
-            }
-          }
-          this.mergeUnknownFields(other.getUnknownFields());
-          return this;
-        }
-
-        public final boolean isInitialized() {
-          if (!hasOid()) {
-            
-            return false;
-          }
-          return true;
-        }
-
-        public Builder mergeFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws java.io.IOException {
-          at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature parsedMessage = null;
-          try {
-            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeature) e.getUnfinishedMessage();
-            throw e;
-          } finally {
-            if (parsedMessage != null) {
-              mergeFrom(parsedMessage);
-            }
-          }
-          return this;
-        }
-        private int bitField0_;
-
-        private long oid_ ;
-        /**
-         * <code>required uint64 oid = 2;</code>
-         */
-        public boolean hasOid() {
-          return ((bitField0_ & 0x00000001) == 0x00000001);
-        }
-        /**
-         * <code>required uint64 oid = 2;</code>
-         */
-        public long getOid() {
-          return oid_;
-        }
-        /**
-         * <code>required uint64 oid = 2;</code>
-         */
-        public Builder setOid(long value) {
-          bitField0_ |= 0x00000001;
-          oid_ = value;
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>required uint64 oid = 2;</code>
-         */
-        public Builder clearOid() {
-          bitField0_ = (bitField0_ & ~0x00000001);
-          oid_ = 0L;
-          onChanged();
-          return this;
-        }
-
-        private java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> operation_ =
-          java.util.Collections.emptyList();
-        private void ensureOperationIsMutable() {
-          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-            operation_ = new java.util.ArrayList<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation>(operation_);
-            bitField0_ |= 0x00000002;
-           }
-        }
-
-        private com.google.protobuf.RepeatedFieldBuilder<
-            at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> operationBuilder_;
-
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> getOperationList() {
-          if (operationBuilder_ == null) {
-            return java.util.Collections.unmodifiableList(operation_);
-          } else {
-            return operationBuilder_.getMessageList();
-          }
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public int getOperationCount() {
-          if (operationBuilder_ == null) {
-            return operation_.size();
-          } else {
-            return operationBuilder_.getCount();
-          }
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation getOperation(int index) {
-          if (operationBuilder_ == null) {
-            return operation_.get(index);
-          } else {
-            return operationBuilder_.getMessage(index);
-          }
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder setOperation(
-            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation value) {
-          if (operationBuilder_ == null) {
-            if (value == null) {
-              throw new NullPointerException();
-            }
-            ensureOperationIsMutable();
-            operation_.set(index, value);
-            onChanged();
-          } else {
-            operationBuilder_.setMessage(index, value);
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder setOperation(
-            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder builderForValue) {
-          if (operationBuilder_ == null) {
-            ensureOperationIsMutable();
-            operation_.set(index, builderForValue.build());
-            onChanged();
-          } else {
-            operationBuilder_.setMessage(index, builderForValue.build());
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder addOperation(at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation value) {
-          if (operationBuilder_ == null) {
-            if (value == null) {
-              throw new NullPointerException();
-            }
-            ensureOperationIsMutable();
-            operation_.add(value);
-            onChanged();
-          } else {
-            operationBuilder_.addMessage(value);
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder addOperation(
-            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation value) {
-          if (operationBuilder_ == null) {
-            if (value == null) {
-              throw new NullPointerException();
-            }
-            ensureOperationIsMutable();
-            operation_.add(index, value);
-            onChanged();
-          } else {
-            operationBuilder_.addMessage(index, value);
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder addOperation(
-            at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder builderForValue) {
-          if (operationBuilder_ == null) {
-            ensureOperationIsMutable();
-            operation_.add(builderForValue.build());
-            onChanged();
-          } else {
-            operationBuilder_.addMessage(builderForValue.build());
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder addOperation(
-            int index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder builderForValue) {
-          if (operationBuilder_ == null) {
-            ensureOperationIsMutable();
-            operation_.add(index, builderForValue.build());
-            onChanged();
-          } else {
-            operationBuilder_.addMessage(index, builderForValue.build());
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder addAllOperation(
-            java.lang.Iterable<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation> values) {
-          if (operationBuilder_ == null) {
-            ensureOperationIsMutable();
-            com.google.protobuf.AbstractMessageLite.Builder.addAll(
-                values, operation_);
-            onChanged();
-          } else {
-            operationBuilder_.addAllMessages(values);
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder clearOperation() {
-          if (operationBuilder_ == null) {
-            operation_ = java.util.Collections.emptyList();
-            bitField0_ = (bitField0_ & ~0x00000002);
-            onChanged();
-          } else {
-            operationBuilder_.clear();
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public Builder removeOperation(int index) {
-          if (operationBuilder_ == null) {
-            ensureOperationIsMutable();
-            operation_.remove(index);
-            onChanged();
-          } else {
-            operationBuilder_.remove(index);
-          }
-          return this;
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder getOperationBuilder(
-            int index) {
-          return getOperationFieldBuilder().getBuilder(index);
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder getOperationOrBuilder(
-            int index) {
-          if (operationBuilder_ == null) {
-            return operation_.get(index);  } else {
-            return operationBuilder_.getMessageOrBuilder(index);
-          }
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public java.util.List<? extends at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
-             getOperationOrBuilderList() {
-          if (operationBuilder_ != null) {
-            return operationBuilder_.getMessageOrBuilderList();
-          } else {
-            return java.util.Collections.unmodifiableList(operation_);
-          }
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder addOperationBuilder() {
-          return getOperationFieldBuilder().addBuilder(
-              at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.getDefaultInstance());
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder addOperationBuilder(
-            int index) {
-          return getOperationFieldBuilder().addBuilder(
-              index, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.getDefaultInstance());
-        }
-        /**
-         * <code>repeated .impl.PbfVgiOperationContainer.PbfVgiOperation operation = 3;</code>
-         */
-        public java.util.List<at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder> 
-             getOperationBuilderList() {
-          return getOperationFieldBuilder().getBuilderList();
-        }
-        private com.google.protobuf.RepeatedFieldBuilder<
-            at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder> 
-            getOperationFieldBuilder() {
-          if (operationBuilder_ == null) {
-            operationBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-                at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation.Builder, at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperationOrBuilder>(
-                    operation_,
-                    ((bitField0_ & 0x00000002) == 0x00000002),
-                    getParentForChildren(),
-                    isClean());
-            operation_ = null;
-          }
-          return operationBuilder_;
-        }
-
-        // @@protoc_insertion_point(builder_scope:impl.PbfVgiOperationContainer.PbfVgiFeature)
-      }
-
-      static {
-        defaultInstance = new PbfVgiFeature(true);
-        defaultInstance.initFields();
-      }
-
-      // @@protoc_insertion_point(class_scope:impl.PbfVgiOperationContainer.PbfVgiFeature)
     }
 
     public interface PbfVgiOperationOrBuilder extends
@@ -2829,6 +2424,14 @@ public final class OperationProto {
     }
     /**
      * Protobuf type {@code impl.PbfVgiOperationContainer.PbfVgiOperation}
+     *
+     * <pre>
+     *	message PbfVgiFeature {
+     *required uint64 oid = 1;
+     *repeated PbfVgiOperation operation = 2;
+     *repeated PbfVgiFeature relationMember = 3;
+     *}
+     * </pre>
      */
     public static final class PbfVgiOperation extends
         com.google.protobuf.GeneratedMessage implements
@@ -3415,6 +3018,14 @@ public final class OperationProto {
       }
       /**
        * Protobuf type {@code impl.PbfVgiOperationContainer.PbfVgiOperation}
+       *
+       * <pre>
+       *	message PbfVgiFeature {
+       *required uint64 oid = 1;
+       *repeated PbfVgiOperation operation = 2;
+       *repeated PbfVgiFeature relationMember = 3;
+       *}
+       * </pre>
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessage.Builder<Builder> implements
@@ -5955,11 +5566,6 @@ public final class OperationProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_impl_PbfVgiOperationContainer_PbfVgiFeatureBatch_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_impl_PbfVgiOperationContainer_PbfVgiOperation_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5983,7 +5589,7 @@ public final class OperationProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\017operation.proto\022\004impl\"\306\005\n\030PbfVgiOperat" +
+      "\n\017operation.proto\022\004impl\"\267\005\n\030PbfVgiOperat" +
       "ionContainer\022K\n\016featureWrapper\030\001 \003(\01323.i" +
       "mpl.PbfVgiOperationContainer.PbfVgiFeatu" +
       "reWrapper\032\234\001\n\024PbfVgiFeatureWrapper\022@\n\005by" +
@@ -5991,22 +5597,22 @@ public final class OperationProto {
       "r.PbfVgiFeatureBytes\022B\n\007feature\030\002 \002(\01321." +
       "impl.PbfVgiOperationContainer.PbfVgiFeat" +
       "ureBatch\032#\n\022PbfVgiFeatureBytes\022\r\n\005bytes\030" +
-      "\001 \002(\007\032W\n\022PbfVgiFeatureBatch\022A\n\toperation" +
-      "\030\001 \003(\0132..impl.PbfVgiOperationContainer.P",
-      "bfVgiOperation\032_\n\rPbfVgiFeature\022\013\n\003oid\030\002" +
-      " \002(\004\022A\n\toperation\030\003 \003(\0132..impl.PbfVgiOpe" +
-      "rationContainer.PbfVgiOperation\032\336\001\n\017PbfV" +
-      "giOperation\022\013\n\003oid\030\001 \001(\022\022\030\n\020vgiOperation" +
-      "Type\030\002 \001(\r\022\013\n\003uid\030\003 \001(\r\022\021\n\ttimestamp\030\004 \001" +
-      "(\021\022\023\n\013changesetId\030\005 \001(\021\022\017\n\007version\030\006 \001(\r" +
-      "\022\013\n\003ref\030\010 \001(\022\022\013\n\003key\030\t \001(\t\022\r\n\005value\030\n \001(" +
-      "\t\022\020\n\010position\030\013 \001(\r\022\021\n\tlongitude\030\r \001(\021\022\020" +
-      "\n\010latitude\030\016 \001(\021\"8\n\rPbfStringList\022\'\n\005ent" +
-      "ry\030\001 \003(\0132\030.impl.PbfStringListEntry\"5\n\022Pb",
-      "fStringListEntry\022\r\n\005value\030\001 \002(\t\022\020\n\010searc" +
-      "hId\030\002 \002(\rB`\nNat.salzburgresearch.vgi.vgi" +
-      "analyticsframework.activityanalysis.pers" +
-      "istence.pbfB\016OperationProto"
+      "\001 \002(\007\032\250\001\n\022PbfVgiFeatureBatch\022A\n\toperatio" +
+      "n\030\001 \003(\0132..impl.PbfVgiOperationContainer.",
+      "PbfVgiOperation\022O\n\027relationMemberOperati" +
+      "on\030\003 \003(\0132..impl.PbfVgiOperationContainer" +
+      ".PbfVgiOperation\032\336\001\n\017PbfVgiOperation\022\013\n\003" +
+      "oid\030\001 \001(\022\022\030\n\020vgiOperationType\030\002 \001(\r\022\013\n\003u" +
+      "id\030\003 \001(\r\022\021\n\ttimestamp\030\004 \001(\021\022\023\n\013changeset" +
+      "Id\030\005 \001(\021\022\017\n\007version\030\006 \001(\r\022\013\n\003ref\030\010 \001(\022\022\013" +
+      "\n\003key\030\t \001(\t\022\r\n\005value\030\n \001(\t\022\020\n\010position\030\013" +
+      " \001(\r\022\021\n\tlongitude\030\r \001(\021\022\020\n\010latitude\030\016 \001(" +
+      "\021\"8\n\rPbfStringList\022\'\n\005entry\030\001 \003(\0132\030.impl" +
+      ".PbfStringListEntry\"5\n\022PbfStringListEntr",
+      "y\022\r\n\005value\030\001 \002(\t\022\020\n\010searchId\030\002 \002(\rB`\nNat" +
+      ".salzburgresearch.vgi.vgianalyticsframew" +
+      "ork.activityanalysis.persistence.pbfB\016Op" +
+      "erationProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6043,15 +5649,9 @@ public final class OperationProto {
     internal_static_impl_PbfVgiOperationContainer_PbfVgiFeatureBatch_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_impl_PbfVgiOperationContainer_PbfVgiFeatureBatch_descriptor,
-        new java.lang.String[] { "Operation", });
-    internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_descriptor =
-      internal_static_impl_PbfVgiOperationContainer_descriptor.getNestedTypes().get(3);
-    internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_impl_PbfVgiOperationContainer_PbfVgiFeature_descriptor,
-        new java.lang.String[] { "Oid", "Operation", });
+        new java.lang.String[] { "Operation", "RelationMemberOperation", });
     internal_static_impl_PbfVgiOperationContainer_PbfVgiOperation_descriptor =
-      internal_static_impl_PbfVgiOperationContainer_descriptor.getNestedTypes().get(4);
+      internal_static_impl_PbfVgiOperationContainer_descriptor.getNestedTypes().get(3);
     internal_static_impl_PbfVgiOperationContainer_PbfVgiOperation_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_impl_PbfVgiOperationContainer_PbfVgiOperation_descriptor,

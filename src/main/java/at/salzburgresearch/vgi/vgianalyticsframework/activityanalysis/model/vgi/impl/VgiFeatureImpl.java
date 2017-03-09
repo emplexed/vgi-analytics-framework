@@ -33,6 +33,7 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
 	
 	protected List<IVgiOperation> operationList = null;
 	protected List<IVgiAction> actionList = null;
+	private List<IVgiFeature> relationMembers = null;
 
 	protected Envelope boundingBox = null;
 	protected String quadtreePath = "";
@@ -211,6 +212,18 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
     		}
         };
     }
+    
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        if (!VgiFeatureImpl.class.isAssignableFrom(object.getClass())) {
+            return false;
+        }
+        final VgiFeatureImpl otherFeature = (VgiFeatureImpl) object;
+        return (getFeatureComparator().compare(this, otherFeature) == 0) ? true : false;
+    }
 	
 	@Override
 	public List<IVgiOperation> getOperationList() {
@@ -263,5 +276,14 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
 	@Override
 	public void setLocalizeType(LocalizeType localizeType) {
 		this.localizeType = localizeType;
+	}
+
+	@Override
+	public List<IVgiFeature> getRelationMembers() {
+		return relationMembers;
+	}
+	@Override
+	public void setRelationMembers(List<IVgiFeature> relationMembers) {
+		this.relationMembers = relationMembers;
 	}
 }

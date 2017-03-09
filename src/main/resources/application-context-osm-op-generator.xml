@@ -49,15 +49,15 @@
 	
 	<bean id="getFeaturesPipeline" scope="prototype" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
-		<property name="vgiPipelineSettings" ref="vgiPipelineSettings" />
+		<property name="producer" ref="vgiOperationPbfReader" />
 		<property name="consumers">
 		   		<list>
 		   			<ref bean="readAllFeaturesPipelineConsumer"/>
 		   		</list>
 		</property>
-		<property name="producerName" value="vgiOperationPbfReader" />
 		<property name="numThreads" value="6" />
 	</bean>
 	

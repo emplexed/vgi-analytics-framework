@@ -492,7 +492,8 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 			}
 		}
 		
-		List<PbfVgiOperation> pbfOperationBatch = new ArrayList<PbfVgiOperation>();
+		List<PbfVgiOperation> pbfOperationList = new ArrayList<PbfVgiOperation>();
+		List<PbfVgiOperation> pbfMemberOperationList = new ArrayList<PbfVgiOperation>();
 		
 		for (IVgiFeature feature : featureBatch) {
 			
@@ -511,7 +512,7 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 				
 				/** Create new file if current file size exceeds maximum file size */
 				if (pbfFileOperationCount >= NUM_OPERATIONS_PER_FILE) {
-					handleOperationBatch(pbfOperationBatch);
+					createOperationBatch(pbfOperationList, pbfMemberOperationList);
 					if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT)) {
 						openPbfDataFile(ElementType.NODE, true);
 					} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE)) {
@@ -531,15 +532,20 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 			pbfFileOperationCount += feature.getOperationList().size();
 			
 			/** build PBF feature */
-			pbfOperationBatch.addAll(createPbfOperations(feature));
+			pbfOperationList.addAll(createPbfOperations(feature));
+			if (feature.getVgiGeometryType().equals(VgiGeometryType.RELATION)) {
+				for (IVgiFeature relationMember : feature.getRelationMembers()) {
+					pbfMemberOperationList.addAll(createPbfOperations(relationMember));
+				}
+			}
 			
-			if (pbfOperationBatch.size() >= FEATURE_BATCH_SIZE) {
-				handleOperationBatch(pbfOperationBatch);
+			if (pbfOperationList.size() >= FEATURE_BATCH_SIZE) {
+				createOperationBatch(pbfOperationList, pbfMemberOperationList);
 			}
 		}
 		
 		/** Add PBF feature (wrapper) to PBF feature list */
-		handleOperationBatch(pbfOperationBatch);
+		createOperationBatch(pbfOperationList, pbfMemberOperationList);
 	}
 	
 	/**
@@ -557,14 +563,18 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	}
 	
 	/**
-	 * @param pbfOperationBatch
+	 * Create an VGI operation batch in PBF format 
+	 * @param pbfOperationList
+	 * @param pbfMemberOperationList
 	 */
-	private void handleOperationBatch(List<PbfVgiOperation> pbfOperationBatch) {
+	private void createOperationBatch(List<PbfVgiOperation> pbfOperationList, List<PbfVgiOperation> pbfMemberOperationList) {
 		PbfVgiOperationContainer.Builder pbfFeatureBatches = PbfVgiOperationContainer.newBuilder();
 		
 		PbfVgiFeatureBatch.Builder pbfFeatureBatchBuilder = PbfVgiFeatureBatch.newBuilder();
-		pbfFeatureBatchBuilder.addAllOperation(pbfOperationBatch);
-		pbfOperationBatch.clear();
+		pbfFeatureBatchBuilder.addAllOperation(pbfOperationList);
+		pbfFeatureBatchBuilder.addAllRelationMemberOperation(pbfMemberOperationList);
+		pbfOperationList.clear();
+		pbfMemberOperationList.clear();
 		
 		/** build PBF feature wrapper (including number of bytes) */
 		PbfVgiFeatureWrapper.Builder pbfFeatureWrapper = PbfVgiFeatureWrapper.newBuilder()

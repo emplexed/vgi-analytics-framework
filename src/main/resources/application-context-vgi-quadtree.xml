@@ -25,38 +25,34 @@
 	
 	<bean id="vgiPipeline" scope="singleton" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="queueSize" value="80000" />
 		<property name="batchSize" value="80000" />
-		<property name="vgiPipelineSettings" ref="vgiPipelineSettings" />
 		<property name="consumers">
 		   		<list>
 		   			<ref bean="countingAnalysisConsumer"/>
 		   			<ref bean="quadtreeBuilderConsumer"/>
 		   		</list>
 		</property>
-		<property name="producerName" value="vgiOperationPbfReader" />
 		<property name="numThreads" value="1" />
 		<property name="filterGeometryType" value="UNDEFINED" />
 	</bean>
 	
 	<bean id="getQuadrantFeaturesPipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
-		<property name="vgiPipelineSettings" ref="vgiPipelineSettings" />
+		<property name="producer" ref="vgiOperationPbfReader" />
 		<property name="consumers">
 		   		<list>
 		   			<ref bean="readAllFeaturesConsumer"/>
 		   		</list>
 		</property>
-		<property name="producerName" value="vgiOperationPbfReader" />
 		<property name="numThreads" value="1" />
 		<property name="filterGeometryType" value="UNDEFINED" />
 	</bean>
 	
-	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl" >
-	</bean>
 	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl">
         <constructor-arg index="0" ref="vgiPipelineSettings" />

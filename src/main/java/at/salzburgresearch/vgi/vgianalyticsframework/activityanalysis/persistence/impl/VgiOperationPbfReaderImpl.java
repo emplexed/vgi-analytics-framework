@@ -54,50 +54,47 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 	
 	protected IVgiPipelineSettings settings = null;
 	
-	protected File pbfDataFolder = null;
-	protected int startFileId = 1;
-	protected int producerCount = 1;
-	protected int producerNumber = 0;
+	private File pbfDataFolder = null;
+	private int startFileId = 1;
+	private int producerCount = 1;
+	private int producerNumber = 0;
 	
-	protected byte[] byteArray = new byte[0];
-	protected int byteArrayPointer = 0;
+	private byte[] byteArray = new byte[0];
+	private int byteArrayPointer = 0;
 	
-	protected VgiGeometryType filterGeometryType = VgiGeometryType.UNDEFINED;
-	protected TLongArrayList filterNodeId = null;
-	protected int filterNodeIdPointer = 0;
-	protected TLongArrayList filterWayId = null;
-	protected int filterWayIdPointer = 0;
-	protected TLongArrayList filterRelationId = null;
-	protected int filterRelationIdPointer = 0;
+	private VgiGeometryType filterGeometryType = VgiGeometryType.UNDEFINED;
+	private TLongArrayList filterNodeId = null;
+	private TLongArrayList filterWayId = null;
+	private TLongArrayList filterRelationId = null;
+	private int filterIdPointer = 0;
 	
 	/** If constrained filter is activated, the PBF file will be processed only if it
 	 *  stores enough wanted features (MIN_NODE|WAY_COUNT); Skipped features will be 
 	 *  processed later. This feature improves performance during building the quadtree */
-	protected boolean constrainedFilter = false;
-	protected static final int MIN_NODE_COUNT = 150;
-	protected static final int MIN_WAY_COUNT = 10;
+	private boolean constrainedFilter = false;
+	private static final int MIN_NODE_COUNT = 150;
+	private static final int MIN_WAY_COUNT = 10;
 	
-	protected boolean coordinateOnly = false;
+	private boolean coordinateOnly = false;
 	
-	protected int filterFileId = -1;
+	private int filterFileId = -1;
 	
 	/** if true, QT quadrant is WITHIN the filter polygon */
 	protected LocalizeType localizeType = LocalizeType.UNDEFINED;
+	/** used to cache features during quadtree read */
+	protected String cacheIdentifier = "";
 
 	/** queue operations for further processing */
-	protected BlockingQueue<IVgiFeature> queue;
+	private BlockingQueue<IVgiFeature> queue;
 	
 	/** if 2 subsequent PBF operations have same attribute value, only the 1st PBF operation saves the attribute (this reduces PBF file size)  */
-	protected IVgiOperation previousOperationValues = null;
-	
-	protected String cacheIdentifier = "";
-	
-	private long previousPbfOperationOid = 0l;
-	private int previousPbfOperationTimestamp = 0;
-	private int previousPbfOperationChangeset = 0;
-	private long previousPbfOperationRefId = 0l;
-	private int previousPbfOperationLongitude = 0;
-	private int previousPbfOperationLatitude = 0;
+	private IVgiOperation currentOperationValues = null;
+	private long currentPbfOperationOid = 0l;
+	private int currentPbfOperationTimestamp = 0;
+	private int currentPbfOperationChangeset = 0;
+	private long currentPbfOperationRefId = 0l;
+	private int currentPbfOperationLongitude = 0;
+	private int currentPbfOperationLatitude = 0;
 	
 	public VgiOperationPbfReaderImpl(IVgiPipelineSettings settings) {
 		this.settings = settings;
@@ -141,26 +138,30 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 		}
 		
 		/** Reset pointers to 0 */
-		filterNodeIdPointer = 0;
-		filterWayIdPointer = 0;
-		filterRelationIdPointer = 0;
+//		filterNodeIdPointer = 0;
+//		filterWayIdPointer = 0;
+//		filterRelationIdPointer = 0;
+		filterIdPointer = 0;
 		
 		/** Iterate through operation files */
 		/** Determine first and last file id (related to multi-threading) */
 		int firstFileId = startFileId + (int)Math.floor((double)(pbfFileList.getNodeOperationFileCount()-startFileId) / producerCount * producerNumber) + 1;
 		if (producerNumber == 0) firstFileId = startFileId;
 		int lastFileId = startFileId + (int)Math.floor((double)(pbfFileList.getNodeOperationFileCount()-startFileId) / producerCount * (producerNumber+1));
+		log.info("[" + producerNumber + "] firstFileId=" + firstFileId + " lastFileId=" + lastFileId);
 		if (settings.getFilterElementType().equals(VgiGeometryType.UNDEFINED) || settings.getFilterElementType().equals(VgiGeometryType.POINT)) {
 			read(pbfFileList.getNodeOperationFileList(), keepInCache, firstFileId, lastFileId);
 		}
-		
+
+		filterIdPointer = 0;
 		firstFileId = startFileId + (int)Math.floor((double)(pbfFileList.getWayOperationFileCount()-startFileId) / producerCount * producerNumber) + 1;
 		if (producerNumber == 0) firstFileId = startFileId;
 		lastFileId = startFileId + (int)Math.floor((double)(pbfFileList.getWayOperationFileCount()-startFileId) / producerCount * (producerNumber+1));
 		if (settings.getFilterElementType().equals(VgiGeometryType.UNDEFINED) || settings.getFilterElementType().equals(VgiGeometryType.LINE)) {
 			read(pbfFileList.getWayOperationFileList(), keepInCache, firstFileId, lastFileId);
 		}
-		
+
+		filterIdPointer = 0;
 		firstFileId = startFileId + (int)Math.floor((double)(pbfFileList.getRelationOperationFileCount()-startFileId) / producerCount * producerNumber) + 1;
 		if (producerNumber == 0) firstFileId = startFileId;
 		lastFileId = startFileId + (int)Math.floor((double)(pbfFileList.getRelationOperationFileCount()-startFileId) / producerCount * (producerNumber+1));
@@ -215,19 +216,19 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 				continue;
 			}
 			
-//			log.info("[" + producerNumber+ ": Pbf " + elementTypePrefix + "_" + file.getOperationFileId() + "/" + pbfFileList.size() + "] Start: NumOps=" + file.getNumEntries() + "; Path=" + pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf");
+//			log.info("[" + producerNumber + ": Pbf " + elementTypePrefix + "_" + file.getOperationFileId() + "/" + pbfFileList.size() + "] Start: NumOps=" + file.getNumEntries() + "; Path=" + pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf");
 			
 			/** Initialize variables */
-			previousOperationValues = new VgiOperationImpl();
+			currentOperationValues = new VgiOperationImpl();
+			currentPbfOperationOid = 0l;
+			currentPbfOperationTimestamp = 0;
+			currentPbfOperationChangeset = 0;
+			currentPbfOperationRefId = 0l;
+			currentPbfOperationLongitude = 0;
+			currentPbfOperationLatitude = 0;
+
 			byteArray = new byte[0];
 			byteArrayPointer = 0;
-			
-			previousPbfOperationOid = 0l;
-			previousPbfOperationTimestamp = 0;
-			previousPbfOperationChangeset = 0;
-			previousPbfOperationRefId = 0l;
-			previousPbfOperationLongitude = 0;
-			previousPbfOperationLatitude = 0;
 			
 			/** Stream and read the operations */
 			try (BufferedInputStream bis = new BufferedInputStream(
@@ -273,24 +274,24 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 					}
 					
 					/** No more filter values in this file */
-					if (filterNodeId != null && file.getElementType().equals(ElementType.NODE) && (filterNodeIdPointer == filterNodeId.size() || file.getMaxElementId() < filterNodeId.get(filterNodeIdPointer))) break;
-					if (filterWayId != null && file.getElementType().equals(ElementType.WAY) && (filterWayIdPointer == filterWayId.size() || file.getMaxElementId() < filterWayId.get(filterWayIdPointer))) break;
+					if (filterNodeId != null && file.getElementType().equals(ElementType.NODE) && (filterIdPointer == filterNodeId.size() || file.getMaxElementId() < filterNodeId.get(filterIdPointer))) break;
+					if (filterWayId != null && file.getElementType().equals(ElementType.WAY) && (filterIdPointer == filterWayId.size() || file.getMaxElementId() < filterWayId.get(filterIdPointer))) break;
 				}
 				
 			} catch (InvalidProtocolBufferException e) {
-				log.error("Operation after: " + previousOperationValues.getVgiGeometryType() + "/" + previousOperationValues.getOid() + " > " + previousOperationValues.getVgiOperationType() + ", " + previousOperationValues.getTimestamp());
+				log.error("Operation after: " + currentOperationValues.getVgiGeometryType() + "/" + currentOperationValues.getOid() + " > " + currentOperationValues.getVgiOperationType() + ", " + currentOperationValues.getTimestamp());
 				e.printStackTrace();
 				/** http://www.openstreetmap.org/browse/changeset/14246617 */
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-//				log.error("Operation after: " + previousOperationValues.getVgiGeometryType() + "/" + previousOperationValues.getOid() + " > " + previousOperationValues.getVgiOperationType() + ", " + previousOperationValues.getTimestamp());
 				log.error("File " + pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf not found!");
 			}
 			
 //			/** log progress of reading PBFs */
 //			log.info("[" + producerNumber+ ": Pbf " + elementTypePrefix + "_" + file.getOperationFileId() + "/" + pbfFileList.size() + "] End  : NumOps=" + file.getNumEntries() + ((numDuration > 0) ? "; Dur=" + (duration/numDuration) : ""));
 		}
+//		log.info("[" + producerNumber + "] Reading PBF files finished");
     }
 	
 	/**
@@ -298,7 +299,7 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 	 * @param file
 	 * @return true if the file contains requested content
 	 */
-	protected boolean containsRequestedOperations(PbfOperationFile file, VgiGeometryType geometryType) {
+	private boolean containsRequestedOperations(PbfOperationFile file, VgiGeometryType geometryType) {
 		/** Geometry type filter */
 		if (!filterGeometryType.equals(VgiGeometryType.UNDEFINED) && !geometryType.equals(filterGeometryType)) return false;
 		
@@ -308,7 +309,7 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 		
 		/** is current node/way/relation id in filter list? */
 		/** If filter is active, check min/max values of this file if there are enough (MIN_NODE_COUNT or 0) features in this file */
-		if (geometryType.equals(VgiGeometryType.POINT) && filterNodeId != null) {
+		if (geometryType.equals(VgiGeometryType.POINT) && filterNodeId != null) { //TODO merge node/way/relation logic
 			
 			/** Skip features with ID less than MinNodeId */
 			while (constrainedFilterNodePointer < filterNodeId.size() && filterNodeId.get(constrainedFilterNodePointer) < file.getMinElementId()) {
@@ -353,72 +354,8 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 		
 		return false;
 	}
-	
-	/**
-	 * Filters feature by element ID and element type
-	 * @param feature
-	 * @return TRUE if operation oId is included in filter or if no filter applies. FALSE if filter applies and operation oId is not included in filter
-	 */
-	protected boolean filterByElementId(IVgiFeature feature) {
-		if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT)) {
-			if (filterNodeId == null) return true;
-			
-			do {
- 				if (filterNodeIdPointer == filterNodeId.size()) {
- 					/** End of filter list */
- 					return false;
- 				} else if (filterNodeId.get(filterNodeIdPointer) == feature.getOid()) {
-					/** Feature ID member of filter list > PROCESS this operation */
-					return true;
-				} else if (filterNodeId.get(filterNodeIdPointer) > feature.getOid()) {
-					/** Feature ID NO member of filter list > SKIP this operation */
-					return false;
-				}
-				/** Current Filter ID is too low > NEXT filter feature id */
-				filterNodeIdPointer++;
-			} while (true);
-			
-		} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE)) {
-			if (filterWayId == null) return true;
-			
-			do {
-				if (filterWayIdPointer == filterWayId.size()) {
-					/** End of filter list */
-					return false;
-				} else if (filterWayId.get(filterWayIdPointer) == feature.getOid()) {
-					/** Feature ID member of filter list > PROCESS this operation */
-					return true;
-				} else if (filterWayId.get(filterWayIdPointer) > feature.getOid()) {
-					/** Feature ID NO member of filter list > SKIP this operation */
-					return false;
-				}
-				/** Current Filter ID is too low > NEXT filter feature id */
-				filterWayIdPointer++;
-			} while (true);
-			
-		} else if(feature.getVgiGeometryType().equals(VgiGeometryType.RELATION)) {
-			if (filterRelationId == null) return true;
-			
-			do {
-				if (filterRelationIdPointer == filterRelationId.size()) {
-					/** End of filter list */
-					return false;
-				} else if (filterRelationId.get(filterRelationIdPointer) == feature.getOid()) {
-					/** Feature ID member of filter list > PROCESS this operation */
-					return true;
-				} else if (filterRelationId.get(filterRelationIdPointer) > feature.getOid()) {
-					/** Feature ID NO member of filter list > SKIP this operation */
-					return false;
-				}
-				/** Current Filter ID is too low > NEXT filter feature id */
-				filterRelationIdPointer++;
-			} while (true);
-		}
-		
-		return true;
-	}
     
-	protected byte[] readBytes(BufferedInputStream bis, int numBytes) {
+	private byte[] readBytes(BufferedInputStream bis, int numBytes) throws IOException {
 
     	byte[] bytes = new byte[numBytes];
 		
@@ -434,23 +371,19 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 		return bytes;
     }
     
-	protected void readBytesFromFile(BufferedInputStream bis) {
+	private void readBytesFromFile(BufferedInputStream bis) throws IOException {
     	int numBytes = 1024*16;
     	byteArray = new byte[numBytes];
     	
-		try {
-			int count = bis.read(byteArray, 0, numBytes);
-			if (count <= 0){
-				byteArray = null;
-			} else if (count < numBytes) {
-		    	byte[] byteArrayNew = new byte[count];
-		    	for (int i=0; i<count; i++) {
-		    		byteArrayNew[i] = byteArray[i];
-		    	}
-		    	byteArray = byteArrayNew;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		int count = bis.read(byteArray, 0, numBytes);
+		if (count <= 0){
+			byteArray = null;
+		} else if (count < numBytes) {
+	    	byte[] byteArrayNew = new byte[count];
+	    	for (int i=0; i<count; i++) {
+	    		byteArrayNew[i] = byteArray[i];
+	    	}
+	    	byteArray = byteArrayNew;
 		}
     }
     
@@ -460,7 +393,7 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
      */
 	protected void enqueueFeature(IVgiFeature feature) {
 		if (feature.getOperationList().size() == 0) {
-//			log.warn("Feature without operations");
+			log.warn("Feature " + feature.getOid() + " without operations");
 			return;
 		}
 		
@@ -482,119 +415,145 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
     private List<IVgiFeature> deserializeFeature(PbfVgiFeatureBatch pbfFeatureBatch, VgiGeometryType geometryType) {
     	List<IVgiFeature> featureList = new ArrayList<IVgiFeature>();
     	IVgiFeature feature = null;
+    	IVgiFeature skipFeature = null;
     	
     	for (PbfVgiOperation pbfOperation : pbfFeatureBatch.getOperationList()) {
-    		if (feature == null || feature.getOid() != pbfOperation.getOid() + previousPbfOperationOid) {
-    			if (feature != null && filterByElementId(feature)) {
+	    	/** id (offset, all) */
+    		if (feature == null || feature.getOid() != pbfOperation.getOid() + currentPbfOperationOid) {
+    			if (feature != null && feature.getOperationList().size() > 0) {
     				featureList.add(feature);
     			}
     			
     			feature = new VgiFeatureImpl();
             	feature.setBBox(new Envelope());
-            	feature.setOid(pbfOperation.getOid() + previousPbfOperationOid);
-            	previousPbfOperationOid = feature.getOid();
+            	feature.setOid(pbfOperation.getOid() + currentPbfOperationOid);
+            	currentPbfOperationOid = feature.getOid();
             	feature.setVgiGeometryType(geometryType);
+    		}
+    		
+    		if (feature.equals(skipFeature) || !filterByElementId(feature)) {
+    			skipFeature = feature;
+    			feature = null;
     		}
     		
 	    	IVgiOperation operation = new VgiOperationImpl();
 	    	
-	    	/** Oid, geometry type */
-	    	operation.setOid(feature.getOid());
-	    	operation.setVgiGeometryType(feature.getVgiGeometryType());
-	    	
-			/** op type */
+			/** op type (transform, all) */
 			if (pbfOperation.hasVgiOperationType()) {
-				operation.setVgiOperationType(VgiOperationType.getOperationTypeById(pbfOperation.getVgiOperationType()));
-				previousOperationValues.setVgiOperationType(operation.getVgiOperationType());
-			} else {
-				operation.setVgiOperationType(previousOperationValues.getVgiOperationType());
+				currentOperationValues
+						.setVgiOperationType(VgiOperationType.getOperationTypeById(pbfOperation.getVgiOperationType()));
 			}
 	    	if (!coordinateOnly) {
-				/** user id */
-				if (pbfOperation.hasUid()) {
-					operation.setUid(pbfOperation.getUid());
-					previousOperationValues.setUid(operation.getUid());
-				} else {
-					operation.setUid(previousOperationValues.getUid());
-				}
+				/** user id (1:1, all) */
+	    		if (pbfOperation.hasUid()) {
+	    			currentOperationValues.setUid(pbfOperation.getUid());
+	    		}
 	    	}
-			/** timestamp */
+			/** timestamp (offset and transform, all) */
 			if (pbfOperation.hasTimestamp()) {
-				operation.setTimestamp(new Date(((long)(pbfOperation.getTimestamp() + 
-						previousPbfOperationTimestamp + VgiOperationPbfWriterImpl.TIMESTAMP_OFFSET)) * 1000));
-				previousPbfOperationTimestamp += pbfOperation.getTimestamp();
-				previousOperationValues.setTimestamp(operation.getTimestamp());
-			} else {
-				operation.setTimestamp(previousOperationValues.getTimestamp());
-			}
-			if (settings.getFilterTimestamp() == null) {
-				log.error("Null problem at settings timestamp " + operation.getOid());
-				if (operation.getTimestamp().after(settings.getFilterTimestamp())) break;
-			}
-			if (operation.getTimestamp() == null) {
-				log.error("Null problem at timestamp " + operation.getOid());
-				if (operation.getTimestamp().after(settings.getFilterTimestamp())) break;
+				currentPbfOperationTimestamp += pbfOperation.getTimestamp();
+				currentOperationValues.setTimestamp(new Date(
+						(long) (currentPbfOperationTimestamp + VgiOperationPbfWriterImpl.TIMESTAMP_OFFSET) * 1000));
 			}
 		    if (!coordinateOnly) {
-				/** changeset id */
+				/** changeset id (offset, all) */
 				if (pbfOperation.hasChangesetId()) {
-					operation.setChangesetid(pbfOperation.getChangesetId() + previousPbfOperationChangeset);
-					previousPbfOperationChangeset += pbfOperation.getChangesetId();
-					previousOperationValues.setChangesetid(operation.getChangesetid());
-				} else {
-					operation.setChangesetid(previousOperationValues.getChangesetid());
+					currentPbfOperationChangeset += pbfOperation.getChangesetId();
 				}
-				/** version */
-				if (pbfOperation.hasVersion()) {
-					operation.setVersion((short)pbfOperation.getVersion());
-					previousOperationValues.setVersion(operation.getVersion());
-				} else {
-					operation.setVersion(previousOperationValues.getVersion());
-				}
-				/** ref id */
+				/** version (1:1, all) */
+	    		if (pbfOperation.hasVersion()) {
+	    			currentOperationValues.setVersion((short) pbfOperation.getVersion());
+	    		}
+		    }
+	    	if (feature != null) {
+		    	operation.setOid(feature.getOid());
+		    	operation.setVgiGeometryType(feature.getVgiGeometryType());
+				operation.setVgiOperationType(currentOperationValues.getVgiOperationType());
+    			operation.setUid(currentOperationValues.getUid());
+				operation.setTimestamp(currentOperationValues.getTimestamp());
+				operation.setChangesetid(currentPbfOperationChangeset);
+    			operation.setVersion(currentOperationValues.getVersion());
+    			if (operation.getTimestamp().before(settings.getFilterTimestamp())) {
+    				feature.addOperation(operation);
+    			}
+			}
+		    if (!coordinateOnly) {
+				/** ref id (offset, if hasRef) */
 				if (pbfOperation.hasRef()) {
-					operation.setRefId(pbfOperation.getRef() + previousPbfOperationRefId);
-					previousPbfOperationRefId += pbfOperation.getRef();
+					currentPbfOperationRefId += pbfOperation.getRef();
+					if (feature != null) {
+						operation.setRefId(currentPbfOperationRefId);
+					}
 				}
-				/** key */
-				if (pbfOperation.hasKey()) {
-//					operation.setKey(stringList.getValue(pbfOperation.getKey()));
-////					operation.setKey(pbfOperation.getKey().intern());
-					operation.setKey(pbfOperation.getKey());
-				}
-				/** value */
-				if (pbfOperation.hasValue()) {
-//					operation.setValue(stringList.getValue(pbfOperation.getValue()));
-//					if (pbfOperation.getKey().equals("highway") || pbfOperation.getKey().equals("building")) {
-//						operation.setValue(pbfOperation.getValue().intern());
-//					} else {
+				if (feature != null) {
+					/** key (1:1, if hasKey) */
+					if (pbfOperation.hasKey()) {
+						operation.setKey(pbfOperation.getKey());
+					}
+					/** value (1:1, if hasValue) */
+					if (pbfOperation.hasValue()) {
 						operation.setValue(pbfOperation.getValue());
-//					}
-				}
-				/** position */
-				if (pbfOperation.hasPosition()) {
-					operation.setPosition(pbfOperation.getPosition());
+					}
+					/** position (1:1, if hasPosition) */
+					if (pbfOperation.hasPosition()) {
+						operation.setPosition(pbfOperation.getPosition());
+					}
 				}
 	    	}
-			/** coordinate */
+			/** coordinate (offset, if hasLongitude) */
 			if (pbfOperation.hasLongitude()) {
-				operation.setCoordinateFromInteger(
-						pbfOperation.getLongitude() + previousPbfOperationLongitude, 
-						pbfOperation.getLatitude() + previousPbfOperationLatitude);
-				previousPbfOperationLongitude += pbfOperation.getLongitude();
-				previousPbfOperationLatitude += pbfOperation.getLatitude();
-				feature.getBBox().expandToInclude(operation.getCoordinate());
+				currentPbfOperationLongitude += pbfOperation.getLongitude();
+				currentPbfOperationLatitude += pbfOperation.getLatitude();
+				if (feature != null) {
+					operation.setCoordinateFromInteger(currentPbfOperationLongitude, currentPbfOperationLatitude);
+					feature.getBBox().expandToInclude(operation.getCoordinate());
+				}
 			}
-			
-			feature.addOperation(operation);
     	}
     	
-		if (feature != null && filterByElementId(feature)) {
+		if (feature != null && feature.getOperationList().size() > 0) {
 			featureList.add(feature);
 		}
     	
 		return featureList;
     }
+	
+	/**
+	 * Filters feature by element ID and element type
+	 * 
+	 * @param feature
+	 * @return TRUE if no filter is set or if featureId is included in filter.
+	 *         FALSE if filter is set and featureId is not included in filter
+	 */
+	private boolean filterByElementId(IVgiFeature feature) {
+		TLongArrayList filterList = new TLongArrayList();
+		if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT)) {
+			filterList = filterNodeId;
+		} else if (feature.getVgiGeometryType().equals(VgiGeometryType.LINE)) {
+			filterList = filterWayId;
+		} else if (feature.getVgiGeometryType().equals(VgiGeometryType.RELATION)) {
+			filterList = filterRelationId;
+		}
+
+		if (filterList == null) {
+			return true;
+		}
+
+		do {
+			if (filterIdPointer == filterList.size()) {
+				/** End of filter list */
+				return false;
+			} else if (filterList.get(filterIdPointer) == feature.getOid()) {
+				/** Feature ID member of filter list > PROCESS this operation */
+				return true;
+			} else if (filterList.get(filterIdPointer) > feature.getOid()) {
+				/** Feature ID NO member of filter list > SKIP this operation */
+				return false;
+			}
+			/** Current Filter ID is too low > NEXT filter feature id */
+			filterIdPointer++;
+		} while (true);
+	}
 	
 	@Override
 	public void setQueue(BlockingQueue<IVgiFeature> queue) {

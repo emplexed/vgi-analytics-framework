@@ -15,6 +15,15 @@
 	<bean id="vgiModelFactory" scope="singleton" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiModelFactoryImpl" />
 	
+	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
+	</bean>
+	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
+	</bean>
+	
 	<bean id="countingAnalysisConsumer" scope="singleton" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.CountingAnalysisConsumer" />
 	
@@ -48,9 +57,11 @@
 	
 	<bean id="vgiPipeline" scope="singleton" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="queueSize" value="100000" />
 		<property name="batchSize" value="100000" />
-		<property name="vgiPipelineSettings" ref="vgiPipelineSettings" />
+		<property name="producer" ref="vgiOperationPbfReader" />
+		<property name="producerQuadtree" ref="vgiOperationPbfReaderQuadtree" />
 		<property name="consumers">
 		   		<list>
 		   			<ref bean="vgiAnalysisConsumer" />
@@ -60,24 +71,25 @@
 		<property name="numThreads" value="1" />
 	</bean>
 	
-	<bean id="vgiPipelineTest" scope="singleton" lazy-init="true"
+<!-- 	<bean id="vgiPipelineTest" scope="singleton" lazy-init="true"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="queueSize" value="100000" />
 		<property name="batchSize" value="100000" />
-		<property name="vgiPipelineSettings" ref="vgiPipelineSettings" />
 		<property name="consumers">
 		   		<list>
 		   			<ref bean="readAllFeaturesConsumer"/>
 		   		</list>
 		</property>
 		<property name="numThreads" value="1" />
-	</bean>
+	</bean> -->
 	
 	<bean id="vgiRelatedFeaturePipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
-		<property name="vgiPipelineSettings" ref="vgiPipelineSettings" />
+		<property name="producer" ref="vgiOperationPbfReader" />
 		<property name="consumers">
 		   		<list>
 		   			<ref bean="relatedVgiOperationFinderConsumer"/>
@@ -88,23 +100,15 @@
 	
 	<bean id="readAllFeaturesPipeline" scope="prototype" lazy-init="true" parent="vgiPipeline"
 		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
 		<property name="queueSize" value="50000" />
 		<property name="batchSize" value="50000" />
-		<property name="vgiPipelineSettings" ref="vgiPipelineSettings" />
+		<property name="producer" ref="vgiOperationPbfReader" />
 		<property name="consumers">
 		   		<list>
 		   			<ref bean="readAllFeaturesPipelineConsumer"/>
 		   		</list>
 		</property>
 		<property name="numThreads" value="1" />
-	</bean>
-	
-	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl">
-        <constructor-arg index="0" ref="vgiPipelineSettings" />
-	</bean>
-	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
-		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl">
-        <constructor-arg index="0" ref="vgiPipelineSettings" />
 	</bean>
 </beans>

@@ -42,4 +42,7 @@ public interface IVgiFeature extends IVgiBaseObject {
 	
 	LocalizeType getLocalizeType();
 	void setLocalizeType(LocalizeType localizeType);
+
+	List<IVgiFeature> getRelationMembers();
+	void setRelationMembers(List<IVgiFeature> relationMembers);
 }

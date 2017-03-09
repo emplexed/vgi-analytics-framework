@@ -132,6 +132,15 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 		dateFormatOSM.setTimeZone(TimeZone.getTimeZone("UTC"));
 
 		featureTypeList = new HashMap<String, IVgiFeatureType>();
+		actionAnalyzerList = new ArrayList<IVgiAnalysisAction>();
+		operationAnalyzerList = new ArrayList<IVgiAnalysisOperation>();
+		featureAnalyzerList = new ArrayList<IVgiAnalysisFeature>();
+		actionDefinitionList = new ArrayList<IVgiAction>();
+		
+		addInvalidFeatureTypes();
+	}
+	
+	private void addInvalidFeatureTypes() {
 		
 		IVgiFeatureType vgiFeatureTypePoint = new VgiFeatureTypeImpl();
 		SimpleFeatureTypeBuilder featureTypePoint = new SimpleFeatureTypeBuilder();
@@ -435,9 +444,6 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
     			/**
     			 * Parse analysis subjects
     			 */
-				actionAnalyzerList = new ArrayList<IVgiAnalysisAction>();
-				operationAnalyzerList = new ArrayList<IVgiAnalysisOperation>();
-				featureAnalyzerList = new ArrayList<IVgiAnalysisFeature>();
 				nodeList1 = firstElement.getElementsByTagName("analysisSubject");
 				for(int t=0; t<nodeList1.getLength() ; t++) {
 	                Node node1 = nodeList1.item(t);
@@ -541,7 +547,6 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 				/**
 				 * Parse actions definitions
 				 */
-				actionDefinitionList = new ArrayList<IVgiAction>();
     			try {
     				nodeList1 = firstElement.getElementsByTagName("actionDefinition");
     				for(int t=0; t<nodeList1.getLength() ; t++) {
