@@ -69,6 +69,9 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 	private long numParsedWays = 0l;
 	private long numParsedRelations = 0l;
 	
+	private int numRefElementsFound = 0;
+	private int numRefElementsNotFound = 0;
+	
 	private IOsmElement lastOsmElement = null;
 	
 	public VgiOperationGeneratorDataHandlerImpl (IVgiPipelineSettings settings) {
@@ -96,7 +99,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				log.info("Start node phase");
 				currentPhase = Phases.NODES;
 			}
-			enqueueOperations(vgiOperationGenerator.generateNodeOperations((Node)osmElement, (Node)lastOsmElement));
+			addOperationsToFeature(vgiOperationGenerator.generateNodeOperations((Node)osmElement, (Node)lastOsmElement));
 			numParsedNodes++;
 			break;
 			
@@ -108,7 +111,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				log.info("Start way phase");
 				currentPhase = Phases.WAYS;
 			}
-			enqueueOperations(vgiOperationGenerator.generateWayOperations((Way)osmElement, (Way)lastOsmElement));
+			addOperationsToFeature(vgiOperationGenerator.generateWayOperations((Way)osmElement, (Way)lastOsmElement));
 			numParsedWays++;
 			break;
 			
@@ -120,7 +123,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				log.info("Start relation phase");
 				currentPhase = Phases.RELATIONS;
 			}
-			enqueueOperations(vgiOperationGenerator.generateRelationOperations((Relation)osmElement, (Relation)lastOsmElement));
+			addOperationsToFeature(vgiOperationGenerator.generateRelationOperations((Relation)osmElement, (Relation)lastOsmElement));
 			numParsedRelations++;
 			break;
 			
@@ -143,40 +146,21 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 	 * Adds operations to operation queue. If operation queue has reached the limit, flush it. 
 	 * @param List with VgiOperations of one feature
 	 */
-	private void enqueueOperations(List<IVgiOperation> operationList) {
+	private void addOperationsToFeature(List<IVgiOperation> operationList) {
 		if (operationList == null || operationList.size() == 0) return;
 		
 		/** Process feature */
 		if (currentFeature != null 
 				&& (currentFeature.getOid() != operationList.get(0).getOid()
 				|| !currentFeature.getVgiGeometryType().equals(operationList.get(0).getVgiGeometryType()))) {
-			
-			/** Add all nodes and filtered ways/relations to feature list */
-			boolean filterByTag = currentFeature.filterByTag(settings.getFilterTag());
-			if (currentFeature.getVgiGeometryType().equals(VgiGeometryType.POINT) || filterByTag) {
-				featureList.add(currentFeature);
-				
-				/** Retrieve children elements */
-				for (IVgiOperation operation : currentFeature.getOperationList()) {
-					if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
-						childNodeList.add(operation.getRefId());
-					} else if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
-//						if (operation.getKey().equals("n")) {
-//							childNodeList.add(operation.getRefId());
-//						} else if (operation.getKey().equals("w")) {
-//							childWayList.add(operation.getRefId());
-//						} else if (operation.getKey().equals("r")) {
-//							childRelationList.add(operation.getRefId());
-//						}
-					}
-				}
-			}
+			enqueueFeature(currentFeature);
+
 			currentFeature = null;
-			if (featureList.size() >= 300000 || childNodeList.size() >= 3000000 || 
+			if (featureList.size() >= 300000 || childNodeList.size() + childWayList.size() + childRelationList.size() >= 3000000 || 
 					Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory() < 1024*1024*1024*4) {
 				try {
-					log.info("Sleep for 0.2 second...");
-					Thread.sleep(200); //TODO test if this is still necessary
+					log.info("Sleep for 0.05 seconds...");
+					Thread.sleep(50); //TODO test if this is still necessary
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -196,7 +180,44 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 		}
 		
 		/** Add operations to current feature */
-		currentFeature.getOperationList().addAll(operationList);
+		for (IVgiOperation operation : operationList) {
+			if (operation.getTimestamp().after(settings.getFilterTimestamp())) break;
+			currentFeature.getOperationList().add(operation);
+		}
+	}
+	
+	private void enqueueFeature(IVgiFeature feature) {
+		if (feature.getOperationList().size() == 0) {
+			return;
+		}
+		
+		/** Add all nodes and filtered ways/relations to feature list */
+		boolean filterByTag = feature.filterByTag(settings.getFilterTag());
+		if (feature.getVgiGeometryType().equals(VgiGeometryType.POINT)
+				|| feature.getVgiGeometryType().equals(VgiGeometryType.LINE) 
+				|| filterByTag) {
+			featureList.add(feature);
+			
+			/** Retrieve children elements */
+			for (IVgiOperation operation : feature.getOperationList()) {
+				if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
+					childNodeList.add(operation.getRefId());
+				} else if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
+					if (operation.getKey().equals("n")) {
+						int index = childNodeList.binarySearch(operation.getRefId());
+						if (index < 0) childNodeList.insert((index*-1)-1, operation.getRefId());
+						
+					} else if (operation.getKey().equals("w")) {
+						int index = childWayList.binarySearch(operation.getRefId());
+						if (index < 0) childWayList.insert((index*-1)-1, operation.getRefId());
+						
+					} else if (operation.getKey().equals("r")) {
+						int index = childRelationList.binarySearch(operation.getRefId());
+						if (index < 0) childRelationList.insert((index*-1)-1, operation.getRefId());
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -204,18 +225,13 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 	 */
 	private void flushQueue() {
 		/** Add last feature to queue */
-		if (currentFeature != null) featureList.add(currentFeature);
+		if (currentFeature != null) enqueueFeature(currentFeature);
 		
-		log.info("Flush " + featureList.size() + " features with " + childNodeList.size() + " child nodes");
+		log.info("Flush " + featureList.size() + " features");
 		
-//		if (childNodeList.size() > 0 || childWayList.size() > 0 || childRelationList.size() > 0) {
-		if (childNodeList.size() > 0) {
+		if (childNodeList.size() > 0 || childWayList.size() > 0 || childRelationList.size() > 0) {
 			/** Find coordinates using a VGI pipeline */
-			childNodeList.sort();
-			childWayList.sort();
-			childRelationList.sort();
-			
-			log.info("Find coordinates for " + childNodeList.size() + " child nodes - Start");
+			log.info("Find reference elements - Start");
 			IVgiPipeline pipeline = ctx.getBean("getFeaturesPipeline", IVgiPipeline.class);
 			pipeline.setPbfDataFolder(settings.getPbfDataFolder());
 			pipeline.setFilterNodeId(childNodeList);
@@ -223,7 +239,7 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			pipeline.setFilterRelationId(childRelationList);
 			pipeline.start();
 			
-			log.debug("Find coordinates for " + childNodeList.size() + " child nodes - End");
+			log.debug("Find reference elements - End");
 			childNodeList.clear();
 			childNodeList.trimToSize();
 			childWayList.clear();
@@ -231,10 +247,19 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			childRelationList.clear();
 			childRelationList.trimToSize();
 			
+			List<IVgiFeature> refElementList = ((ReadAllFeaturesConsumer)pipeline.getConsumers().get(0)).getFeatureList();
+			log.info(refElementList.size() + " ref elements found!");
+			refElementList.sort(VgiFeatureImpl.getFeatureComparator());
+			
 			/** Add geometries to operations */
 			log.info("Add coordinates to operations - Start");
-			addCoordinateToOperations(((ReadAllFeaturesConsumer)pipeline.getConsumers().get(0)).getFeatureList());
+			addCoordinateToOperations(refElementList);
 			log.debug("Add coordinates to operations - End");
+			
+			/** Add relation member operations */
+			log.info("Add relation member operations - Start");
+			addRelationMemberOperations(refElementList);
+			log.debug("Add relation member operations - End");
 		}
 		
 		if (settings.getFilterPolygonList() != null && !settings.getFilterPolygonList().isEmpty()) {
@@ -272,11 +297,6 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 	 * @param refElements list of child elements (way nodes and relation members)
 	 */
 	private void addCoordinateToOperations(List<IVgiFeature> refElements) {
-		
-		log.info(refElements.size() + " ref elements found!");
-		
-		refElements.sort(VgiFeatureImpl.getFeatureComparator());
-		
 		int numFound=0, numNotFound=0;
 		
 		for (IVgiFeature feature : featureList) {
@@ -303,37 +323,8 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 				if (!featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) continue;
 				
 				/** Find ref element */
-				IVgiFeature refElement = null;
-				IVgiFeature refElementForSearch = new VgiFeatureImpl();
-				refElementForSearch.setOid(featureOperation.getRefId());
-				if (featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE)) {
-					refElementForSearch.setVgiGeometryType(VgiGeometryType.POINT);
-//				} else if (featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) {
-//					if (featureOperation.getKey().equals("n")) {
-//						refElementForSearch.setVgiGeometryType(VgiGeometryType.POINT);
-//					} else if (featureOperation.getKey().equals("w")) {
-//						refElementForSearch.setVgiGeometryType(VgiGeometryType.LINE);
-//					} else if (featureOperation.getKey().equals("r")) {
-//						refElementForSearch.setVgiGeometryType(VgiGeometryType.RELATION);
-//					}
-				}
-				int index = Collections.binarySearch(refElements, refElementForSearch, VgiFeatureImpl.getFeatureComparator());
-				if (index >= 0) {
-					refElement = refElements.get(index);
-					numFound++;
-				} else {
-					numNotFound++;
-					if (settings.getCurrentPolygon() == null) {
-						/** only write error if no polygon filter is set */
-						if (numNotFound < 100 || numNotFound % 10000 == 0) {
-							log.error(featureOperation.getVgiGeometryType() + "/" + featureOperation.getOid() + "/v"
-									+ featureOperation.getVersion() + ": Cannot find ref element "
-									+ refElementForSearch.getVgiGeometryType() + "/" + refElementForSearch.getOid()
-									+ " (" + numNotFound + "/" + (numFound + numNotFound) + ")");
-						}
-					}
-					continue;
-				}
+				IVgiFeature refElement = findRefElement(refElements, featureOperation);
+				if (refElement == null) continue;
 				
 				/** Operations for added nodes */
 				featureChildElements.put(refElement.getOid(), refElement.getOperationList());
@@ -410,7 +401,69 @@ public class VgiOperationGeneratorDataHandlerImpl implements OsmDataConsumer, Ap
 			Collections.sort(feature.getOperationList(), VgiOperationImpl.getVersionComparator());
 		}
 		
-		log.info(numNotFound + " of " + (numNotFound + numFound) + " ref elements not found!");
+		if (numNotFound > 0) log.info(numNotFound + " of " + (numNotFound + numFound) + " ref elements not found!");
+	}
+	
+	private void addRelationMemberOperations(List<IVgiFeature> refElements) {
+		numRefElementsFound=0;
+		numRefElementsNotFound=0;
+		
+		for (IVgiFeature feature : featureList) {
+			if (!feature.getVgiGeometryType().equals(VgiGeometryType.RELATION)) continue;
+			List<IVgiFeature> featureRefElements = new ArrayList<IVgiFeature>();
+			for (IVgiOperation featureOperation : feature.getOperationList()) {
+				/** Only OpAddMember */
+				if (!featureOperation.getVgiOperationType().equals(VgiOperationType.OP_ADD_MEMBER)) continue;
+				
+				/** Find ref element */
+				IVgiFeature refElement = findRefElement(refElements, featureOperation);
+				if (refElement == null) continue;
+				
+				if (!featureRefElements.contains(refElement)) {
+					featureRefElements.add(refElement);
+				}
+			}
+			
+			Collections.sort(featureRefElements, VgiFeatureImpl.getFeatureComparator());
+			feature.setRelationMembers(featureRefElements);
+		}
+		
+		if (numRefElementsNotFound > 0) log.info(numRefElementsNotFound + " of " + (numRefElementsNotFound + numRefElementsFound) + " ref elements not found!");
+	}
+	
+	/**
+	 * Finds a ref element in a list of VGI features
+	 * @param refElements
+	 * @param operation
+	 * @return
+	 */
+	private IVgiFeature findRefElement(List<IVgiFeature> refElements, IVgiOperation operation) {
+		IVgiFeature refElementForSearch = new VgiFeatureImpl();
+		refElementForSearch.setOid(operation.getRefId());
+		if (operation.getVgiOperationType().equals(VgiOperationType.OP_ADD_NODE) || operation.getKey().equals("n")) {
+			refElementForSearch.setVgiGeometryType(VgiGeometryType.POINT);
+		} else if (operation.getKey().equals("w")) {
+			refElementForSearch.setVgiGeometryType(VgiGeometryType.LINE);
+		} else if (operation.getKey().equals("r")) {
+			refElementForSearch.setVgiGeometryType(VgiGeometryType.RELATION);
+		}
+		int index = Collections.binarySearch(refElements, refElementForSearch, VgiFeatureImpl.getFeatureComparator());
+		if (index >= 0) {
+			numRefElementsFound++;
+			return refElements.get(index);
+		} else {
+			numRefElementsNotFound++;
+			if (settings.getFilterPolygonList() != null && !settings.getFilterPolygonList().isEmpty()) {
+				/** only write error if no polygon filter is set */
+				if (numRefElementsNotFound < 20 || numRefElementsNotFound % 10000 == 0) {
+					log.warn(operation.getVgiGeometryType() + "/" + operation.getOid() + "/v"
+							+ operation.getVersion() + ": Cannot find ref element "
+							+ refElementForSearch.getVgiGeometryType() + "/" + refElementForSearch.getOid()
+							+ " (" + numRefElementsNotFound + "/" + (numRefElementsFound + numRefElementsNotFound) + ")");
+				}
+			}
+			return null;
+		}
 	}
 	
 	public IOsmVgiOperationGenerator getVgiOperationGenerator() {

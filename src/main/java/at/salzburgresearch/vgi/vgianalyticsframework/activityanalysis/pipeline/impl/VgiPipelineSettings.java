@@ -130,13 +130,8 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 	
 	public VgiPipelineSettings() {
 		dateFormatOSM.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-		featureTypeList = new HashMap<String, IVgiFeatureType>();
-		actionAnalyzerList = new ArrayList<IVgiAnalysisAction>();
-		operationAnalyzerList = new ArrayList<IVgiAnalysisOperation>();
-		featureAnalyzerList = new ArrayList<IVgiAnalysisFeature>();
-		actionDefinitionList = new ArrayList<IVgiAction>();
 		
+		featureTypeList = new HashMap<String, IVgiFeatureType>();
 		addInvalidFeatureTypes();
 	}
 	
@@ -358,6 +353,9 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
     			 * Parse feature types
     			 */
 				NodeList nodeList1 = firstElement.getElementsByTagName("featureType");
+//				if (nodeList1.getLength() > 0) {
+//					featureTypeList = new HashMap<String, IVgiFeatureType>();
+//				}
 				for(int t=0; t<nodeList1.getLength() ; t++) {
 	                Node node1 = nodeList1.item(t);
 	                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
@@ -445,6 +443,11 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
     			 * Parse analysis subjects
     			 */
 				nodeList1 = firstElement.getElementsByTagName("analysisSubject");
+				if (nodeList1.getLength() > 0) {
+					actionAnalyzerList = new ArrayList<IVgiAnalysisAction>();
+					operationAnalyzerList = new ArrayList<IVgiAnalysisOperation>();
+					featureAnalyzerList = new ArrayList<IVgiAnalysisFeature>();
+				}
 				for(int t=0; t<nodeList1.getLength() ; t++) {
 	                Node node1 = nodeList1.item(t);
 	                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
@@ -547,59 +550,59 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 				/**
 				 * Parse actions definitions
 				 */
-    			try {
-    				nodeList1 = firstElement.getElementsByTagName("actionDefinition");
-    				for(int t=0; t<nodeList1.getLength() ; t++) {
-    	                Node node1 = nodeList1.item(t);
-    	                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
-						Element firstElement1 = (Element) node1;
-						
-						IVgiAction action = new VgiActionImpl();
-						try {
-							action.setActionName(firstElement1.getAttribute("name"));
-							if (!firstElement1.getAttribute("geometryType").equals("")) {
-								action.setGeometryType(VgiGeometryType.valueOf(firstElement1.getAttribute("geometryType")));
-							}
-						} catch(Exception ex) {
-							log.warn("Cannot parse setting 'action definition': " + firstElement1.getAttribute("name"));
+				nodeList1 = firstElement.getElementsByTagName("actionDefinition");
+				if (nodeList1.getLength() > 0) {
+					actionDefinitionList = new ArrayList<IVgiAction>();
+				}
+				for(int t=0; t<nodeList1.getLength() ; t++) {
+	                Node node1 = nodeList1.item(t);
+	                if (node1.getNodeType() != Node.ELEMENT_NODE) continue;
+					Element firstElement1 = (Element) node1;
+					
+					IVgiAction action = new VgiActionImpl();
+					try {
+						action.setActionName(firstElement1.getAttribute("name"));
+						if (!firstElement1.getAttribute("geometryType").equals("")) {
+							action.setGeometryType(VgiGeometryType.valueOf(firstElement1.getAttribute("geometryType")));
 						}
-		    			try {
-		    				action.setActionType(VgiActionImpl.ActionType.valueOf(firstElement1.getAttribute("actionType")));
-		    			} catch (Exception ex) {
-		    				log.warn("Cannot parse setting 'actionType' ");
-		    			}
-						
-	    				NodeList nodeList2 = firstElement1.getElementsByTagName("definitionRule");
-	    				for(int v=0; v<nodeList2.getLength() ; v++) {
-	    	                Node node2 = nodeList2.item(v);
-	    	                if (node2.getNodeType() != Node.ELEMENT_NODE) continue;
-    						Element firstElement2 = (Element) node2;
-    						try {
-    							action.addDefinitionRule(new VgiActionDefinitionRule(VgiOperationType.valueOf(firstElement2.getAttribute("operationType")), VgiActionDefinitionRule.EntryPointType.valueOf(firstElement2.getAttribute("entryPoint"))));
-    						} catch(Exception ex) {
-    							log.warn("Cannot parse setting 'definitionRule': " + firstElement1.getAttribute("name") + ">" + firstElement2.getAttribute("operationType"));
-    						}
-	    				}
-	    				
-	    				Collections.sort(action.getDefinition(), VgiActionDefinitionRule.getOperationTypeComparator());
-	    				Collections.reverse(action.getDefinition());
-	    				
-	    				actionDefinitionList.add(action);
+					} catch(Exception ex) {
+						log.warn("Cannot parse setting 'action definition': " + firstElement1.getAttribute("name"));
+					}
+	    			try {
+	    				action.setActionType(VgiActionImpl.ActionType.valueOf(firstElement1.getAttribute("actionType")));
+	    			} catch (Exception ex) {
+	    				log.warn("Cannot parse setting 'actionType' ");
+	    			}
+					
+    				NodeList nodeList2 = firstElement1.getElementsByTagName("definitionRule");
+    				for(int v=0; v<nodeList2.getLength() ; v++) {
+    	                Node node2 = nodeList2.item(v);
+    	                if (node2.getNodeType() != Node.ELEMENT_NODE) continue;
+						Element firstElement2 = (Element) node2;
+						try {
+							action.addDefinitionRule(new VgiActionDefinitionRule(VgiOperationType.valueOf(firstElement2.getAttribute("operationType")), VgiActionDefinitionRule.EntryPointType.valueOf(firstElement2.getAttribute("entryPoint"))));
+						} catch(Exception ex) {
+							log.warn("Cannot parse setting 'definitionRule': " + firstElement1.getAttribute("name") + ">" + firstElement2.getAttribute("operationType"));
+						}
     				}
-    			} catch (Exception ex) {
-    				log.warn("Cannot parse setting 'actionDefinitions'");
-    			}
-    			
+    				
+    				Collections.sort(action.getDefinition(), VgiActionDefinitionRule.getOperationTypeComparator());
+    				Collections.reverse(action.getDefinition());
+    				
+    				actionDefinitionList.add(action);
+				}
             }
 
             /**
 			 * Parse filter polygons
 			 */
             nodeList = doc.getElementsByTagName("filterPolygons");
+            if (nodeList.getLength() > 0) {
+            	filterPolygonList = new ArrayList<VgiPolygon>();
+			}
             
             for(int s=0; s<nodeList.getLength(); s++) {
 				WKTReader wktReader = new WKTReader();
-            	if (filterPolygonList == null) filterPolygonList = new ArrayList<VgiPolygon>();
             	
                 Node node = nodeList.item(s);
 				if (node.getNodeType() != Node.ELEMENT_NODE) continue; 

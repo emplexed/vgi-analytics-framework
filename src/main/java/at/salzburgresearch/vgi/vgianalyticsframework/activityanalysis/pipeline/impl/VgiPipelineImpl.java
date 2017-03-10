@@ -26,14 +26,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiActionDefinitionRule;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiGeometryType;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl;
+import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipeline;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.IVgiPipelineConsumer;
@@ -50,11 +49,9 @@ import gnu.trove.list.array.TLongArrayList;
  * supports multi-threading.
  *
  */
-public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
+public class VgiPipelineImpl implements IVgiPipeline {
 
 	private static Logger log = Logger.getLogger(VgiPipelineImpl.class);
-	
-	private ApplicationContext ctx;
 	
 	private IVgiPipelineSettings settings;
 
@@ -63,8 +60,8 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 	private int queueSize = 10000;
 	private int batchSize = 10000;
 	
-	private String producerName = "vgiOperationPbfReader";
 	private IVgiAnalysisPipelineProducer producer = null;
+	private IVgiAnalysisPipelineProducer producerQuadtree = null;
 	private int numThreads = 1;
 	
 	private File pbfDataFolder = null;
@@ -80,6 +77,10 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private SimpleDateFormat dateFormatOSM = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	
+	public VgiPipelineImpl(IVgiPipelineSettings settings) {
+		this.settings = settings;
+	}
+	
 	/**
 	 * Starts the pipeline. Create producers, lets them read the VGI operations, receives the data and sends the operations to a set of consumers
 	 */
@@ -91,11 +92,9 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 		
 		/** Create thread(s) which will read the PBF files */
 		Thread[] producerThread = new Thread[numThreads];
+		
 		for (int i=0; i<numThreads; i++) {
-			
-			producerName = (settings.isReadQuadtree()) ? "vgiOperationPbfReaderQuadtree" : "vgiOperationPbfReader";
-			
-			producer = ctx.getBean(producerName, IVgiAnalysisPipelineProducer.class);
+			producer = (settings.isReadQuadtree() && producerQuadtree != null) ? new VgiOperationPbfReaderQuadtreeImpl(settings) : new VgiOperationPbfReaderImpl(settings);
 			producer.setQueue(queue);
 			producerThread[i] = new Thread(producer);
 			
@@ -153,7 +152,9 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 			log.error("error joining producer thread", e);
 		}
 		
-		if (settings.getActionAnalyzerList() != null) {
+		if (settings.getActionAnalyzerList() != null 
+				|| settings.getOperationAnalyzerList() != null 
+				|| settings.getFeatureAnalyzerList() != null) {
 			writeMetaData(settings.getResultFolder());			
 		}
 	}
@@ -272,29 +273,28 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 	public void setConsumers(List<IVgiPipelineConsumer> consumers) {
 		this.consumers = consumers;
 	}
-	
-	@Override
-	public String getProducerName() {
-		return producerName;
-	}
-	@Override
-	public void setProducerName(String producerName) {
-		this.producerName = producerName;
-	}
 
 	@Override
 	public void setNumThreads(int threadCount) {
+		if (threadCount < 1) {
+			throw new IllegalArgumentException("numThreads less than 1");
+		}
 		this.numThreads = threadCount;
-	}
-	
-	@Override
-	public void setVgiPipelineSettings(IVgiPipelineSettings settings) {
-		this.settings = settings;
 	}
 
 	@Override
 	public void setPbfDataFolder(File pbfDataFolder) {
 		this.pbfDataFolder = pbfDataFolder;
+	}
+	
+	@Override
+	public void setProducer(IVgiAnalysisPipelineProducer producer) {
+		this.producer = producer;
+	}
+	
+	@Override
+	public void setProducerQuadtree(IVgiAnalysisPipelineProducer producerQuadtree) {
+		this.producerQuadtree = producerQuadtree;
 	}
 
 	@Override
@@ -330,10 +330,5 @@ public class VgiPipelineImpl implements IVgiPipeline, ApplicationContextAware {
 	@Override
 	public void setCoordinateOnly(boolean coordinatesOnly) {
 		this.coordinateOnly = coordinatesOnly;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-		this.ctx = ctx;
 	}
 }
