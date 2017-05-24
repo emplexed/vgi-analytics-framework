@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.vividsolutions.jts.geom.Envelope;
@@ -50,7 +50,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.p
 import gnu.trove.list.array.TLongArrayList;
 
 public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
-	private static Logger log = Logger.getLogger(VgiOperationPbfReaderImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationPbfReaderImpl.class);
 	
 	protected IVgiPipelineSettings settings = null;
 	
@@ -106,13 +106,13 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 		
 		log.info("Start reading PBF files");
 		log.info(" - Data folder: " + pbfDataFolder);
-		if (constrainedFilter) log.info(" - Constrained Filter: " + constrainedFilter);
-		if (filterNodeId != null) log.info(" - Node ID Filter Size: " + filterNodeId.size());
-		if (filterWayId != null) log.info(" - Way ID Filter Size: " + filterWayId.size());
-		if (filterRelationId != null) log.info(" - Relation ID Filter Size: " + filterRelationId.size());
-		if (filterFileId != -1) log.info(" - filterFileId: " + filterFileId);
-		if (producerCount != 1) log.info(" - producer: " + producerNumber + " (of " + producerCount + ")");
-		if (!filterGeometryType.equals(VgiGeometryType.UNDEFINED)) log.info(" - filterGeometryType: " + filterGeometryType);
+		if (constrainedFilter) log.info(" - Constrained Filter: {}", constrainedFilter);
+		if (filterNodeId != null) log.info(" - Node ID Filter Size: {}", filterNodeId.size());
+		if (filterWayId != null) log.info(" - Way ID Filter Size: {}", filterWayId.size());
+		if (filterRelationId != null) log.info(" - Relation ID Filter Size: {}", filterRelationId.size());
+		if (filterFileId != -1) log.info(" - filterFileId: {}", filterFileId);
+		if (producerCount != 1) log.info(" - producer: {} of {}", producerNumber, producerCount);
+		if (!filterGeometryType.equals(VgiGeometryType.UNDEFINED)) log.info(" - filterGeometryType: {}", filterGeometryType);
 		
 		readPbfFiles(false);
 	}
@@ -126,21 +126,20 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 		/** Read the operation file list */
 		PbfOperationFileList pbfFileList = null;
 		
-		if (!new File(pbfDataFolder + File.separator + "operationFileList.pbf").exists()) {
-			log.error("'" + pbfDataFolder + File.separator + "operationFileList.pbf' not found!");
+		File listFile = new File(pbfDataFolder + File.separator + "operationFileList.pbf");
+		
+		if (!listFile.exists()) {
+			log.error("'{}' not found!", listFile);
 			return;
 		}
 		
-		try (FileInputStream fisFileList = new FileInputStream(pbfDataFolder + File.separator + "operationFileList.pbf")) {
+		try (FileInputStream fisFileList = new FileInputStream(listFile)) {
 			pbfFileList = PbfOperationFileList.parseFrom(fisFileList);
 		} catch (IOException e) {
 			log.error("IOException while reading PBF files");
 		}
 		
 		/** Reset pointers to 0 */
-//		filterNodeIdPointer = 0;
-//		filterWayIdPointer = 0;
-//		filterRelationIdPointer = 0;
 		filterIdPointer = 0;
 		
 		/** Iterate through operation files */
@@ -148,7 +147,7 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 		int firstFileId = startFileId + (int)Math.floor((double)(pbfFileList.getNodeOperationFileCount()-startFileId) / producerCount * producerNumber) + 1;
 		if (producerNumber == 0) firstFileId = startFileId;
 		int lastFileId = startFileId + (int)Math.floor((double)(pbfFileList.getNodeOperationFileCount()-startFileId) / producerCount * (producerNumber+1));
-		log.info("[" + producerNumber + "] firstFileId=" + firstFileId + " lastFileId=" + lastFileId);
+		log.info("[{}] firstFileId={} lastFileId={}", producerNumber, firstFileId, lastFileId);
 		if (settings.getFilterElementType().equals(VgiGeometryType.UNDEFINED) || settings.getFilterElementType().equals(VgiGeometryType.POINT)) {
 			read(pbfFileList.getNodeOperationFileList(), keepInCache, firstFileId, lastFileId);
 		}
@@ -211,13 +210,14 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 			
 			if (!containsRequestedOperations(file, geometryType)) continue;
 			
-			if (!new File(pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf").exists()) {
-				log.error(pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf not found!");
+			File pbfFile = new File(pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf");
+			
+			if (!pbfFile.exists()) {
+				log.error("'{}' not found!", pbfFile);
 				continue;
 			}
 			
-//			log.info("[" + producerNumber + ": Pbf " + elementTypePrefix + "_" + file.getOperationFileId() + "/" + pbfFileList.size() + "] Start: NumOps=" + file.getNumEntries() + "; Path=" + pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf");
-			
+//			log.info("[{}: Pbf {}_{}/{}] Start: NumOps={}; File={}", producerNumber, elementTypePrefix, file.getOperationFileId(), pbfFileList.size(), file.getNumEntries(), pbfFile);
 			/** Initialize variables */
 			currentOperationValues = new VgiOperationImpl();
 			currentPbfOperationOid = 0l;
@@ -232,7 +232,7 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 			
 			/** Stream and read the operations */
 			try (BufferedInputStream bis = new BufferedInputStream(
-					new FileInputStream(pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf"), 1024*64)) {
+					new FileInputStream(pbfFile), 1024*64)) {
 				
 				byte[] byteArray = null;
 				PbfVgiFeatureBatch pbfFeature = null;
@@ -279,19 +279,19 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 				}
 				
 			} catch (InvalidProtocolBufferException e) {
-				log.error("Operation after: " + currentOperationValues.getVgiGeometryType() + "/" + currentOperationValues.getOid() + " > " + currentOperationValues.getVgiOperationType() + ", " + currentOperationValues.getTimestamp());
+				log.error("Operation after: {}/{} > {}, {}", currentOperationValues.getVgiGeometryType(), currentOperationValues.getOid(), currentOperationValues.getVgiOperationType(), currentOperationValues.getTimestamp());
 				e.printStackTrace();
 				/** http://www.openstreetmap.org/browse/changeset/14246617 */
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				log.error("File " + pbfDataFolder + "/operation_" + elementTypePrefix + "_" + file.getOperationFileId() + ".pbf not found!");
+				log.error("'{}' not found!", pbfFile);
 			}
 			
 //			/** log progress of reading PBFs */
-//			log.info("[" + producerNumber+ ": Pbf " + elementTypePrefix + "_" + file.getOperationFileId() + "/" + pbfFileList.size() + "] End  : NumOps=" + file.getNumEntries() + ((numDuration > 0) ? "; Dur=" + (duration/numDuration) : ""));
+//			log.info("[{}: Pbf {}_{}/{}] End  : NumOps={} {}", producerNumber, elementTypePrefix, file.getOperationFileId(), pbfFileList.size(), file.getNumEntries(), ((numDuration > 0) ? "; Dur=" + (duration/numDuration) : ""));
 		}
-//		log.info("[" + producerNumber + "] Reading PBF files finished");
+//		log.info("[{}] Reading PBF files finished", producerNumber);
     }
 	
 	/**
@@ -393,7 +393,7 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
      */
 	protected void enqueueFeature(IVgiFeature feature) {
 		if (feature.getOperationList().size() == 0) {
-			log.warn("Feature " + feature.getOid() + " without operations");
+			log.warn("Feature {} without operations", feature.getOid());
 			return;
 		}
 		

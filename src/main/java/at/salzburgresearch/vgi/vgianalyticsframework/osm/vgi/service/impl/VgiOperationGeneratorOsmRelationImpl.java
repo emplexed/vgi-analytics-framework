@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.OsmElementType;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Relation;
@@ -32,7 +32,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.IOsmVgiRelationOperationGenerator;
 
 public class VgiOperationGeneratorOsmRelationImpl extends AbstractVgiOperationOsmGenerator implements IOsmVgiRelationOperationGenerator {
-	private static Logger log = Logger.getLogger(VgiOperationGeneratorOsmRelationImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationGeneratorOsmRelationImpl.class);
 
 	public VgiOperationGeneratorOsmRelationImpl(IVgiModelFactory operationFactory) {
 		super(operationFactory);
@@ -133,9 +133,9 @@ public class VgiOperationGeneratorOsmRelationImpl extends AbstractVgiOperationOs
 						valueMembers.get(i).getRole(), valueMembers.get(i).getId(), i));
 				
 				/** Adds node to current node list */
-				if (i > currentMembers.size()) {
-					currentMembers.size();
-				}
+//				if (i > currentMembers.size()) {
+//					currentMembers.size(); //Nothing happens here...
+//				}
 				currentMembers.add(i, valueMembers.get(i));
 			} else {
 				/** Remove node from available node list */
@@ -144,18 +144,18 @@ public class VgiOperationGeneratorOsmRelationImpl extends AbstractVgiOperationOs
 		}
 		
 		if (currentMembers.size() != valueMembers.size()) {
-			log.error("Current member list has " + currentMembers.size() + " items, while value member list has "
-					+ valueMembers.size() + " items (relation " + value.getId() + " v" + value.getVersion() + ")");
+			log.error("Current member list has {} items, while value member list has {} items (relation/{}/v{})",
+					currentMembers.size(), valueMembers.size(), value.getId(), value.getVersion());
 			String listString = "";
 			for (RelationMember s : currentMembers) {
 			    listString += s.getId() + "  ";
 			}
-			log.info(" - " + listString);
+			log.info(" - {}", listString);
 			listString = "";
 			for (RelationMember s : valueMembers) {
 			    listString += s.getId() + "  ";
 			}
-			log.info(" - " + listString);
+			log.info(" - {}", listString);
 		}
 		
 		return operationList;

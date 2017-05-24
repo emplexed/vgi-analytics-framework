@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.openstreetmap.osmosis.osmbinary.BinaryParser;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.openstreetmap.osmosis.osmbinary.Osmformat.DenseInfo;
@@ -41,7 +41,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.OsmDataConsume
  * Extends Importer by Osmosis
  */
 public class OsmPbfParser extends BinaryParser {
-	private static Logger log = Logger.getLogger(VgiOperationImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationImpl.class);
 
     private OsmDataConsumer osmDataConsumer = null;
 

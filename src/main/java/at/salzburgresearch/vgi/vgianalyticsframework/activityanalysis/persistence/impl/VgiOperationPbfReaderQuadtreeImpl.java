@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -37,8 +37,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.impl.CSVFileWriter;
 
 public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl {
-
-	private static Logger log = Logger.getLogger(VgiOperationPbfReaderQuadtreeImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationPbfReaderQuadtreeImpl.class);
 	
 	private GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
 	
@@ -67,11 +66,11 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 		    settings.getCache().clear();
 		    settings.setCache(new HashMap<String, List<IVgiFeature>>());
 		    settings.setKeepInCacheLevel(2);
-			log.info(" - keepInCacheLevel=" + settings.getKeepInCacheLevel());
+			log.info(" - keepInCacheLevel={}", settings.getKeepInCacheLevel());
 		} else {
 			settings.setKeepInCacheLevel(settings.getKeepInCacheLevel()+1);
 			if (settings.getKeepInCacheLevel() > keepInCacheMaxLevel) settings.setKeepInCacheLevel(keepInCacheMaxLevel);
-			log.info(" - keepInCacheLevel=" + settings.getKeepInCacheLevel());
+			log.info(" - keepInCacheLevel={}", settings.getKeepInCacheLevel());
 		}
 	}
 	
@@ -84,7 +83,7 @@ public class VgiOperationPbfReaderQuadtreeImpl extends VgiOperationPbfReaderImpl
 			PbfQuadtreeIndex pbfQuadtree = null;
 			
 			if (!new File(settings.getPbfDataFolder() + "/Quadtree/index.pbf").exists()) {
-				log.error("Cannot find file '" + settings.getPbfDataFolder() + "/Quadtree/index.pbf'");
+				log.error("Cannot find file '{}/Quadtree/index.pbf'", settings.getPbfDataFolder());
 				return;
 			}
 			

@@ -27,7 +27,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.geotools.factory.Hints;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -50,7 +50,7 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class HexagonalRasterGenerator {
-	private static Logger log = Logger.getLogger(HexagonalRasterGenerator.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(HexagonalRasterGenerator.class);
 
 	public static void main(String[] args) {
 		/**

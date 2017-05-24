@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -39,7 +39,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.IOsmVgiRela
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.IOsmVgiWayOperationGenerator;
 
 public class VgiOperationGeneratorOsmImpl extends AbstractVgiOperationOsmGenerator implements IOsmVgiOperationGenerator {
-	private static Logger log = Logger.getLogger(VgiOperationImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationImpl.class);
 
 	protected IOsmVgiNodeOperationGenerator nodeOpGenerator;
 	protected IOsmVgiWayOperationGenerator wayOpGenerator;

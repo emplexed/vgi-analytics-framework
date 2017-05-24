@@ -32,7 +32,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.w3c.dom.Document;
@@ -83,7 +83,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.an
  *
  */
 public class VgiPipelineSettings implements IVgiPipelineSettings {
-	private static Logger log = Logger.getLogger(VgiPipelineSettings.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiPipelineSettings.class);
 	
 	private SimpleDateFormat dateFormatOSM = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	
@@ -208,7 +208,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 				/** pbfDataFolder */
 				pbfDataFolder = new File(prepareFile(firstElement.getAttribute("pbfDataFolder")));
 				if (!pbfDataFolder.exists()) {
-					log.error("Cannot find pbfDataFolder!");
+					log.error("Cannot find pbfDataFolder '{}'", pbfDataFolder);
 					System.exit(1);
 				}
 				
@@ -216,7 +216,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
     			if (firstElement.hasAttribute("resultFolder")) {
 					resultFolder = new File(prepareFile(firstElement.getAttribute("resultFolder")));
 					if (!resultFolder.exists()) {
-						log.error("Cannot find resultFolder!");
+						log.error("Cannot find resultFolder '{}'", resultFolder);
 						System.exit(1);
 					}
 					SimpleDateFormat dateFormatOSM = new SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss'Z'");
@@ -431,12 +431,12 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
     				
     				vgiFeatureType.setFeatureType(featureType.buildFeatureType());
     				if (featureTypeList.containsKey(featureType.getName())) {
-    					log.error("Feature type with name '" + featureType.getName() + "' already exists!");
+    					log.error("Feature type with name '{}' already exists!", featureType.getName());
     					System.exit(0);
     				} else {
     					featureTypeList.put(featureType.getName(), vgiFeatureType);
     				}
-    				log.info("FeatureType '" + featureType.getName() + "' added");
+    				log.info("FeatureType '{}' added", featureType.getName());
 	            }
     			
     			/**
@@ -566,7 +566,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 							action.setGeometryType(VgiGeometryType.valueOf(firstElement1.getAttribute("geometryType")));
 						}
 					} catch(Exception ex) {
-						log.warn("Cannot parse setting 'action definition': " + firstElement1.getAttribute("name"));
+						log.warn("Cannot parse setting 'action definition': {}", firstElement1.getAttribute("name"));
 					}
 	    			try {
 	    				action.setActionType(VgiActionImpl.ActionType.valueOf(firstElement1.getAttribute("actionType")));
@@ -582,7 +582,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 						try {
 							action.addDefinitionRule(new VgiActionDefinitionRule(VgiOperationType.valueOf(firstElement2.getAttribute("operationType")), VgiActionDefinitionRule.EntryPointType.valueOf(firstElement2.getAttribute("entryPoint"))));
 						} catch(Exception ex) {
-							log.warn("Cannot parse setting 'definitionRule': " + firstElement1.getAttribute("name") + ">" + firstElement2.getAttribute("operationType"));
+							log.warn("Cannot parse setting 'definitionRule': {}>{}", firstElement1.getAttribute("name"), firstElement2.getAttribute("operationType"));
 						}
     				}
     				
@@ -641,7 +641,7 @@ public class VgiPipelineSettings implements IVgiPipelineSettings {
 			return false;
 		}
 	    
-	    log.info("Settings '" + this.getSettingName() + "' loaded");
+	    log.info("Settings '{}' loaded", this.getSettingName());
 	    return true;
 	}
 

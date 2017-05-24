@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiOperation;
@@ -41,7 +41,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistenc
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation;
 
 public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
-	private Logger log = Logger.getLogger(VgiOperationPbfWriterImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationPbfWriterImpl.class);
 	
 	protected FileOutputStream pbfFeatureWriter = null;
 	

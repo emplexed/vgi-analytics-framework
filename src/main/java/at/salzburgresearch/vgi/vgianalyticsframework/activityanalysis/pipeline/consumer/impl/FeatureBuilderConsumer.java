@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -44,7 +44,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.c
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineSettings;
 
 public class FeatureBuilderConsumer implements IVgiPipelineConsumer {
-	private static Logger log = Logger.getLogger(FeatureBuilderConsumer.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(FeatureBuilderConsumer.class);
 	
 	private final SimpleDateFormat dateFormatOSM = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	
@@ -64,7 +64,7 @@ public class FeatureBuilderConsumer implements IVgiPipelineConsumer {
 	@Override
 	public void handleBatch(List<IVgiFeature> batch) {
 		log.info("Start building features from operation");
-		log.info(" - Cutoff date: " + dateFormatOSM.format(settings.getFilterTimestamp()) + ")");
+		log.info(" - Cutoff date: {})", dateFormatOSM.format(settings.getFilterTimestamp()));
 		for (IVgiFeature feature : batch) {
 			features.add(assembleGeometry(feature, null));
 		}
@@ -117,7 +117,7 @@ public class FeatureBuilderConsumer implements IVgiPipelineConsumer {
 				
 			case OP_ADD_NODE:
 				if (coordinateArray.size() < operation.getPosition())
-					log.warn("Index out of bounds... " + feature.getOid() + " " + operation.getRefId() + " " + operation.getTimestamp());
+					log.warn("Index out of bounds... {} {} {}", feature.getOid(), operation.getRefId(), operation.getTimestamp());
 				
 				coordinateArray.add(operation.getPosition(), (operation.getCoordinate() != null ? new Coordinate(operation.getCoordinate()) : null));
 				nodeArray.add(operation.getPosition(), operation.getRefId());

@@ -9,8 +9,8 @@
 	<url>http://www.salzburgresearch.at</url>
 	<packaging>jar</packaging>
 	<properties>
-		<geotools.version>14.0</geotools.version>
-		<spring.version>4.2.4.RELEASE</spring.version>
+		<geotools.version>16.2</geotools.version>
+		<spring.version>4.3.6.RELEASE</spring.version>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
@@ -72,7 +72,7 @@
 		<dependency>
 			<groupId>org.openstreetmap.osmosis</groupId>
 			<artifactId>osmosis-osm-binary</artifactId>
-			<version>0.44.1</version>
+			<version>0.45</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -89,13 +89,13 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>2.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

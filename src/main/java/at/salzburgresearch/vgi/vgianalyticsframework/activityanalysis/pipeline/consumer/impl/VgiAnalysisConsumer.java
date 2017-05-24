@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
@@ -60,7 +60,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.service.im
 import gnu.trove.list.array.TLongArrayList;
 
 public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationContextAware {
-	private static Logger log = Logger.getLogger(VgiAnalysisConsumer.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiAnalysisConsumer.class);
 	
 	private ApplicationContext ctx = null;
 	
@@ -208,11 +208,11 @@ public class VgiAnalysisConsumer implements IVgiPipelineConsumer, ApplicationCon
 	private void analyzeFeatures() {
 		
 		if (settings.isFindRelatedOperations()) {
-			log.info("Find related operations for " + featureList.size() + " Features");
+			log.info("Find related operations for {} Features", featureList.size());
 			findRelatedOperations();
 		}
 
-		if (featureList.size() > 0) log.info("Analyze " + featureList.size() + " Features");
+		if (featureList.size() > 0) log.info("Analyze {} Features", featureList.size());
 		for (IVgiFeature feature : this.featureList) {
 			analyzeFeature(feature);
 		}

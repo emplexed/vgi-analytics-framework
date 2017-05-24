@@ -23,14 +23,14 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipeline;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 
 public class VgiQuadtreeBuilder {
-	private static Logger log = Logger.getLogger(VgiQuadtreeBuilder.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiQuadtreeBuilder.class);
 
 	public static void main(String[] args) {
 		/**
@@ -62,7 +62,7 @@ public class VgiQuadtreeBuilder {
             if (cmd.hasOption('s')) {
                 settingsFile = new File(cmd.getOptionValue('s'));
             	if (!settingsFile.exists()) {
-            		log.warn("Setting file does not exist! (" + settingsFile.getAbsolutePath() + ")");
+            		log.warn("Setting file does not exist! ({})", settingsFile.getAbsolutePath());
             		settingsFile = null;
             	}
             } else {

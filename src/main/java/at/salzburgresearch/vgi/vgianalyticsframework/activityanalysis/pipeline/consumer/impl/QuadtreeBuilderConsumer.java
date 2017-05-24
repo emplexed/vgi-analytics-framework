@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -47,7 +47,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.IVgiPipelineConsumer;
 
 public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtree, FeatureImportListener, ApplicationContextAware {
-	private static Logger log = Logger.getLogger(QuadtreeBuilderConsumer.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(QuadtreeBuilderConsumer.class);
 	
 	private ApplicationContext ctx;
 	
@@ -105,7 +105,7 @@ public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtr
 				
 				File indexFile = new File(settings.getPbfDataFolder() + "/Quadtree/index.pbf");
 				if (!indexFile.exists()) {
-					log.warn("Cannot find file '" + indexFile + "'! A new tree will be built.");
+					log.warn("Cannot find file '{}'! A new tree will be built.", indexFile);
 					return;
 				}
 				
@@ -162,7 +162,7 @@ public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtr
 	@Override
 	public void insertCollectedFeatures(List<IVgiFeature> featureList) {
 		
-		log.info("Insert " + featureList.size() + " features into QT");
+		log.info("Insert {} features into QT", featureList.size());
 	    
 		/** If too much memory is used, write quadtree to files */
 	    checkRuntimeMemory();
@@ -185,7 +185,7 @@ public class QuadtreeBuilderConsumer implements IVgiPipelineConsumer, IPbfQuadtr
 				missing++;
 			}
 		}
-	    if (missing > 0) log.warn(" - " + missing + " features have no location");
+	    if (missing > 0) log.warn(" - {} features have no location", missing);
 		
 		/** Clear feature lists */
 		featureList = new ArrayList<IVgiFeature>();

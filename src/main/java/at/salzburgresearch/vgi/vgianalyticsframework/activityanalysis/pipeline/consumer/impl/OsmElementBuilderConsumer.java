@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -39,7 +39,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.c
 import gnu.trove.list.array.TLongArrayList;
 
 public class OsmElementBuilderConsumer implements IVgiPipelineConsumer {
-	private static Logger log = Logger.getLogger(OsmElementBuilderConsumer.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OsmElementBuilderConsumer.class);
 	
 	private Date cutoffDate = new Date();
 	private final SimpleDateFormat dateFormatOSM = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -54,7 +54,7 @@ public class OsmElementBuilderConsumer implements IVgiPipelineConsumer {
 	
 	@Override
 	public void handleBatch(List<IVgiFeature> batch) {		
-		log.info("Start building features from operation (Cutoff date: " + dateFormatOSM.format(cutoffDate) + ")");
+		log.info("Start building features from operation (Cutoff date: {})", dateFormatOSM.format(cutoffDate));
 		for (IVgiFeature feature : batch) {
 			featureList.add(buildOsmEntry(feature));
 		}
@@ -160,7 +160,7 @@ public class OsmElementBuilderConsumer implements IVgiPipelineConsumer {
 					try {
 						osmFeature.getTags().put(operation.getKey(), operation.getValue());
 					} catch (NullPointerException ex) {
-						log.info("");
+//						log.info("");
 					}
 					break;
 					

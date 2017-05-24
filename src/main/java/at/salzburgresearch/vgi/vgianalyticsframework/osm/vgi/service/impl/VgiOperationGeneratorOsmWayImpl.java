@@ -18,7 +18,7 @@ package at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Way;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiModelFactory;
@@ -28,7 +28,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.IOsmVgiWayOperationGenerator;
 
 public class VgiOperationGeneratorOsmWayImpl extends AbstractVgiOperationOsmGenerator implements IOsmVgiWayOperationGenerator {
-	private static Logger log = Logger.getLogger(VgiOperationGeneratorOsmWayImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationGeneratorOsmWayImpl.class);
 
 	public VgiOperationGeneratorOsmWayImpl(IVgiModelFactory operationFactory) {
 		super(operationFactory);
@@ -80,7 +80,8 @@ public class VgiOperationGeneratorOsmWayImpl extends AbstractVgiOperationOsmGene
 		}
 		
 		if (currentNodeRefs.size() != valueNodeRefs.size()) {
-			log.error("Current Node Ref List has " + currentNodeRefs.size() + " items, while Value Node Ref List has " + valueNodeRefs.size() + " items (way/" + value.getId() + "/v" + value.getVersion() + ")");
+			log.error("Current Node Ref List has {} items, while Value Node Ref List has {} items (way/{}/v{})",
+					currentNodeRefs.size(), valueNodeRefs.size(), value.getId(), value.getVersion());
 		}
 		
 		/** PHASE C: Find OpReorderNode operations */

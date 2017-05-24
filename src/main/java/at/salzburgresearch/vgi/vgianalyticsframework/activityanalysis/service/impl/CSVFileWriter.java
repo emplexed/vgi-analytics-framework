@@ -21,10 +21,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class CSVFileWriter implements Closeable {
-	private static Logger log = Logger.getLogger(CSVFileWriter.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(CSVFileWriter.class);
 	
 	private Writer fw = null;
 	private String filename = "";
@@ -62,7 +62,7 @@ public class CSVFileWriter implements Closeable {
 	public void close() throws IOException {
 		if (fw != null) {
 			fw.close();
-			log.info("File [" +filename + "] written!");
+			log.info("File '{}' written", filename);
 		}
 	}
 }

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.geotools.geometry.jts.Geometries;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -46,7 +46,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.c
  *
  */
 public class VgiActionGeneratorImpl implements IVgiActionGenerator {
-	private static Logger log = Logger.getLogger(VgiActionGeneratorImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiActionGeneratorImpl.class);
 	
 	private IVgiModelFactory actionFactory = new VgiModelFactoryImpl();
 	
@@ -77,7 +77,7 @@ public class VgiActionGeneratorImpl implements IVgiActionGenerator {
 		if (feature.getActionList() == null) {
 			feature.setActionList(new ArrayList<IVgiAction>());
 		} else {
-			log.warn("---------------------- IS THIS POSSIBLE ??? > " + feature.getActionList().size());
+			log.warn("{} actions already generated... ", feature.getActionList().size());
 		}
 		currentFeatureTags = new HashMap<String, String>();
 		previousFeatureType = new ArrayList<IVgiFeatureType>();

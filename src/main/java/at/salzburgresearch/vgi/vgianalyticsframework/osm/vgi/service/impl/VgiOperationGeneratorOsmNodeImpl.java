@@ -18,7 +18,7 @@ package at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKBWriter;
@@ -31,7 +31,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.IOsmVgiNodeOperationGenerator;
 
 public class VgiOperationGeneratorOsmNodeImpl extends AbstractVgiOperationOsmGenerator implements IOsmVgiNodeOperationGenerator {
-	private static Logger log = Logger.getLogger(VgiOperationGeneratorOsmNodeImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationGeneratorOsmNodeImpl.class);
 	
 	WKBWriter wkbWriter = new WKBWriter(2);
 	

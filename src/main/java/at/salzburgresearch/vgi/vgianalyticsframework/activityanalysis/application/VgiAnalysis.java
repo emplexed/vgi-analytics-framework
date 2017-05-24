@@ -26,7 +26,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.vividsolutions.jts.geom.Polygon;
@@ -45,7 +45,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
  *
  */
 public class VgiAnalysis {
-	private static Logger log = Logger.getLogger(VgiAnalysis.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiAnalysis.class);
 
 	public static void main(String[] args) {
 		/**
@@ -80,7 +80,7 @@ public class VgiAnalysis {
 			if (cmd.hasOption('s')) {
 				settingsFile = new File(cmd.getOptionValue('s'));
 				if (!settingsFile.exists()) {
-					log.warn("Setting file does not exist! (" + settingsFile.getAbsolutePath() + ")");
+					log.warn("Setting file does not exist! ({})", settingsFile.getAbsolutePath());
 					settingsFile = null;
 				}
 			} else {
@@ -125,7 +125,7 @@ public class VgiAnalysis {
 							settings.getFilterPolygonList().add(new VgiPolygon((Polygon) wktReader.read(split[0]), split[1]));
 
 						} catch (ParseException e) {
-							log.warn("Cannot parse geometry!! (" + split[0] + ")");
+							log.warn("Cannot parse geometry!! ({})", split[0]);
 							continue;
 						}
 					}
@@ -143,7 +143,7 @@ public class VgiAnalysis {
 				log.info(settings.getFilterPolygonList().size() + " filter polygons found!");
 				for (VgiPolygon polygon : settings.getFilterPolygonList()) {
 					settings.setCurrentPolygon(polygon);
-					log.info("Start analysis... " + settings.getCurrentPolygon().getLabel());
+					log.info("Start analysis... {}", settings.getCurrentPolygon().getLabel());
 					pipeline.start();
 				}
 			}

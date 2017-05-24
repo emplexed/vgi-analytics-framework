@@ -18,13 +18,13 @@ package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.IVgiPipelineConsumer;
 
 public class CountingAnalysisConsumer implements IVgiPipelineConsumer {
-	private static Logger log = Logger.getLogger(CountingAnalysisConsumer.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(CountingAnalysisConsumer.class);
 	
 	AtomicLong featureCount;
 	AtomicLong operationCount;
@@ -46,7 +46,7 @@ public class CountingAnalysisConsumer implements IVgiPipelineConsumer {
 		for (IVgiFeature feature : batch) {
 			operationCount.getAndAdd(feature.getOperationList().size());
 		}
-		log.info(" > Operation Counter: Already processed " + featureCount.get() + " features with " + operationCount.get() + " operations");
+		log.info(" > Operation Counter: Already processed {} features with {} operations", featureCount.get(), operationCount.get());
 	}
 	
 	@Override

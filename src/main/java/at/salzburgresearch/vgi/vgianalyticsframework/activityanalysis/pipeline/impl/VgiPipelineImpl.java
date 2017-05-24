@@ -25,7 +25,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiAction;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.IVgiFeature;
@@ -50,8 +50,7 @@ import gnu.trove.list.array.TLongArrayList;
  *
  */
 public class VgiPipelineImpl implements IVgiPipeline {
-
-	private static Logger log = Logger.getLogger(VgiPipelineImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiPipelineImpl.class);
 	
 	private IVgiPipelineSettings settings;
 

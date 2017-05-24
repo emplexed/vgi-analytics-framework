@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.IVgiPipelineSettings;
 
@@ -30,7 +30,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.I
  *
  */
 public abstract class VgiAnalysisParent {
-	protected static Logger log = Logger.getLogger(VgiAnalysisParent.class);
+	protected static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiAnalysisParent.class);
 	
 	protected IVgiPipelineSettings settings = null;
 

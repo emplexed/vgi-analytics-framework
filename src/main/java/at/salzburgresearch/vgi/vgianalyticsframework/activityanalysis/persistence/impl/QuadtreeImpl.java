@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -31,7 +31,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistenc
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.IQuadtree;
 
 public class QuadtreeImpl implements IQuadtree {
-	private Logger log = Logger.getLogger(QuadtreeImpl.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(QuadtreeImpl.class);
 	
 	private static EventListenerList listeners = new EventListenerList();
 	
@@ -103,7 +103,7 @@ public class QuadtreeImpl implements IQuadtree {
 	}
 	
 	private void subdivideQuadrants() {
-		log.info("Subdivide Quadrant: " + path + " (Level " + level + ")");
+		log.info("Subdivide Quadrant: {} (Level {})", path, level);
 		/** create new quadrants in next level */
 		this.NW = new QuadtreeImpl(level+1, path+"/NW");
 		this.NE = new QuadtreeImpl(level+1, path+"/NE");

@@ -27,7 +27,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.openstreetmap.osmosis.osmbinary.file.BlockInputStream;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -42,7 +42,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.osm.importer.impl.VgiOperat
  *
  */
 public class OsmHistoryImporter {
-	private static Logger log = Logger.getLogger(OsmHistoryImporter.class);
+	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OsmHistoryImporter.class);
 
 	public static void main(String[] args) {
 		/**
@@ -77,7 +77,7 @@ public class OsmHistoryImporter {
             if (cmd.hasOption('o')) {
             	osmHistoryFile = new File(cmd.getOptionValue('o'));
             	if (!osmHistoryFile.exists()) {
-            		log.warn("OSM History file does not exist! (" + osmHistoryFile.getAbsolutePath() + ")");
+            		log.warn("OSM History file does not exist! ({})", osmHistoryFile.getAbsolutePath());
             		System.exit(0);
             	}
             } else {
@@ -88,7 +88,7 @@ public class OsmHistoryImporter {
             if (cmd.hasOption('s')) {
                 settingsFile = new File(cmd.getOptionValue('s'));
             	if (!settingsFile.exists()) {
-            		log.warn("Setting file does not exist! (" + settingsFile.getAbsolutePath() + ")");
+            		log.warn("Setting file does not exist! ({})", settingsFile.getAbsolutePath());
             		System.exit(0);
             	}
             } else {
