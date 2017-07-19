@@ -17,6 +17,7 @@ package at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service;
 
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -27,7 +28,6 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiModelFactoryImpl;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiOperationType;
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl.VgiOperationGeneratorOsmNodeImpl;
-import junit.framework.Assert;
 
 public class TestVgiOperationGeneratorOsmNode {
 	
@@ -63,7 +63,7 @@ public class TestVgiOperationGeneratorOsmNode {
 		Assert.assertEquals(1, operations.size());
 		
 		Assert.assertEquals(VgiOperationType.OP_MODIFY_COORDINATE, operations.get(0).getVgiOperationType());
-		Assert.assertEquals(13.5, operations.get(0).getCoordinate().x);
-		Assert.assertEquals(47.0, operations.get(0).getCoordinate().y);
+		Assert.assertEquals(13.5, operations.get(0).getCoordinate().x, 0.0);
+		Assert.assertEquals(47.0, operations.get(0).getCoordinate().y, 0.0);
 	}
 }
