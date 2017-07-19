@@ -18,6 +18,7 @@ package at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.osm.impl.Way;
@@ -26,7 +27,6 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiModelFactoryImpl;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiOperationType;
 import at.salzburgresearch.vgi.vgianalyticsframework.osm.vgi.service.impl.VgiOperationGeneratorOsmWayImpl;
-import junit.framework.Assert;
 
 public class TestVgiOperationGeneratorOsmWay {
 	
