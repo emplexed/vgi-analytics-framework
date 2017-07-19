@@ -1,0 +1,54 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+
+
+	<bean id="vgiPipelineSettings" scope="singleton" lazy-init="true"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineSettings" />
+		
+	<bean id="vgiModelFactory" lazy-init="true" scope="singleton"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.model.vgi.impl.VgiModelFactoryImpl" />
+		
+	<bean id="vgiOperationPbfWriter" lazy-init="true" scope="prototype"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfWriterImpl" />
+
+	<bean id="vgiOperationPbfReader" lazy-init="true" scope="prototype"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
+	</bean>
+	<bean id="vgiOperationPbfReaderQuadtree" lazy-init="true" scope="prototype"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl.VgiOperationPbfReaderQuadtreeImpl">
+        <constructor-arg index="0" ref="vgiPipelineSettings" />
+	</bean>
+	
+	<bean id="vgiPipeline" scope="singleton" lazy-init="true"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.impl.VgiPipelineImpl" >
+		<constructor-arg index="0" ref="vgiPipelineSettings" />
+		<property name="queueSize" value="100000" />
+		<property name="batchSize" value="100000" />
+		<property name="producer" ref="vgiOperationPbfReader" />
+		<property name="producerQuadtree" ref="vgiOperationPbfReaderQuadtree" />
+		<property name="consumers">
+		   		<list>
+		   			<ref bean="readAllFeaturesConsumer" />
+		   		</list>
+		</property>
+		<property name="numThreads" value="1" />
+	</bean>
+	
+	<bean id="readAllFeaturesConsumer" scope="singleton" lazy-init="true"
+		class="at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.pipeline.consumer.impl.ReadAllFeaturesConsumer" />
+	
+	
+</beans>

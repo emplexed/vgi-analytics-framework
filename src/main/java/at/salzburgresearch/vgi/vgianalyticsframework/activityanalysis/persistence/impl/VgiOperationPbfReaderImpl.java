@@ -473,7 +473,8 @@ public class VgiOperationPbfReaderImpl implements IVgiAnalysisPipelineProducer {
 				operation.setTimestamp(currentOperationValues.getTimestamp());
 				operation.setChangesetid(currentPbfOperationChangeset);
     			operation.setVersion(currentOperationValues.getVersion());
-    			if (operation.getTimestamp().before(settings.getFilterTimestamp())) {
+    			if (settings.getFilterTimestamp() == null ||
+    					operation.getTimestamp().before(settings.getFilterTimestamp())) {
     				feature.addOperation(operation);
     			}
 			}
