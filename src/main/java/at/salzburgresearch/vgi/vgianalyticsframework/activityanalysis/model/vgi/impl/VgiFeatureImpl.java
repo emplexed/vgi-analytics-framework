@@ -50,7 +50,7 @@ public class VgiFeatureImpl extends VgiBaseObjectImpl implements IVgiFeature {
 		this.operationList = new ArrayList<IVgiOperation>();
 	}
 
-	public VgiFeatureImpl(ArrayList<IVgiOperation> operationList) {
+	public VgiFeatureImpl(List<IVgiOperation> operationList) {
 		this.operationList = operationList;
 	}
 	
