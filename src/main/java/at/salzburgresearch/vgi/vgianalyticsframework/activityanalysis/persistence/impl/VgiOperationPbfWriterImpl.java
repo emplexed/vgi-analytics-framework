@@ -15,6 +15,7 @@ limitations under the License.
 
 package at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.impl;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,7 +41,7 @@ import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistenc
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiFeatureWrapper;
 import at.salzburgresearch.vgi.vgianalyticsframework.activityanalysis.persistence.pbf.OperationProto.PbfVgiOperationContainer.PbfVgiOperation;
 
-public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
+public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter, Closeable {
 	private static Logger log = org.apache.logging.log4j.LogManager.getLogger(VgiOperationPbfWriterImpl.class);
 	
 	protected FileOutputStream pbfFeatureWriter = null;
@@ -345,6 +346,11 @@ public class VgiOperationPbfWriterImpl implements IVgiOperationPbfWriter {
 	
 	@Override
 	public void terminatePbfWriter() {
+		closePbfDataFile();
+	}
+
+	@Override
+	public void close() throws IOException {
 		closePbfDataFile();
 	}
 	
